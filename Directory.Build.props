@@ -1,0 +1,21 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors>FS0025;FS0026;FS0052;FS0064</WarningsAsErrors>
+    <!-- Principle II: visibility lives in .fsi, not in .fs.
+         FS0078 would warn on `private` or `internal` on top-level bindings
+         in a file that has a companion .fsi. We promote it to error. -->
+    <WarningsAsErrors>$(WarningsAsErrors);FS0078</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <Version>0.1.0</Version>
+    <Authors>$(USER)</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>

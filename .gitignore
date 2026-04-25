@@ -1,0 +1,26 @@
+bin/
+obj/
+*.user
+.vs/
+.idea/
+.vscode/
+.fake/
+.ionide/
+*.suo
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Test output
+TestResults/
+*.trx
+*.coverage
+coverage/
+
+# FSI
+.fsi-cache/
+
+# macOS / Linux cruft
+.DS_Store
