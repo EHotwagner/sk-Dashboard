@@ -413,6 +413,17 @@ let stateReducerTests =
           }
 
           test "scroll_commands_update_table_and_full_detail_offsets" {
+              let longPlanContent =
+                  String.concat "\n" [ for i in 1..200 -> sprintf "line %d" i ]
+
+              let plan =
+                  { Path = Some "plan.md"
+                    Summary = None
+                    TechnicalContext = None
+                    ConstitutionCheck = None
+                    RawContent = longPlanContent
+                    Diagnostics = [] }
+
               let snapshot =
                   { RepositoryRoot = "."
                     CurrentBranch = None
@@ -421,7 +432,7 @@ let stateReducerTests =
                     SelectedFeatureId = None
                     Stories = []
                     SelectedStoryId = None
-                    Plan = None
+                    Plan = Some plan
                     TaskGraph = None
                     SelectedTaskId = None
                     Panes = Domain.defaultPanes
@@ -454,9 +465,31 @@ let stateReducerTests =
                   (full.FullScreen |> Option.map _.Viewport.LineOffset)
                   (Some 5)
                   "Full detail scroll updates modal viewport."
+
+              let bounded =
+                  App.openFullScreen PlanFullScreen { snapshot with Plan = None }
+                  |> App.applyCommand "." DetailScrollDown
+
+              Expect.equal
+                  (bounded.FullScreen |> Option.map _.Viewport.LineOffset)
+                  (Some 0)
+                  "Scrolling past the end of short content is clamped to the last visible line."
           }
 
           test "fullscreen_arrow_navigation_scrolls_detail_content" {
+              let widePadding = String.replicate 200 "x"
+
+              let longPlanContent =
+                  String.concat "\n" [ for i in 1..200 -> sprintf "line %d %s" i widePadding ]
+
+              let plan =
+                  { Path = Some "plan.md"
+                    Summary = None
+                    TechnicalContext = None
+                    ConstitutionCheck = None
+                    RawContent = longPlanContent
+                    Diagnostics = [] }
+
               let snapshot =
                   { RepositoryRoot = "."
                     CurrentBranch = None
@@ -465,7 +498,7 @@ let stateReducerTests =
                     SelectedFeatureId = None
                     Stories = []
                     SelectedStoryId = None
-                    Plan = None
+                    Plan = Some plan
                     TaskGraph = None
                     SelectedTaskId = None
                     Panes = Domain.defaultPanes

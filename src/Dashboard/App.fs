@@ -350,16 +350,22 @@ module App =
 
         { snapshot with Panes = panes }
 
+    let fullScreenContentMetrics snapshot modal =
+        let text = Render.fullScreenText snapshot modal
+        let lines = text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n')
+        let widest = lines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
+        lines.Length, widest
+
     let scrollFullScreenLines delta snapshot =
         match snapshot.FullScreen with
         | None -> snapshot
         | Some modal ->
-            let lineCount = 100000
+            let lineCount, columnCount = fullScreenContentMetrics snapshot modal
 
             let viewport =
                 Domain.clampDetailViewport
                     lineCount
-                    100000
+                    columnCount
                     { modal.Viewport with
                         LineOffset = modal.Viewport.LineOffset + delta }
 
@@ -370,11 +376,11 @@ module App =
         match snapshot.FullScreen with
         | None -> snapshot
         | Some modal ->
-            let columnCount = 100000
+            let lineCount, columnCount = fullScreenContentMetrics snapshot modal
 
             let viewport =
                 Domain.clampDetailViewport
-                    100000
+                    lineCount
                     columnCount
                     { modal.Viewport with
                         ColumnOffset = modal.Viewport.ColumnOffset + delta }
