@@ -54,6 +54,7 @@ let stateReducerTests =
               Expect.equal (Input.commandForKey "S") (Some FullScreenStory) "Story full-screen is reachable."
               Expect.equal (Input.commandForKey "P") (Some FullScreenPlan) "Plan full-screen is reachable."
               Expect.equal (Input.commandForKey "T") (Some FullScreenTask) "Task full-screen is reachable."
+              Expect.equal (Input.commandForKey "C") (Some ConstitutionOpen) "Constitution view is reachable."
               Expect.equal (Input.commandForKey ",") (Some SettingsOpen) "Settings page is reachable."
               Expect.equal (Input.commandForKey "h") (Some TableScrollLeft) "Table scroll left is reachable."
               Expect.equal (Input.commandForKey "l") (Some TableScrollRight) "Table scroll right is reachable."
@@ -352,6 +353,63 @@ let stateReducerTests =
               Expect.equal closed.SelectedFeatureId snapshot.SelectedFeatureId "Feature selection remains after close."
               Expect.equal closed.SelectedStoryId snapshot.SelectedStoryId "Story selection remains after close."
               Expect.equal closed.SelectedTaskId snapshot.SelectedTaskId "Task selection remains after close."
+          }
+
+          test "constitution_open_reads_current_file_and_close_preserves_context" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-constitution-").FullName
+              let memory = Path.Combine(root, ".specify", "memory")
+              Directory.CreateDirectory(memory) |> ignore
+              let constitutionPath = Path.Combine(memory, "constitution.md")
+              File.WriteAllText(constitutionPath, "# Constitution\n\n- Current rule")
+
+              let snapshot =
+                  { RepositoryRoot = root
+                    CurrentBranch = None
+                    Version = Domain.resolveDashboardVersion ()
+                    Features = []
+                    SelectedFeatureId = Some "001-a"
+                    Stories = []
+                    SelectedStoryId = Some "US1"
+                    Plan = None
+                    TaskGraph = None
+                    SelectedTaskId = Some "T001"
+                    Panes = Domain.defaultPanes
+                    Ui = Domain.defaultUiPreferences
+                    FullScreen = None
+                    Diagnostics = []
+                    LastRefreshedAt = DateTimeOffset.UnixEpoch }
+
+              let opened = App.applyCommand root ConstitutionOpen snapshot
+
+              Expect.equal
+                  (opened.FullScreen |> Option.map _.Target)
+                  (Some ConstitutionFullScreen)
+                  "Constitution view opens."
+
+              Expect.stringContains
+                  (opened.FullScreen
+                   |> Option.bind _.Document
+                   |> Option.map _.RawContent
+                   |> Option.defaultValue "")
+                  "Current rule"
+                  "Constitution file content is loaded."
+
+              File.WriteAllText(constitutionPath, "# Constitution\n\n- Changed rule")
+              let reopened = App.applyCommand root ConstitutionOpen opened
+
+              Expect.stringContains
+                  (reopened.FullScreen
+                   |> Option.bind _.Document
+                   |> Option.map _.RawContent
+                   |> Option.defaultValue "")
+                  "Changed rule"
+                  "The file is re-read on every open command."
+
+              let closed = App.applyCommand root DetailsClose reopened
+              Expect.isNone closed.FullScreen "Close clears the constitution view."
+              Expect.equal closed.SelectedFeatureId snapshot.SelectedFeatureId "Feature context is preserved."
+              Expect.equal closed.SelectedStoryId snapshot.SelectedStoryId "Story context is preserved."
+              Expect.equal closed.SelectedTaskId snapshot.SelectedTaskId "Task context is preserved."
           }
 
           test "scroll_commands_update_table_and_full_detail_offsets" {

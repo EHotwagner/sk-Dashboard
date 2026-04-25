@@ -1,0 +1,10 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/005-markdown-constitution-hotkey
+
+[1/2] Computing task graph...
+task-graph: 44 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/005-markdown-constitution-hotkey/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/005-markdown-constitution-hotkey/readiness/task-graph.md
+  status: 44[X]
+
+graph-only mode; skipping diff scan.

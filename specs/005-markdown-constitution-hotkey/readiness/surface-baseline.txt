@@ -168,7 +168,9 @@ type MarkdownRenderStatus =
     | MarkdownSourceMissing
     | MarkdownSourceUnreadable of string
 
-type MarkdownDocumentSource = { Path: string; DisplayName: string }
+type MarkdownDocumentSource =
+    { Path: string
+      DisplayName: string }
 
 type RenderFailureDiagnostic =
     { Message: string
@@ -256,27 +258,59 @@ module Domain =
     val emptyFeatureStatus: DateTimeOffset -> FeatureStatus
     val defaultPanes: Pane list
     val defaultUiPreferences: DashboardUiPreferences
-    val colorRoleId: DashboardColorRole -> string
-    val tryColorRole: string -> DashboardColorRole option
-    val tableBorderId: TableBorderStyle -> string
-    val tryTableBorder: string -> TableBorderStyle option
-    val defaultTableViewport: int -> int -> TableViewport
-    val defaultDetailViewport: int -> int -> DetailViewport
-    val clampTableViewport: int -> int -> TableViewport -> TableViewport
-    val keepRowVisible: int -> int -> TableViewport -> TableViewport
-    val scrollTableColumns: int -> int -> TableViewport -> TableViewport
-    val resizeTableViewport: int -> int -> int -> int -> TableViewport -> TableViewport
-    val clampDetailViewport: int -> int -> DetailViewport -> DetailViewport
-    val scrollDetailLines: int -> int -> DetailViewport -> DetailViewport
-    val scrollDetailColumns: int -> int -> DetailViewport -> DetailViewport
-    val settingsSession: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
-    val updateSettingsDraft: DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
-    val markSettingsConflict: ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
-    val discardSettingsDraft: SettingsEditSession -> SettingsEditSession
-    val reloadSettingsDraft: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
-    val liveReloadState: DashboardUiPreferences -> LiveReloadState
-    val applyLiveReload: ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState
-    val deferLiveReload: ConfigFileVersion -> LiveReloadState -> LiveReloadState
-    val normalizeDashboardVersionLabel: string -> string option
-    val resolveDashboardVersion: unit -> DashboardVersionDisplay
-    val resolveLayout: int -> DashboardLayoutMode -> DashboardResolvedLayout
+namespace SkDashboard.Core
+
+type DashboardCommand =
+    | FeaturePrevious
+    | FeatureNext
+    | FeatureCheckout
+    | StoryPrevious
+    | StoryNext
+    | TaskPrevious
+    | TaskNext
+    | PaneNext
+    | PanePrevious
+    | DetailsOpen
+    | DetailsClose
+    | FullScreenFeature
+    | FullScreenStory
+    | FullScreenPlan
+    | FullScreenTask
+    | ConstitutionOpen
+    | TableScrollLeft
+    | TableScrollRight
+    | DetailScrollUp
+    | DetailScrollDown
+    | DetailScrollLeft
+    | DetailScrollRight
+    | SettingsOpen
+    | SettingsSave
+    | SettingsDiscard
+    | SettingsReload
+    | SettingsOverwrite
+    | Refresh
+    | HotkeysReload
+    | Quit
+
+type HotkeyBinding =
+    { Command: DashboardCommand
+      KeySequence: string
+      Scope: string
+      Source: string }
+
+type DashboardPreferences =
+    { Bindings: HotkeyBinding list
+      Ui: DashboardUiPreferences
+      Diagnostics: Diagnostic list }
+
+module Hotkeys =
+    val defaultBindings: HotkeyBinding list
+    val validateBindings: HotkeyBinding list -> Diagnostic list
+    val commandId: DashboardCommand -> string
+    val commandLabel: DashboardCommand -> string
+    val colorRoleDefaults: unit -> Map<DashboardColorRole, DashboardColorStyle>
+    val parseLayoutMode: string -> DashboardLayoutMode option
+    val currentConfigVersion: string -> ConfigFileVersion
+    val writePreferences: string -> DashboardPreferences -> unit
+    val loadPreferences: string -> DashboardPreferences
+    val loadBindings: string -> HotkeyBinding list * Diagnostic list

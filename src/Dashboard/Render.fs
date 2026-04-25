@@ -2,6 +2,8 @@ namespace SkDashboard.Dashboard
 
 open System
 open System.IO
+open System.Text
+open NTokenizers.Extensions.Spectre.Console
 open Spectre.Console
 open Spectre.Console.Rendering
 open SkDashboard.Core
@@ -210,6 +212,187 @@ module Render =
 
     let panel title (renderable: IRenderable) =
         Panel(renderable).Header(PanelHeader(title)).Border(BoxBorder.Rounded)
+
+    let fallbackMarkdownLines text =
+        if String.IsNullOrWhiteSpace text then
+            [| "(empty document)" |]
+        else
+            text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n')
+
+    let renderMarkdownLines (sourcePath: string option) text =
+        try
+            use writer = new StringWriter()
+
+            let output = AnsiConsoleOutput(writer)
+            let settings = AnsiConsoleSettings()
+            settings.Ansi <- AnsiSupport.No
+            settings.ColorSystem <- ColorSystemSupport.NoColors
+            settings.Out <- output
+            settings.Interactive <- InteractionSupport.No
+
+            let console = AnsiConsole.Create(settings)
+            AnsiConsoleMarkdownExtensions.WriteMarkdown(console, text)
+
+            let rendered = writer.ToString().Replace("\r\n", "\n").Replace('\r', '\n')
+
+            let lines =
+                if String.IsNullOrWhiteSpace rendered then
+                    fallbackMarkdownLines text
+                else
+                    rendered.Split('\n', StringSplitOptions.None)
+
+            lines, MarkdownRendered, []
+        with ex ->
+            fallbackMarkdownLines text,
+            MarkdownPlainTextFallback ex.Message,
+            [ { Message = "Markdown renderer failed: " + ex.Message
+                SourcePath = sourcePath } ]
+
+    let markdownRows text sourcePath viewport =
+        let _, status, diagnostics = renderMarkdownLines sourcePath text
+
+        let sourceLines = fallbackMarkdownLines text
+        let widest = sourceLines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
+        let viewport = Domain.clampDetailViewport sourceLines.Length widest viewport
+
+        let inlineMarkdown (value: string) =
+            let output = StringBuilder()
+            let literal = StringBuilder()
+
+            let flushLiteral () =
+                if literal.Length > 0 then
+                    output.Append(Markup.Escape(literal.ToString())) |> ignore
+                    literal.Clear() |> ignore
+
+            let appendStyled (tag: string) (text: string) =
+                flushLiteral ()
+
+                output.Append("[").Append(tag).Append("]").Append(Markup.Escape text).Append("[/]")
+                |> ignore
+
+            let rec loop index =
+                if index >= value.Length then
+                    ()
+                elif index + 1 < value.Length && value[index] = '*' && value[index + 1] = '*' then
+                    let close = value.IndexOf("**", index + 2, StringComparison.Ordinal)
+
+                    if close > index then
+                        appendStyled "bold" value[(index + 2) .. (close - 1)]
+                        loop (close + 2)
+                    else
+                        literal.Append(value[index]) |> ignore
+                        loop (index + 1)
+                elif value[index] = '`' then
+                    let close = value.IndexOf('`', index + 1)
+
+                    if close > index then
+                        appendStyled "yellow" value[(index + 1) .. (close - 1)]
+                        loop (close + 1)
+                    else
+                        literal.Append(value[index]) |> ignore
+                        loop (index + 1)
+                elif value[index] = '_' then
+                    let close = value.IndexOf('_', index + 1)
+
+                    if close > index then
+                        appendStyled "italic" value[(index + 1) .. (close - 1)]
+                        loop (close + 1)
+                    else
+                        literal.Append(value[index]) |> ignore
+                        loop (index + 1)
+                elif value[index] = '[' then
+                    let labelClose = value.IndexOf(']', index + 1)
+
+                    if
+                        labelClose > index
+                        && labelClose + 1 < value.Length
+                        && value[labelClose + 1] = '('
+                    then
+                        let urlClose = value.IndexOf(')', labelClose + 2)
+
+                        if urlClose > labelClose then
+                            flushLiteral ()
+
+                            output
+                                .Append("[underline]")
+                                .Append(Markup.Escape value[(index + 1) .. (labelClose - 1)])
+                                .Append("[/] [grey](")
+                                .Append(Markup.Escape value[(labelClose + 2) .. (urlClose - 1)])
+                                .Append(")[/]")
+                            |> ignore
+
+                            loop (urlClose + 1)
+                        else
+                            literal.Append(value[index]) |> ignore
+                            loop (index + 1)
+                    else
+                        literal.Append(value[index]) |> ignore
+                        loop (index + 1)
+                else
+                    literal.Append(value[index]) |> ignore
+                    loop (index + 1)
+
+            loop 0
+            flushLiteral ()
+            output.ToString()
+
+        let renderLine (inCode: bool) (line: string) =
+            let trimmed = line.TrimStart()
+
+            if line.Trim().StartsWith("```") then
+                Markup("[grey]" + Markup.Escape line + "[/]") :> IRenderable
+            elif inCode then
+                Markup("[grey]" + Markup.Escape line + "[/]") :> IRenderable
+            elif trimmed.StartsWith("#") then
+                let heading = trimmed.TrimStart('#').Trim()
+                Markup("[bold]" + inlineMarkdown heading + "[/]") :> IRenderable
+            elif trimmed.StartsWith("- ") || trimmed.StartsWith("* ") then
+                let indent = line.Length - trimmed.Length
+                let body = trimmed.Substring(2)
+                Markup(String(' ', indent) + "- " + inlineMarkdown body) :> IRenderable
+            else
+                let dot = trimmed.IndexOf(". ", StringComparison.Ordinal)
+
+                if dot > 0 && trimmed[0 .. (dot - 1)] |> Seq.forall Char.IsDigit then
+                    let indent = line.Length - trimmed.Length
+                    let marker = trimmed[0..dot]
+                    let body = trimmed.Substring(dot + 2)
+                    Markup(String(' ', indent) + marker + " " + inlineMarkdown body) :> IRenderable
+                else
+                    Markup(inlineMarkdown line) :> IRenderable
+
+        let formatted =
+            let mutable inCode = false
+
+            sourceLines
+            |> Array.map (fun line ->
+                let renderable = renderLine inCode line
+
+                if line.Trim().StartsWith("```") then
+                    inCode <- not inCode
+
+                renderable)
+
+        let rows =
+            formatted
+            |> Array.skip viewport.LineOffset
+            |> Array.truncate viewport.VisibleLines
+            |> Array.mapi (fun index renderable ->
+                if viewport.ColumnOffset = 0 then
+                    renderable
+                else
+                    let sourceIndex = viewport.LineOffset + index
+                    Text(sliceText viewport.ColumnOffset sourceLines.[sourceIndex]) :> IRenderable)
+
+        rows, sourceLines.Length, viewport, status, diagnostics
+
+    let markdownBlock text sourcePath =
+        let lines, _, _, status, diagnostics =
+            markdownRows text sourcePath (Domain.defaultDetailViewport System.Int32.MaxValue 120)
+
+        let _ = status, diagnostics
+        Rows lines :> IRenderable
+
 
     let featuresTable snapshot =
         let ui = snapshot.Ui
@@ -472,6 +655,8 @@ module Render =
                         + (source.Line |> Option.map string |> Option.defaultValue "?"))
                     |> Option.defaultValue "(unknown)"
 
+                let description = task.Description |> Option.defaultValue ""
+
                 let rows =
                     Rows(
                         [| Markup(sprintf "[bold %s]%s[/]" (color DetailHeading ui) (Markup.Escape task.Title))
@@ -509,14 +694,7 @@ module Render =
                                    (Markup.Escape source)
                            )
                            :> IRenderable
-                           Markup(
-                               "["
-                               + color DetailBody ui
-                               + "]"
-                               + Markup.Escape(task.Description |> Option.defaultValue "")
-                               + "[/]"
-                           )
-                           :> IRenderable |]
+                           markdownBlock description (task.SourceLocation |> Option.map _.Path) |]
                     )
 
                 rows :> IRenderable)
@@ -721,6 +899,10 @@ module Render =
                          |> String.concat ", ")
                     (task.Description |> Option.defaultValue "")
                     source
+        | ConstitutionFullScreen ->
+            modal.Document
+            |> Option.map _.RawContent
+            |> Option.defaultValue "No constitution document is loaded. Press esc to return."
         | SettingsFullScreen ->
             let ui = snapshot.Ui
 
@@ -740,31 +922,51 @@ module Render =
         | StoryFullScreen -> "User Story"
         | PlanFullScreen -> "Plan"
         | TaskFullScreen -> "Task"
+        | ConstitutionFullScreen -> "Constitution"
         | SettingsFullScreen -> "Settings"
 
     let fullScreenRenderable (snapshot: DashboardSnapshot) (modal: FullScreenModal) =
         let ui = snapshot.Ui
         let rawText = fullScreenText snapshot modal
-        let lines = rawText.Split('\n')
-        let widest = lines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
-        let viewport = Domain.clampDetailViewport lines.Length widest modal.Viewport
 
-        let rows =
-            lines
-            |> Array.skip viewport.LineOffset
-            |> Array.truncate viewport.VisibleLines
-            |> Array.map (fun line ->
-                Markup("[white]" + Markup.Escape(sliceText viewport.ColumnOffset line) + "[/]") :> IRenderable)
+        let sourcePath = modal.Document |> Option.bind _.Source |> Option.map _.Path
+
+        let rows, lineCount, viewport, status, diagnostics =
+            match modal.Target with
+            | SettingsFullScreen ->
+                let lines = rawText.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n')
+                let widest = lines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
+                let viewport = Domain.clampDetailViewport lines.Length widest modal.Viewport
+
+                let rows =
+                    lines
+                    |> Array.skip viewport.LineOffset
+                    |> Array.truncate viewport.VisibleLines
+                    |> Array.map (fun line ->
+                        Markup("[white]" + Markup.Escape(sliceText viewport.ColumnOffset line) + "[/]") :> IRenderable)
+
+                rows, lines.Length, viewport, MarkdownRendered, []
+            | _ -> markdownRows rawText sourcePath modal.Viewport
 
         let title =
+            let statusText =
+                match status, diagnostics with
+                | MarkdownPlainTextFallback _, _ -> " fallback"
+                | MarkdownEmptyDocument, _ -> " empty"
+                | MarkdownSourceMissing, _ -> " missing"
+                | MarkdownSourceUnreadable _, _ -> " unreadable"
+                | _, _ :: _ -> " diagnostics"
+                | _ -> ""
+
             sprintf
-                "[bold %s]%s Full Screen[/] [grey]lines %d-%d/%d col +%d[/]"
+                "[bold %s]%s Full Screen[/] [grey]lines %d-%d/%d col +%d%s[/]"
                 (color PanelAccent ui)
                 (fullScreenTitle modal.Target)
                 (viewport.LineOffset + 1)
-                (min lines.Length (viewport.LineOffset + viewport.VisibleLines))
-                lines.Length
+                (min lineCount (viewport.LineOffset + viewport.VisibleLines))
+                lineCount
                 viewport.ColumnOffset
+                statusText
 
         panel title (Rows rows)
 
@@ -935,9 +1137,9 @@ module Render =
         let footer =
             let actions =
                 if List.isEmpty snapshot.Features then
-                    "[bold]r[/] refresh  [bold],[/] settings  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
+                    "[bold]C[/] constitution  [bold]r[/] refresh  [bold],[/] settings  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
                 else
-                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]h/l[/] table scroll  [bold]F/S/P/T[/] full screen  [bold]arrows[/] scroll detail  [bold],[/] settings  [bold]r[/] refresh  [bold]q[/] quit"
+                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]h/l[/] table scroll  [bold]F/S/P/T[/] full screen  [bold]C[/] constitution  [bold]arrows[/] scroll detail  [bold],[/] settings  [bold]r[/] refresh  [bold]q[/] quit"
 
             let rows =
                 Rows(

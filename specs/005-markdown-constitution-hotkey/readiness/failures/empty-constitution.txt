@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m [1mv0.1.15[0m  repo /tmp/tmp.L0q7RvCl2C  branch (none)                  
+                                                                                
+                                                                                
+╭─[1mConstitution Full Screen[0m lines 1-1/1 col +0──────────────────────────────────╮
+│ Constitution file is empty:                                                  │
+│ /tmp/tmp.L0q7RvCl2C/.specify/memory/constitution.md                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mC[0m constitution  [1mr[0m refresh  [1m,[0m settings  [1mq[0m quit  create specs with Speckit to  │
+│ begin                                                                        │
+│ ╭───────────┬──────────────────────────────────────────────────────────────╮ │
+│ │ [1mSeverity[0m  │ [1mMessage[0m                                                      │ │
+│ ├───────────┼──────────────────────────────────────────────────────────────┤ │
+│ │  info     │  No Speckit feature artifacts were found. Use refresh after  │ │
+│ │           │ creating specs.                                              │ │
+│ │  warning  │  Constitution file is empty.                                 │ │
+│ │           │ (/tmp/tmp.L0q7RvCl2C/.specify/memory/constitution.md)        │ │
+│ ╰───────────┴──────────────────────────────────────────────────────────────╯ │

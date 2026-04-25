@@ -1,0 +1,14 @@
+Test run for /home/developer/projects/sk-Dashboard/tests/Dashboard.Tests/bin/Debug/net10.0/Dashboard.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /home/developer/projects/sk-Dashboard/tests/Core.Tests/bin/Debug/net10.0/Core.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1-dev (x64)
+
+VSTest version 18.0.1-dev (x64)
+
+Starting test execution, please wait...
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    33, Skipped:     0, Total:    33, Duration: 137 ms - Dashboard.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    37, Skipped:     0, Total:    37, Duration: 204 ms - Core.Tests.dll (net10.0)

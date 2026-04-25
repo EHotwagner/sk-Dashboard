@@ -20,6 +20,7 @@ type DashboardCommand =
     | FullScreenStory
     | FullScreenPlan
     | FullScreenTask
+    | ConstitutionOpen
     | TableScrollLeft
     | TableScrollRight
     | DetailScrollUp
@@ -64,6 +65,7 @@ module Hotkeys =
         | FullScreenStory -> "fullscreen.story"
         | FullScreenPlan -> "fullscreen.plan"
         | FullScreenTask -> "fullscreen.task"
+        | ConstitutionOpen -> "constitution.open"
         | TableScrollLeft -> "table.scrollLeft"
         | TableScrollRight -> "table.scrollRight"
         | DetailScrollUp -> "detail.scrollUp"
@@ -96,6 +98,7 @@ module Hotkeys =
         | "fullscreen.story" -> Some FullScreenStory
         | "fullscreen.plan" -> Some FullScreenPlan
         | "fullscreen.task" -> Some FullScreenTask
+        | "constitution.open" -> Some ConstitutionOpen
         | "table.scrollLeft" -> Some TableScrollLeft
         | "table.scrollRight" -> Some TableScrollRight
         | "detail.scrollUp" -> Some DetailScrollUp
@@ -111,6 +114,39 @@ module Hotkeys =
         | "hotkeys.reload" -> Some HotkeysReload
         | "quit" -> Some Quit
         | _ -> None
+
+    let commandLabel command =
+        match command with
+        | FeaturePrevious -> "Previous feature"
+        | FeatureNext -> "Next feature"
+        | FeatureCheckout -> "Checkout feature"
+        | StoryPrevious -> "Previous story"
+        | StoryNext -> "Next story"
+        | TaskPrevious -> "Previous task"
+        | TaskNext -> "Next task"
+        | PaneNext -> "Next pane"
+        | PanePrevious -> "Previous pane"
+        | DetailsOpen -> "Open details"
+        | DetailsClose -> "Close details"
+        | FullScreenFeature -> "Open feature document"
+        | FullScreenStory -> "Open story document"
+        | FullScreenPlan -> "Open plan document"
+        | FullScreenTask -> "Open task document"
+        | ConstitutionOpen -> "Open constitution"
+        | TableScrollLeft -> "Scroll table left"
+        | TableScrollRight -> "Scroll table right"
+        | DetailScrollUp -> "Scroll detail up"
+        | DetailScrollDown -> "Scroll detail down"
+        | DetailScrollLeft -> "Scroll detail left"
+        | DetailScrollRight -> "Scroll detail right"
+        | SettingsOpen -> "Open settings"
+        | SettingsSave -> "Save settings"
+        | SettingsDiscard -> "Discard settings"
+        | SettingsReload -> "Reload settings"
+        | SettingsOverwrite -> "Overwrite settings"
+        | Refresh -> "Refresh"
+        | HotkeysReload -> "Reload hotkeys"
+        | Quit -> "Quit"
 
     let defaultBindings =
         [ { Command = FeaturePrevious
@@ -171,6 +207,10 @@ module Hotkeys =
             Source = "default" }
           { Command = FullScreenTask
             KeySequence = "T"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = ConstitutionOpen
+            KeySequence = "C"
             Scope = "dashboard"
             Source = "default" }
           { Command = TableScrollLeft

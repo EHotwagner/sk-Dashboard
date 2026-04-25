@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m [1mv0.1.16[0m  repo /home/developer/projects/sk-Dashboard  branch       
+ 005-markdown-constitution-hotkey                                               
+                                                                                
+╭─[1mConstitution Full Screen[0m lines 1-40/227 col +0───────────────────────────────╮
+│ [1msk-Dashboard Constitution[0m                                                    │
+│ [1mCore Principles[0m                                                              │
+│ [1mI. Spec -> FSI -> Semantic Tests -> Implementation[0m                           │
+│ Every non-trivial change MUST follow this order:                             │
+│ 1. [1mSpecify.[0m Feature spec names user-visible outcome, scope boundaries,       │
+│    change classification, public API impact, and verification approach.      │
+│ 2. [1mSketch in FSI.[0m The intended public surface is drafted as a .fsi           │
+│    signature and exercised interactively in F# Interactive before any .fs    │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mh/l[0m table scroll  [1mF/S/P/T[0m   │
+│ full screen  [1mC[0m constitution  [1marrows[0m scroll detail  [1m,[0m settings  [1mr[0m refresh  [1mq[0m  │
+│ quit                                                                         │
+│ ╭────────────────────────────┬─────────────────────────────────────────────╮ │
+│ │ [1mSeverity[0m                   │ [1mMessage[0m                                     │ │
+│ ├────────────────────────────┼─────────────────────────────────────────────┤ │
+│ │ ok                         │ No diagnostics                              │ │
+│ ╰────────────────────────────┴─────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                

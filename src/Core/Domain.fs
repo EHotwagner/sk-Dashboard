@@ -162,11 +162,32 @@ type DashboardVersionDisplay =
       Source: string
       Diagnostic: Diagnostic option }
 
+type MarkdownRenderStatus =
+    | MarkdownRendered
+    | MarkdownPlainTextFallback of string
+    | MarkdownEmptyDocument
+    | MarkdownSourceMissing
+    | MarkdownSourceUnreadable of string
+
+type MarkdownDocumentSource = { Path: string; DisplayName: string }
+
+type RenderFailureDiagnostic =
+    { Message: string
+      SourcePath: string option }
+
+type MarkdownDocument =
+    { Title: string
+      RawContent: string
+      Source: MarkdownDocumentSource option
+      Status: MarkdownRenderStatus
+      Diagnostics: RenderFailureDiagnostic list }
+
 type FullScreenTarget =
     | FeatureFullScreen
     | StoryFullScreen
     | PlanFullScreen
     | TaskFullScreen
+    | ConstitutionFullScreen
     | SettingsFullScreen
 
 type FullScreenModal =
@@ -174,6 +195,7 @@ type FullScreenModal =
       SelectedFeatureId: string option
       SelectedStoryId: string option
       SelectedTaskId: string option
+      Document: MarkdownDocument option
       Viewport: DetailViewport }
 
 and TableViewport =
@@ -234,6 +256,8 @@ module Domain =
         { Severity = severity
           Message = message
           Source = source }
+
+    let constitutionRelativePath = ".specify/memory/constitution.md"
 
     let emptyFeatureStatus refreshedAt =
         { SpecState = Missing

@@ -262,6 +262,75 @@ module App =
                       SelectedFeatureId = snapshot.SelectedFeatureId
                       SelectedStoryId = snapshot.SelectedStoryId
                       SelectedTaskId = snapshot.SelectedTaskId
+                      Document = None
+                      Viewport = Domain.defaultDetailViewport 40 120 } }
+
+    let constitutionPath projectPath =
+        Path.Combine(SpeckitArtifacts.resolveRepositoryRoot projectPath, Domain.constitutionRelativePath)
+
+    let constitutionDocument projectPath =
+        let path = constitutionPath projectPath
+
+        let source =
+            Some
+                { Path = path
+                  DisplayName = "constitution.md" }
+
+        try
+            if not (File.Exists path) then
+                { Title = "Constitution"
+                  RawContent = "Constitution is unavailable: " + path
+                  Source = source
+                  Status = MarkdownSourceMissing
+                  Diagnostics =
+                    [ { Message = "Constitution file is missing."
+                        SourcePath = Some path } ] }
+            else
+                let text = File.ReadAllText path
+
+                if String.IsNullOrWhiteSpace text then
+                    { Title = "Constitution"
+                      RawContent = "Constitution file is empty: " + path
+                      Source = source
+                      Status = MarkdownEmptyDocument
+                      Diagnostics =
+                        [ { Message = "Constitution file is empty."
+                            SourcePath = Some path } ] }
+                else
+                    { Title = "Constitution"
+                      RawContent = text
+                      Source = source
+                      Status = MarkdownRendered
+                      Diagnostics = [] }
+        with ex ->
+            { Title = "Constitution"
+              RawContent = "Constitution is unreadable: " + path + "\n" + ex.Message
+              Source = source
+              Status = MarkdownSourceUnreadable ex.Message
+              Diagnostics =
+                [ { Message = "Constitution file is unreadable: " + ex.Message
+                    SourcePath = Some path } ] }
+
+    let openConstitution projectPath snapshot =
+        let document = constitutionDocument projectPath
+
+        let diagnostics =
+            document.Diagnostics
+            |> List.map (fun diagnostic ->
+                Domain.diagnostic
+                    Warning
+                    diagnostic.Message
+                    (diagnostic.SourcePath |> Option.map (fun path -> { Path = path; Line = None })))
+
+        { snapshot with
+            Diagnostics = snapshot.Diagnostics @ diagnostics
+            FullScreen =
+                Some
+                    { Target = ConstitutionFullScreen
+                      SelectedFeatureId = snapshot.SelectedFeatureId
+                      SelectedStoryId = snapshot.SelectedStoryId
+                      SelectedTaskId = snapshot.SelectedTaskId
+                      Document = Some document
                       Viewport = Domain.defaultDetailViewport 40 120 } }
 
     let closeFullScreen snapshot = { snapshot with FullScreen = None }
@@ -378,6 +447,7 @@ module App =
         | FullScreenStory -> openFullScreen StoryFullScreen snapshot
         | FullScreenPlan -> openFullScreen PlanFullScreen snapshot
         | FullScreenTask -> openFullScreen TaskFullScreen snapshot
+        | ConstitutionOpen -> openConstitution projectPath snapshot
         | TableScrollLeft when settingsSurfaceActive snapshot -> cycleBorder -1 snapshot
         | TableScrollRight when settingsSurfaceActive snapshot -> cycleBorder 1 snapshot
         | TableScrollLeft -> scrollTableColumns -snapshot.Ui.Table.HorizontalStep snapshot

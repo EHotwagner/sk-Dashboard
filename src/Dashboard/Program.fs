@@ -78,6 +78,7 @@ module Program =
         | FullScreenStory
         | FullScreenPlan
         | FullScreenTask
+        | ConstitutionOpen
         | SettingsOpen
         | SettingsSave
         | SettingsDiscard

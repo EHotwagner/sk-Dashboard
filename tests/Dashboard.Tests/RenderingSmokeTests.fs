@@ -176,6 +176,74 @@ let renderingSmokeTests =
               Expect.isFalse (text.Contains "User Story US1") "Only the requested target type is rendered."
           }
 
+          test "constitution_full_screen_renders_markdown_and_failure_states" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-constitution-").FullName
+
+              let memory = Path.Combine(root, ".specify", "memory")
+              Directory.CreateDirectory(memory) |> ignore
+              let constitutionPath = Path.Combine(memory, "constitution.md")
+
+              File.WriteAllText(
+                  constitutionPath,
+                  "# Constitution\n\n- **Respect** public contracts\n- Use `dotnet test`\n"
+              )
+
+              let opened = App.load root |> App.applyCommand root ConstitutionOpen
+
+              let text =
+                  opened.FullScreen
+                  |> Option.map (Render.fullScreenText opened)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains text "Respect" "Markdown source content is loaded for the constitution view."
+              opened.FullScreen |> Option.iter (Render.fullScreenRenderable opened >> ignore)
+
+              File.Delete constitutionPath
+              let missing = App.applyCommand root ConstitutionOpen opened
+
+              let missingText =
+                  missing.FullScreen
+                  |> Option.map (Render.fullScreenText missing)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains missingText "unavailable" "Missing constitution has a readable fallback document."
+              Expect.isNonEmpty missing.Diagnostics "Missing constitution emits a non-fatal diagnostic."
+
+              File.WriteAllText(constitutionPath, "")
+              let empty = App.applyCommand root ConstitutionOpen missing
+
+              let emptyText =
+                  empty.FullScreen
+                  |> Option.map (Render.fullScreenText empty)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains emptyText "empty" "Empty constitution has an explicit message."
+          }
+
+          test "compact_tables_keep_markdown_like_cells_plain" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-plain-tables-").FullName
+
+              let featureRoot = Path.Combine(root, "specs", "001-a")
+              Directory.CreateDirectory(featureRoot) |> ignore
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "spec.md"),
+                  "### User Story 1 - **Bold Story** (Priority: P1)\n"
+              )
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "tasks.md"),
+                  "- [ ] T001 [US1] Keep `inline code` plain in table rows\n"
+              )
+
+              let snapshot = App.load root
+              Render.storiesTable snapshot |> ignore
+              Render.tasksTable snapshot |> ignore
+              Expect.isTrue true "Markdown-like compact table cells render on the plain table path."
+          }
+
           test "navigation_state_is_preserved_across_layout_modes" {
               let root =
                   Directory.CreateTempSubdirectory("sk-dashboard-render-nav-layout-").FullName
@@ -278,6 +346,7 @@ let renderingSmokeTests =
                     SelectedFeatureId = None
                     SelectedStoryId = None
                     SelectedTaskId = None
+                    Document = None
                     Viewport =
                       { Domain.defaultDetailViewport 5 8 with
                           ColumnOffset = 20 } }

@@ -1,0 +1,747 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature branch, spec, plan, contracts, data model, quickstart, and requested NTokenizers package decision are present for `005-markdown-constitution-hotkey`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create readiness scaffolding under `specs/005-markdown-constitution-hotkey/readiness/` for FSI transcripts, surface baselines, Markdown smoke captures, dashboard smoke logs, and failure-case transcripts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record the Tier 1 contract surfaces, affected Core/Dashboard modules, dependency upgrade, and required real-evidence paths in `specs/005-markdown-constitution-hotkey/readiness/evidence-plan.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Map existing hotkey registration, input dispatch, detail/fullscreen rendering, table rendering, active repository resolution, and dashboard context restoration paths to the feature requirements",
+      "explicit_deps": [
+        "T001"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public Core `.fsi` signatures for `ConstitutionOpen`, Markdown document state, constitution view state, source locations, render statuses, viewport state reuse, and render failure diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic test scaffolding for hotkey command ids, default bindings, public document/constitution state, viewport clamping, source paths, and diagnostic status values",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke test scaffolding for Markdown-rendered document views, compact plain table cells, constitution open/close/scroll flows, and constitution failure states",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft public signatures from FSI and capture the transcript in `specs/005-markdown-constitution-hotkey/readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record public surface baselines for changed `.fsi` modules in `specs/005-markdown-constitution-hotkey/readiness/surface-baseline.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define user-facing fallback messages and operational diagnostics for malformed Markdown, renderer exceptions, missing constitution files, empty files, unreadable files, and attempted file paths",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define reusable Markdown and repository fixtures covering headings, paragraphs, lists, emphasis, inline code, links, fenced code blocks, long lines, tables, malformed syntax, empty constitution files, missing constitution files, unreadable files, and changed-on-reopen content",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the foundation test scaffolds once and capture the expected failing or pending evidence in `specs/005-markdown-constitution-hotkey/readiness/foundation-test-baseline.txt`",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for Markdown document render status, source metadata, fallback status, empty-document status, and renderer diagnostic shapes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests proving headings, lists, emphasis, inline code, links, and fenced code blocks render as structured terminal content in constitution and full/detail document views",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests proving compact feature, story, task, plan, and diagnostic table cells keep Markdown-like text plain and row-stable",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests proving malformed or unsupported Markdown and renderer failures fall back to readable text without crashing",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Upgrade `Spectre.Console` and add `NTokenizers.Extensions.Spectre.Console` 2.2.0 in `src/Dashboard/Dashboard.fsproj`, then restore to verify dependency compatibility",
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement a small Dashboard Markdown rendering adapter around NTokenizers/Spectre that returns formatted output or escaped plain-text fallback plus diagnostics",
+      "explicit_deps": [
+        "T014",
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Route full/detail Markdown-backed document rendering through the new adapter in `src/Dashboard/Render.fs` while preserving existing detail layout, scroll offsets, and color roles",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Keep compact dashboard table rendering on the existing plain-text path so Markdown-like table cell content does not expand or alter row height",
+      "explicit_deps": [
+        "T015",
+        "T019"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire render failure diagnostics into existing dashboard diagnostic surfaces without exposing unrelated environment details or terminating the render loop",
+      "explicit_deps": [
+        "T016",
+        "T018",
+        "T019"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 independent evidence with Core semantic tests, Dashboard Markdown rendering smoke output, fallback smoke output, and compact-table plain-text captures under readiness artifacts",
+      "explicit_deps": [
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests proving `constitution.open` is a stable command id, default binding is `C`, command discovery includes the label, and existing conflict/customization behavior applies",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard reducer and smoke tests proving pressing the constitution command opens the current constitution, closing restores selected feature/story/task/focus/detail context, and normal refresh/quit behavior is preserved",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests proving long constitution content can be navigated by keyboard with clamped vertical and horizontal offsets in narrow and short terminal layouts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add `ConstitutionOpen` to Core hotkey command types, command id parsing/serialization, default bindings, help/discovery metadata, and public `.fsi` exposure",
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement active repository constitution resolution for `.specify/memory/constitution.md` and ensure the file is read on every constitution-open command",
+      "explicit_deps": [
+        "T024",
+        "T026"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add typed constitution view state and reducer transitions for open, scroll, and close while preserving and restoring previous dashboard context",
+      "explicit_deps": [
+        "T024",
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire input dispatch so the configured constitution hotkey opens the view and existing detail/document scroll and close commands operate while the view is active",
+      "explicit_deps": [
+        "T023",
+        "T024",
+        "T025",
+        "T028"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Render the constitution view through the shared Markdown rendering adapter with usable layout and controls in `src/Dashboard/Render.fs`",
+      "explicit_deps": [
+        "T027",
+        "T028"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 independent evidence with hotkey semantic tests, open/close context restoration smoke logs, scroll smoke logs, and a manual or scripted dashboard transcript under readiness artifacts",
+      "explicit_deps": [
+        "T023",
+        "T024",
+        "T025",
+        "T029",
+        "T030"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for missing, empty, unreadable, malformed, and changed-on-reopen constitution files using real temporary repository fixtures where the local filesystem supports them",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core and Dashboard tests proving constitution access and Markdown render diagnostics include the attempted source path where relevant, avoid unrelated environment details, and never crash the dashboard",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement non-fatal constitution fallback documents and messages for missing, empty, unreadable, and render-failed constitution content",
+      "explicit_deps": [
+        "T032",
+        "T033"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure reopening the constitution after file changes discards stale content and displays the current file contents within the 2-second target for files up to 2,000 lines",
+      "explicit_deps": [
+        "T032",
+        "T034"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Harden constitution and detail rendering for long lines, large code blocks, nested lists, Markdown tables, and narrow or short terminals without overlapping controls or corrupting layout",
+      "explicit_deps": [
+        "T032",
+        "T033",
+        "T034"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US3 independent evidence with failure-case smoke transcripts, changed-on-reopen verification, no-crash diagnostics, and 2,000-line constitution timing logs under readiness artifacts",
+      "explicit_deps": [
+        "T032",
+        "T033",
+        "T034",
+        "T035",
+        "T036"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh public surface baselines for all changed `.fsi` files and confirm Tier 1 contract additions are intentional",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the repository formatter on changed F# source and test files where available, capturing output in `specs/005-markdown-constitution-hotkey/readiness/formatter.txt`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet restore sk-Dashboard.sln`, `dotnet build sk-Dashboard.sln`, and `dotnet test sk-Dashboard.sln`, capturing full transcripts in readiness artifacts",
+      "explicit_deps": [
+        "T039"
+      ],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run quickstart smoke checks for dashboard launch, Markdown detail rendering, compact plain table cells, constitution hotkey open/scroll/close, missing/empty/unreadable constitution cases, malformed Markdown fallback, and changed-on-reopen behavior",
+      "explicit_deps": [
+        "T040"
+      ],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update `specs/005-markdown-constitution-hotkey/quickstart.md` and contract notes with any final command, dependency, or interaction details discovered during implementation",
+      "explicit_deps": [
+        "T041"
+      ],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/005-markdown-constitution-hotkey --graph-only` and confirm no cycles, dangling refs, missing task ids, or unexpected propagation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/005-markdown-constitution-hotkey` and document a PASS verdict or every accepted synthetic-evidence override",
+      "explicit_deps": [
+        "T040",
+        "T041",
+        "T043"
+      ],
+      "phase_deps": [
+        "T037"
+      ],
+      "root_cause": []
+    }
+  ]
+}

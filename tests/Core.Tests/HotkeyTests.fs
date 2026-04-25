@@ -11,7 +11,7 @@ let hotkeyTests =
         [ test "defaultBindings_cover primary commands" {
               let commands = Hotkeys.defaultBindings |> List.map _.Command |> Set.ofList
 
-              Expect.equal commands.Count 29 "Every primary command has a default binding."
+              Expect.equal commands.Count 30 "Every primary command has a default binding."
 
               Expect.equal
                   (Hotkeys.defaultBindings
@@ -80,6 +80,20 @@ let hotkeyTests =
                       .KeySequence
                   "T"
                   "Task full-screen defaults to T."
+
+              Expect.equal
+                  (Hotkeys.defaultBindings
+                   |> List.find (fun binding -> binding.Command = ConstitutionOpen))
+                      .KeySequence
+                  "C"
+                  "Constitution opens with the requested C binding."
+
+              Expect.equal (Hotkeys.commandId ConstitutionOpen) "constitution.open" "Constitution command id is stable."
+
+              Expect.equal
+                  (Hotkeys.commandLabel ConstitutionOpen)
+                  "Open constitution"
+                  "Constitution command is discoverable with a label."
 
               Expect.equal
                   (Hotkeys.defaultBindings
