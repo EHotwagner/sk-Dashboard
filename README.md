@@ -16,6 +16,10 @@ work.
 - Selection is preserved across refreshes when the selected items still exist.
 - Last-activity highlighting marks the most recently active user story and task
   with a grey background.
+- The header shows the running `sk-dashboard` version, and table rows use
+  configurable alternating stripe backgrounds.
+- Modal full-screen views expand the current feature, user story, plan, or task
+  without changing the current selection.
 - Keyboard-only operation, including editor-integrated terminals such as Emacs
   vterm.
 
@@ -51,6 +55,11 @@ branch unless `--no-auto-checkout` is supplied.
 | `enter` | Check out the selected feature branch |
 | `r` | Refresh project state |
 | `R` | Reload dashboard preferences |
+| `F` | Open selected feature full screen |
+| `S` | Open selected or active user story full screen |
+| `P` | Open selected feature plan full screen |
+| `T` | Open selected or active task full screen |
+| `esc` | Close a full-screen view |
 | `q` | Quit |
 
 ## Install As A Tool
@@ -89,6 +98,7 @@ the active bindings:
 
 ```bash
 sk-dashboard --keys j,enter,down .
+sk-dashboard --keys F,esc,S,esc,P,esc,T,esc .
 ```
 
 Arrow-key names are accepted in scripted checks: `up`, `down`, `left`, and
@@ -130,7 +140,9 @@ Example configuration:
       "diagnosticWarning": "yellow",
       "diagnosticError": "red",
       "muted": "grey",
-      "panelAccent": "#7aa2f7"
+      "panelAccent": "#7aa2f7",
+      "rowStripeOdd": { "foreground": "white", "background": "#101820" },
+      "rowStripeEven": { "foreground": "white", "background": "#18232f" }
     }
   }
 }
@@ -150,3 +162,7 @@ layout modes, unknown color roles, and low-contrast foreground/background pairs
 are reported in the dashboard diagnostics pane while safe defaults keep the
 dashboard running. Press `R` to reload the preferences during a dashboard
 session.
+
+Stripe color roles use the same validation path as the other dashboard colors.
+Invalid or low-contrast stripe colors are reported in diagnostics and replaced
+with safe defaults for the affected role.

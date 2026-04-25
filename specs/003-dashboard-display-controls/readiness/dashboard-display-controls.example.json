@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "bindings": [
+    { "command": "fullscreen.feature", "key": "F" },
+    { "command": "fullscreen.story", "key": "S" },
+    { "command": "fullscreen.plan", "key": "P" },
+    { "command": "fullscreen.task", "key": "T" }
+  ],
+  "ui": {
+    "layout": "auto",
+    "colors": {
+      "rowStripeOdd": { "foreground": "white", "background": "#101820" },
+      "rowStripeEven": { "foreground": "white", "background": "#18232f" }
+    }
+  }
+}
+

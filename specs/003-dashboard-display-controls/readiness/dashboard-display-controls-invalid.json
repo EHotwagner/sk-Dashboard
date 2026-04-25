@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "bindings": [],
+  "ui": {
+    "colors": {
+      "rowStripeOdd": { "foreground": "white", "background": "#eeeeee" },
+      "rowStripeEven": "notacolor"
+    }
+  }
+}

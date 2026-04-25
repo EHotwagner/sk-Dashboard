@@ -13,13 +13,17 @@ let hotkeyTests =
                 |> List.map _.Command
                 |> Set.ofList
 
-            Expect.equal commands.Count 14 "Every primary command has a default binding."
+            Expect.equal commands.Count 18 "Every primary command has a default binding."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FeaturePrevious)).KeySequence "k" "Feature previous defaults to k."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FeatureNext)).KeySequence "j" "Feature next defaults to j."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = StoryPrevious)).KeySequence "up" "Story previous defaults to up arrow."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = StoryNext)).KeySequence "down" "Story next defaults to down arrow."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = TaskPrevious)).KeySequence "left" "Task previous defaults to left arrow."
             Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = TaskNext)).KeySequence "right" "Task next defaults to right arrow."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FullScreenFeature)).KeySequence "F" "Feature full-screen defaults to F."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FullScreenStory)).KeySequence "S" "Story full-screen defaults to S."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FullScreenPlan)).KeySequence "P" "Plan full-screen defaults to P."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FullScreenTask)).KeySequence "T" "Task full-screen defaults to T."
         }
 
         test "validateBindings_reports duplicate keys" {
@@ -52,14 +56,16 @@ let hotkeyTests =
 
         test "loadPreferences_parses combined bindings_and_ui" {
             let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-").FullName, "dashboard.json")
-            File.WriteAllText(path, """{"version":1,"bindings":[{"command":"story.next","key":"n"}],"ui":{"layout":"vertical","colors":{"selected":{"foreground":"black","background":"green"},"panelAccent":"#7aa2f7"}}}""")
+            File.WriteAllText(path, """{"version":1,"bindings":[{"command":"story.next","key":"n"},{"command":"fullscreen.task","key":"x"}],"ui":{"layout":"vertical","colors":{"selected":{"foreground":"black","background":"green"},"panelAccent":"#7aa2f7","rowStripeOdd":{"foreground":"white","background":"#101820"}}}}""")
 
             let preferences = Hotkeys.loadPreferences path
             Expect.isEmpty preferences.Diagnostics "Valid combined preferences have no diagnostics."
             Expect.equal (preferences.Bindings |> List.find (fun binding -> binding.Command = StoryNext)).KeySequence "n" "Hotkey override is active."
+            Expect.equal (preferences.Bindings |> List.find (fun binding -> binding.Command = FullScreenTask)).KeySequence "x" "Full-screen hotkey override is active."
             Expect.equal preferences.Ui.Layout Vertical "Layout is parsed."
             Expect.equal preferences.Ui.Colors[Selected] { Foreground = "black"; Background = Some "green" } "Selected pair is parsed."
             Expect.equal preferences.Ui.Colors[PanelAccent] { Foreground = "#7aa2f7"; Background = None } "Hex color is parsed."
+            Expect.equal preferences.Ui.Colors[RowStripeOdd] { Foreground = "white"; Background = Some "#101820" } "Stripe role is parsed."
         }
 
         test "loadPreferences_defaults_ui_when_absent" {
@@ -138,13 +144,21 @@ let hotkeyTests =
                   DiagnosticWarning
                   DiagnosticError
                   Muted
-                  PanelAccent ]
+                  PanelAccent
+                  RowStripeOdd
+                  RowStripeEven ]
 
             Expect.equal (Hotkeys.parseLayoutMode "auto") (Some Auto) "Auto layout is exposed."
             Expect.equal (Hotkeys.parseLayoutMode "widescreen") (Some Widescreen) "Widescreen layout is exposed."
             Expect.equal (Hotkeys.parseLayoutMode "vertical") (Some Vertical) "Vertical layout is exposed."
             Expect.equal (Domain.resolveLayout 119 preferences.Ui.Layout) VerticalLayout "Resolved layout type is exposed."
-            Expect.equal roles.Length 9 "All required color roles are exposed."
+            Expect.equal roles.Length 11 "All required color roles are exposed."
             Expect.isTrue (roles |> List.forall (fun role -> preferences.Ui.Colors.ContainsKey role)) "Default colors cover every exposed role."
+        }
+
+        test "resolveDashboardVersion_returns_readable_label" {
+            let version = Domain.resolveDashboardVersion ()
+            Expect.stringStarts version.Label "v" "Version label has a visible prefix."
+            Expect.isNonEmpty version.Label "Version label is never empty."
         }
     ]

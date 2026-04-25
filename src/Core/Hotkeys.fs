@@ -16,6 +16,10 @@ type DashboardCommand =
     | PanePrevious
     | DetailsOpen
     | DetailsClose
+    | FullScreenFeature
+    | FullScreenStory
+    | FullScreenPlan
+    | FullScreenTask
     | Refresh
     | HotkeysReload
     | Quit
@@ -45,6 +49,10 @@ module Hotkeys =
         | PanePrevious -> "pane.previous"
         | DetailsOpen -> "details.open"
         | DetailsClose -> "details.close"
+        | FullScreenFeature -> "fullscreen.feature"
+        | FullScreenStory -> "fullscreen.story"
+        | FullScreenPlan -> "fullscreen.plan"
+        | FullScreenTask -> "fullscreen.task"
         | Refresh -> "refresh"
         | HotkeysReload -> "hotkeys.reload"
         | Quit -> "quit"
@@ -62,6 +70,10 @@ module Hotkeys =
         | "pane.previous" -> Some PanePrevious
         | "details.open" -> Some DetailsOpen
         | "details.close" -> Some DetailsClose
+        | "fullscreen.feature" -> Some FullScreenFeature
+        | "fullscreen.story" -> Some FullScreenStory
+        | "fullscreen.plan" -> Some FullScreenPlan
+        | "fullscreen.task" -> Some FullScreenTask
         | "refresh" -> Some Refresh
         | "hotkeys.reload" -> Some HotkeysReload
         | "quit" -> Some Quit
@@ -79,6 +91,10 @@ module Hotkeys =
           { Command = PanePrevious; KeySequence = "shift+tab"; Scope = "dashboard"; Source = "default" }
           { Command = DetailsOpen; KeySequence = "d"; Scope = "dashboard"; Source = "default" }
           { Command = DetailsClose; KeySequence = "esc"; Scope = "dashboard"; Source = "default" }
+          { Command = FullScreenFeature; KeySequence = "F"; Scope = "dashboard"; Source = "default" }
+          { Command = FullScreenStory; KeySequence = "S"; Scope = "dashboard"; Source = "default" }
+          { Command = FullScreenPlan; KeySequence = "P"; Scope = "dashboard"; Source = "default" }
+          { Command = FullScreenTask; KeySequence = "T"; Scope = "dashboard"; Source = "default" }
           { Command = Refresh; KeySequence = "r"; Scope = "dashboard"; Source = "default" }
           { Command = HotkeysReload; KeySequence = "R"; Scope = "dashboard"; Source = "default" }
           { Command = Quit; KeySequence = "q"; Scope = "dashboard"; Source = "default" } ]

@@ -1,0 +1,70 @@
+diff --git a/src/Core/Domain.fsi b/src/Core/Domain.fsi
+index 0038b82..dedf2ff 100644
+--- a/src/Core/Domain.fsi
++++ b/src/Core/Domain.fsi
+@@ -124,6 +124,8 @@ type DashboardColorRole =
+     | DiagnosticError
+     | Muted
+     | PanelAccent
++    | RowStripeOdd
++    | RowStripeEven
+ 
+ type DashboardColorStyle =
+     { Foreground: string
+@@ -133,9 +135,27 @@ type DashboardUiPreferences =
+     { Layout: DashboardLayoutMode
+       Colors: Map<DashboardColorRole, DashboardColorStyle> }
+ 
++type DashboardVersionDisplay =
++    { Label: string
++      Source: string
++      Diagnostic: Diagnostic option }
++
++type FullScreenTarget =
++    | FeatureFullScreen
++    | StoryFullScreen
++    | PlanFullScreen
++    | TaskFullScreen
++
++type FullScreenModal =
++    { Target: FullScreenTarget
++      SelectedFeatureId: string option
++      SelectedStoryId: string option
++      SelectedTaskId: string option }
++
+ type DashboardSnapshot =
+     { RepositoryRoot: string
+       CurrentBranch: string option
++      Version: DashboardVersionDisplay
+       Features: Feature list
+       SelectedFeatureId: string option
+       Stories: UserStory list
+@@ -145,6 +165,7 @@ type DashboardSnapshot =
+       SelectedTaskId: string option
+       Panes: Pane list
+       Ui: DashboardUiPreferences
++      FullScreen: FullScreenModal option
+       Diagnostics: Diagnostic list
+       LastRefreshedAt: DateTimeOffset }
+ 
+@@ -155,4 +176,5 @@ module Domain =
+     val defaultUiPreferences : DashboardUiPreferences
+     val colorRoleId : DashboardColorRole -> string
+     val tryColorRole : string -> DashboardColorRole option
++    val resolveDashboardVersion : unit -> DashboardVersionDisplay
+     val resolveLayout : int -> DashboardLayoutMode -> DashboardResolvedLayout
+diff --git a/src/Core/Hotkeys.fsi b/src/Core/Hotkeys.fsi
+index 4aff740..0a80329 100644
+--- a/src/Core/Hotkeys.fsi
++++ b/src/Core/Hotkeys.fsi
+@@ -12,6 +12,10 @@ type DashboardCommand =
+     | PanePrevious
+     | DetailsOpen
+     | DetailsClose
++    | FullScreenFeature
++    | FullScreenStory
++    | FullScreenPlan
++    | FullScreenTask
+     | Refresh
+     | HotkeysReload
+     | Quit

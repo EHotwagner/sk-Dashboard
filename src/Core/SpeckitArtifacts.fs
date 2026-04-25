@@ -315,6 +315,7 @@ module SpeckitArtifacts =
 
     { RepositoryRoot = root
       CurrentBranch = None
+      Version = Domain.resolveDashboardVersion ()
       Features = featuresWithStatus
       SelectedFeatureId = selected |> Option.map _.Id
       Stories = stories
@@ -324,5 +325,6 @@ module SpeckitArtifacts =
       SelectedTaskId = taskGraph |> Option.bind (_.SelectedTaskId)
       Panes = Domain.defaultPanes
       Ui = Domain.defaultUiPreferences
+      FullScreen = None
       Diagnostics = diagnostics
       LastRefreshedAt = now }

@@ -1,0 +1,6 @@
+version=v14.0.104-dev source=fsi diagnostic=false
+stripeOdd=rowStripeOdd
+stripeEven=rowStripeEven
+fullscreenCommands=fullscreen.feature,fullscreen.story,fullscreen.plan,fullscreen.task
+opened=Some FeatureFullScreen selectedFeature=Some "003-dashboard-display-controls"
+closed=true selections=Some "003-dashboard-display-controls"/Some "US1"/Some "T012"

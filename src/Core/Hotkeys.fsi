@@ -12,6 +12,10 @@ type DashboardCommand =
     | PanePrevious
     | DetailsOpen
     | DetailsClose
+    | FullScreenFeature
+    | FullScreenStory
+    | FullScreenPlan
+    | FullScreenTask
     | Refresh
     | HotkeysReload
     | Quit

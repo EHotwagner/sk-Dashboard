@@ -62,7 +62,9 @@ let renderingSmokeTests =
                     |> Map.add DiagnosticWarning { Foreground = "yellow"; Background = None }
                     |> Map.add DiagnosticError { Foreground = "red"; Background = None }
                     |> Map.add Muted { Foreground = "grey42"; Background = None }
-                    |> Map.add PanelAccent { Foreground = "#7aa2f7"; Background = None } }
+                    |> Map.add PanelAccent { Foreground = "#7aa2f7"; Background = None }
+                    |> Map.add RowStripeOdd { Foreground = "white"; Background = Some "#101820" }
+                    |> Map.add RowStripeEven { Foreground = "white"; Background = Some "#18232f" } }
 
             Expect.equal (Render.styleTag Selected ui) "black on green" "Selected role uses configured pair."
             Expect.equal (Render.styleTag LastActivity ui) "white on #555555" "Last activity role uses configured pair."
@@ -71,6 +73,8 @@ let renderingSmokeTests =
             Expect.equal (Render.markup DiagnosticInfo ui "info") "[#7aa2f7]info[/]" "Diagnostic info color is used."
             Expect.equal (Render.color Muted ui) "grey42" "Muted color is used."
             Expect.equal (Render.color PanelAccent ui) "#7aa2f7" "Panel accent color is used."
+            Expect.equal (Render.rowStripeTag 0 ui) "white on #18232f" "Even stripe role is used."
+            Expect.equal (Render.rowStripeTag 1 ui) "white on #101820" "Odd stripe role is used."
         }
 
         test "default_colors_are_used_without_custom_preferences" {
@@ -79,6 +83,33 @@ let renderingSmokeTests =
             Expect.equal (Render.color ProgressComplete ui) "green" "Default progress color is used."
             Expect.equal (Render.color DiagnosticError ui) "red" "Default diagnostic error color is used."
             Expect.equal (Render.color Muted ui) "grey" "Default muted color is used."
+            Expect.equal (Render.rowStripeTag 0 ui) "white on black" "Default even stripe is used."
+            Expect.equal (Render.rowStripeTag 1 ui) "white on grey7" "Default odd stripe is used."
+        }
+
+        test "snapshotText_includes_dashboard_version" {
+            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-version-").FullName
+            let text = App.load root |> Render.snapshotText
+            Expect.stringContains text "sk-dashboard v" "Snapshot text exposes header version."
+        }
+
+        test "full_screen_text_renders_single_requested_target" {
+            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-fullscreen-").FullName
+            let featureRoot = Path.Combine(root, "specs", "001-a")
+            Directory.CreateDirectory(featureRoot) |> ignore
+            File.WriteAllText(
+                Path.Combine(featureRoot, "spec.md"),
+                "### User Story 1 - First (Priority: P1)\n\nDescription\n\n1. **Given** x, **When** y, **Then** z.\n")
+            File.WriteAllText(Path.Combine(featureRoot, "plan.md"), "## Summary\n\nPlan summary\n\n## Technical Context\n\nF#\n")
+            File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "- [ ] T001 [US1] First task\n")
+
+            let snapshot = App.load root
+            let planModal = App.openFullScreen PlanFullScreen snapshot
+            let text = planModal.FullScreen |> Option.map (Render.fullScreenText planModal) |> Option.defaultValue ""
+
+            Expect.stringContains text "Plan" "Plan target renders."
+            Expect.stringContains text "Plan summary" "Plan fields render."
+            Expect.isFalse (text.Contains "User Story US1") "Only the requested target type is rendered."
         }
 
         test "navigation_state_is_preserved_across_layout_modes" {

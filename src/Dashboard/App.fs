@@ -193,7 +193,8 @@ module App =
 
         { nextWithSelections with
             SelectedTaskId = selectedTaskId
-            TaskGraph = taskGraph }
+            TaskGraph = taskGraph
+            FullScreen = previous.FullScreen }
 
     let checkoutSelectedFeature projectPath snapshot =
         let selected =
@@ -206,6 +207,18 @@ module App =
             let checkoutState = GitFeatures.checkoutBranch (SpeckitArtifacts.resolveRepositoryRoot projectPath) branchName
             loadWithSelectedBranch projectPath (selected |> Option.map _.Id) checkoutState
 
+    let openFullScreen target snapshot =
+        { snapshot with
+            FullScreen =
+                Some
+                    { Target = target
+                      SelectedFeatureId = snapshot.SelectedFeatureId
+                      SelectedStoryId = snapshot.SelectedStoryId
+                      SelectedTaskId = snapshot.SelectedTaskId } }
+
+    let closeFullScreen snapshot =
+        { snapshot with FullScreen = None }
+
     let applyCommand projectPath command snapshot =
         match command with
         | FeaturePrevious -> selectFeature -1 snapshot
@@ -215,6 +228,11 @@ module App =
         | TaskPrevious -> selectTask -1 snapshot
         | TaskNext -> selectTask 1 snapshot
         | FeatureCheckout -> checkoutSelectedFeature projectPath snapshot
+        | DetailsClose -> closeFullScreen snapshot
+        | FullScreenFeature -> openFullScreen FeatureFullScreen snapshot
+        | FullScreenStory -> openFullScreen StoryFullScreen snapshot
+        | FullScreenPlan -> openFullScreen PlanFullScreen snapshot
+        | FullScreenTask -> openFullScreen TaskFullScreen snapshot
         | Refresh -> loadWithAutoCheckout false projectPath
         | _ -> snapshot
 

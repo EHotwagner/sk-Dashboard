@@ -1,0 +1,14 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/003-dashboard-display-controls
+
+[1/2] Computing task graph...
+task-graph: 44 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/003-dashboard-display-controls/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/003-dashboard-display-controls/readiness/task-graph.md
+  status: 44[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.

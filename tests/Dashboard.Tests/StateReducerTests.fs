@@ -30,6 +30,10 @@ let stateReducerTests =
             Expect.equal (Input.commandForKey "down") (Some StoryNext) "Story next is reachable."
             Expect.equal (Input.commandForKey "left") (Some TaskPrevious) "Task previous is reachable."
             Expect.equal (Input.commandForKey "right") (Some TaskNext) "Task next is reachable."
+            Expect.equal (Input.commandForKey "F") (Some FullScreenFeature) "Feature full-screen is reachable."
+            Expect.equal (Input.commandForKey "S") (Some FullScreenStory) "Story full-screen is reachable."
+            Expect.equal (Input.commandForKey "P") (Some FullScreenPlan) "Plan full-screen is reachable."
+            Expect.equal (Input.commandForKey "T") (Some FullScreenTask) "Task full-screen is reachable."
         }
 
         test "commandForKeyWithBindings_applies valid override" {
@@ -59,6 +63,7 @@ let stateReducerTests =
             let snapshot =
                 { RepositoryRoot = "."
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = [ feature "001-a"; feature "002-b" ]
                   SelectedFeatureId = Some "001-a"
                   Stories = []
@@ -68,6 +73,7 @@ let stateReducerTests =
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -88,6 +94,7 @@ let stateReducerTests =
             let snapshot =
                 { RepositoryRoot = "."
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = []
                   SelectedFeatureId = None
                   Stories = [ story "US1"; story "US2" ]
@@ -97,6 +104,7 @@ let stateReducerTests =
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -126,6 +134,7 @@ let stateReducerTests =
             let snapshot =
                 { RepositoryRoot = "."
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = [ feature "001-a"; feature "002-b" ]
                   SelectedFeatureId = Some "001-a"
                   Stories = [ story "US1"; story "US2" ]
@@ -135,6 +144,7 @@ let stateReducerTests =
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -168,6 +178,7 @@ let stateReducerTests =
             let snapshot =
                 { RepositoryRoot = "."
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = []
                   SelectedFeatureId = None
                   Stories = []
@@ -177,6 +188,7 @@ let stateReducerTests =
                   SelectedTaskId = Some "T001"
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -229,6 +241,7 @@ let stateReducerTests =
             let snapshot =
                 { RepositoryRoot = root
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = [ feature ]
                   SelectedFeatureId = Some "001-a"
                   Stories = [ story "US1"; story "US2" ]
@@ -238,6 +251,7 @@ let stateReducerTests =
                   SelectedTaskId = Some "T001"
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -245,6 +259,57 @@ let stateReducerTests =
             Expect.equal next.SelectedStoryId (Some "US2") "Story selection moved."
             Expect.equal (next.TaskGraph |> Option.map _.Nodes |> Option.defaultValue [] |> List.map _.Id) [ "T002" ] "Task graph was rebuilt for the new story."
             Expect.equal next.SelectedTaskId (Some "T002") "Task selection follows rebuilt graph."
+        }
+
+        test "full_screen_commands_open_replace_and_close_without_selection_changes" {
+            let task id =
+                { Id = id
+                  Title = id
+                  Description = None
+                  RawStatus = "[ ]"
+                  Dependencies = []
+                  RelatedStoryId = Some "US1"
+                  SourceLocation = None
+                  Metadata = Map.empty }
+
+            let graph =
+                { SelectedStoryId = Some "US1"
+                  Nodes = [ task "T001"; task "T002" ]
+                  Edges = []
+                  Diagnostics = []
+                  SelectedTaskId = Some "T002" }
+
+            let snapshot =
+                { RepositoryRoot = "."
+                  CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
+                  Features = []
+                  SelectedFeatureId = Some "001-a"
+                  Stories = []
+                  SelectedStoryId = Some "US1"
+                  Plan = None
+                  TaskGraph = Some graph
+                  SelectedTaskId = Some "T002"
+                  Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
+                  FullScreen = None
+                  Diagnostics = []
+                  LastRefreshedAt = DateTimeOffset.UnixEpoch }
+
+            let featureModal = App.applyCommand "." FullScreenFeature snapshot
+            Expect.equal (featureModal.FullScreen |> Option.map _.Target) (Some FeatureFullScreen) "Feature modal opens."
+            Expect.equal featureModal.SelectedFeatureId snapshot.SelectedFeatureId "Feature selection is preserved."
+            Expect.equal featureModal.SelectedStoryId snapshot.SelectedStoryId "Story selection is preserved."
+            Expect.equal featureModal.SelectedTaskId snapshot.SelectedTaskId "Task selection is preserved."
+
+            let taskModal = App.applyCommand "." FullScreenTask featureModal
+            Expect.equal (taskModal.FullScreen |> Option.map _.Target) (Some TaskFullScreen) "A second modal command replaces the target."
+
+            let closed = App.applyCommand "." DetailsClose taskModal
+            Expect.isNone closed.FullScreen "Close clears only modal state."
+            Expect.equal closed.SelectedFeatureId snapshot.SelectedFeatureId "Feature selection remains after close."
+            Expect.equal closed.SelectedStoryId snapshot.SelectedStoryId "Story selection remains after close."
+            Expect.equal closed.SelectedTaskId snapshot.SelectedTaskId "Task selection remains after close."
         }
 
         test "preserveSelections_keeps_visible_selection_across_refresh" {
@@ -295,6 +360,7 @@ let stateReducerTests =
 
                 { RepositoryRoot = "."
                   CurrentBranch = None
+                  Version = Domain.resolveDashboardVersion ()
                   Features = [ feature "001-a" (selectedFeature = Some "001-a"); feature "002-b" (selectedFeature = Some "002-b") ]
                   SelectedFeatureId = selectedFeature
                   Stories = [ story "US1"; story "US2" ]
@@ -304,6 +370,7 @@ let stateReducerTests =
                   SelectedTaskId = selectedTask
                   Panes = Domain.defaultPanes
                   Ui = Domain.defaultUiPreferences
+                  FullScreen = None
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 

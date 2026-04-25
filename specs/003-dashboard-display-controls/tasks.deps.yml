@@ -1,0 +1,57 @@
+schema_version: "1.0"
+
+# Dependency topology for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here, even if
+# its deps list is empty. compute-task-graph.py refuses to proceed on
+# dangling references or orphaned tasks.
+#
+# Phase-checkpoint edges are auto-injected by the script (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N).
+# Only write non-phase cross-edges here.
+
+tasks:
+  T001: []
+  T002: []
+  T003: []
+  T004: []
+  T005: []
+  T006: []
+  T007: []
+  T008: []
+  T009: [T005]
+  T010: [T005]
+  T011: []
+  T012: []
+  T013: []
+  T014: [T012]
+  T015: [T014]
+  T016: [T013, T015]
+  T017: [T014]
+  T018: [T016, T017]
+  T019: []
+  T020: []
+  T021: []
+  T022: [T019]
+  T023: [T020, T021, T022]
+  T024: [T023]
+  T025: [T022]
+  T026: [T024, T025]
+  T027: []
+  T028: []
+  T029: []
+  T030: []
+  T031: [T028]
+  T032: [T027, T031]
+  T033: [T028, T031, T032]
+  T034: [T030, T031]
+  T035: [T029, T030, T033, T034]
+  T036: [T033]
+  T037: [T032, T035]
+  T038: [T035, T036, T037]
+  T039: []
+  T040: []
+  T041: [T018, T026, T038]
+  T042: [T018]
+  T043: []
+  T044: [T039, T040, T041, T042, T043]

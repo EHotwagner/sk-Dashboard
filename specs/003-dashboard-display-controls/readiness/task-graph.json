@@ -1,0 +1,728 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm active feature metadata points to `specs/003-dashboard-display-controls`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create `specs/003-dashboard-display-controls/readiness/` for evidence transcripts, smoke output, and graph artifacts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record Tier 1 public-surface impact for version display, stripe color roles, full-screen commands, and modal state in `readiness/public-surface.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add a display-controls evidence plan covering FSI, semantic tests, render smoke checks, and package version verification",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft `.fsi` public surface updates for new version metadata, row stripe roles, full-screen target/model types, and dashboard command cases",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing semantic tests for command IDs, default full-screen bindings, stripe role parsing/defaults, and version fallback behavior",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing dashboard state reducer tests for opening, replacing, and closing full-screen modal targets without changing selected feature/story/task",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing rendering smoke tests for header version placement, stripe precedence helpers, and full-screen single-target rendering",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft `.fsi` surface from FSI and capture transcript to `readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record current public surface baseline before implementation in `readiness/public-surface-baseline.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record unsupported-scope and safe-failure expectations for missing version metadata, missing source text, invalid stripe colors, and unavailable full-screen targets",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic test coverage for resolving build/package version metadata and `vunknown` fallback through the public surface",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add rendering smoke coverage that asserts the header contains `sk-dashboard` plus a version value in wide and narrow layouts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement version resolution in Core using installed assembly/package metadata with a stable fallback value",
+      "explicit_deps": [
+        "T012"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire the resolved version into dashboard snapshot/rendering inputs without reading source checkout files at runtime",
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Update header rendering so the dashboard name and version remain visible in widescreen and vertical layouts",
+      "explicit_deps": [
+        "T013",
+        "T015"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add actionable diagnostics or fallback evidence for unavailable version metadata",
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture version-display smoke output in `readiness/us1-version-header.txt`",
+      "explicit_deps": [
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for `rowStripeOdd` and `rowStripeEven` preference parsing, defaults, invalid values, and low-contrast fallback",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add renderer tests proving alternating row styles apply to feature, story, task, diagnostic, and detail-style tables",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add renderer tests proving selected, active, warning, and error row states override stripe backgrounds",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend `DashboardColorRole` defaults, parsing, diagnostics, and preference contract support for row stripe roles",
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement reusable table row style selection so visible non-header data rows alternate safely",
+      "explicit_deps": [
+        "T020",
+        "T021",
+        "T022"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Apply row striping to feature, user story, task, diagnostic, and detail-like tables without changing selection or ordering behavior",
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Update README and preference examples with stripe color roles and safe-fallback behavior",
+      "explicit_deps": [
+        "T022"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture default, configured-color, and invalid-stripe smoke outputs in readiness artifacts",
+      "explicit_deps": [
+        "T024",
+        "T025"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for full-screen command IDs, default bindings, and user-configured binding overrides",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add state reducer tests for feature/story/plan/task modal open, modal replacement, close behavior, and selection preservation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add rendering tests for feature, story, plan, and task full-screen views showing parsed fields plus source text when available",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add missing-target tests for unavailable feature, story, plan, task, source text, and diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Add full-screen target and modal state types to the public domain surface",
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend hotkey commands, default bindings, preference parsing, scripted key handling, and footer/help text for four full-screen commands",
+      "explicit_deps": [
+        "T027",
+        "T031"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement app state transitions for opening each full-screen target, using selected story/task first and active fallback only when no selected item exists, replacing an open target, and closing without changing selections",
+      "explicit_deps": [
+        "T028",
+        "T031",
+        "T032"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Load or expose associated source artifact text for selected feature, story, plan, and task targets with safe unreadable/missing handling",
+      "explicit_deps": [
+        "T030",
+        "T031"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement full-screen renderables for feature, story, plan, and task views with exactly one requested target type per modal",
+      "explicit_deps": [
+        "T029",
+        "T030",
+        "T033",
+        "T034"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Preserve existing navigation, refresh, preference reload, and quit behavior outside full-screen views",
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Update README and quickstart examples for full-screen hotkeys and scripted smoke checks",
+      "explicit_deps": [
+        "T032",
+        "T035"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture feature/story/plan/task full-screen smoke transcripts in readiness artifacts",
+      "explicit_deps": [
+        "T035",
+        "T036",
+        "T037"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh surface-area baselines for changed public modules after implementation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet test sk-Dashboard.sln` and capture output to `readiness/dotnet-test.txt`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run scripted dashboard smoke checks for default navigation plus version, stripe, full-screen flows, table-like full-screen stripe behavior, and lightweight render-cycle/performance evidence",
+      "explicit_deps": [
+        "T018",
+        "T026",
+        "T038"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Verify package version bump/install workflow or document why package installation was not performed for this change",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh --graph-only` and capture clean graph output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the final evidence audit and resolve any `[S]`, `[S*]`, or diff-scan hits before merge readiness",
+      "explicit_deps": [
+        "T039",
+        "T040",
+        "T041",
+        "T042",
+        "T043"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    }
+  ]
+}

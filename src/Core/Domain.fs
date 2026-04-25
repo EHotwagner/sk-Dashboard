@@ -1,6 +1,7 @@
 namespace SkDashboard.Core
 
 open System
+open System.Reflection
 
 type DiagnosticSeverity =
     | Info
@@ -124,6 +125,8 @@ type DashboardColorRole =
     | DiagnosticError
     | Muted
     | PanelAccent
+    | RowStripeOdd
+    | RowStripeEven
 
 type DashboardColorStyle =
     { Foreground: string
@@ -133,9 +136,27 @@ type DashboardUiPreferences =
     { Layout: DashboardLayoutMode
       Colors: Map<DashboardColorRole, DashboardColorStyle> }
 
+type DashboardVersionDisplay =
+    { Label: string
+      Source: string
+      Diagnostic: Diagnostic option }
+
+type FullScreenTarget =
+    | FeatureFullScreen
+    | StoryFullScreen
+    | PlanFullScreen
+    | TaskFullScreen
+
+type FullScreenModal =
+    { Target: FullScreenTarget
+      SelectedFeatureId: string option
+      SelectedStoryId: string option
+      SelectedTaskId: string option }
+
 type DashboardSnapshot =
     { RepositoryRoot: string
       CurrentBranch: string option
+      Version: DashboardVersionDisplay
       Features: Feature list
       SelectedFeatureId: string option
       Stories: UserStory list
@@ -145,6 +166,7 @@ type DashboardSnapshot =
       SelectedTaskId: string option
       Panes: Pane list
       Ui: DashboardUiPreferences
+      FullScreen: FullScreenModal option
       Diagnostics: Diagnostic list
       LastRefreshedAt: DateTimeOffset }
 
@@ -181,6 +203,8 @@ module Domain =
         | DiagnosticError -> "diagnosticError"
         | Muted -> "muted"
         | PanelAccent -> "panelAccent"
+        | RowStripeOdd -> "rowStripeOdd"
+        | RowStripeEven -> "rowStripeEven"
 
     let tryColorRole text =
         match text with
@@ -193,6 +217,8 @@ module Domain =
         | "diagnosticError" -> Some DiagnosticError
         | "muted" -> Some Muted
         | "panelAccent" -> Some PanelAccent
+        | "rowStripeOdd" -> Some RowStripeOdd
+        | "rowStripeEven" -> Some RowStripeEven
         | _ -> None
 
     let defaultUiPreferences =
@@ -206,8 +232,48 @@ module Domain =
               DiagnosticWarning, { Foreground = "yellow"; Background = None }
               DiagnosticError, { Foreground = "red"; Background = None }
               Muted, { Foreground = "grey"; Background = None }
-              PanelAccent, { Foreground = "deepskyblue1"; Background = None } ]
+              PanelAccent, { Foreground = "deepskyblue1"; Background = None }
+              RowStripeOdd, { Foreground = "white"; Background = Some "grey7" }
+              RowStripeEven, { Foreground = "white"; Background = Some "black" } ]
             |> Map.ofList }
+
+    let resolveDashboardVersion () =
+        let cleanVersion (value: string) =
+            let trimmed = value.Trim()
+            if String.IsNullOrWhiteSpace trimmed then None
+            else Some("v" + trimmed.TrimStart('v', 'V'))
+
+        let assembly =
+            Assembly.GetEntryAssembly()
+            |> Option.ofObj
+            |> Option.defaultValue typeof<DashboardSnapshot>.Assembly
+
+        let informational =
+            assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            |> Option.ofObj
+            |> Option.bind (fun attribute -> cleanVersion attribute.InformationalVersion)
+
+        let assemblyVersion =
+            assembly.GetName().Version
+            |> Option.ofObj
+            |> Option.bind (fun version ->
+                let text =
+                    if version.Revision > 0 then version.ToString()
+                    elif version.Build > 0 then sprintf "%d.%d.%d" version.Major version.Minor version.Build
+                    else sprintf "%d.%d" version.Major version.Minor
+
+                cleanVersion text)
+
+        match informational |> Option.orElse assemblyVersion with
+        | Some label ->
+            { Label = label
+              Source = assembly.GetName().Name |> Option.ofObj |> Option.defaultValue "assembly"
+              Diagnostic = None }
+        | None ->
+            let diagnostic = diagnostic Warning "Dashboard version metadata is unavailable; showing vunknown." None
+            { Label = "vunknown"
+              Source = "fallback"
+              Diagnostic = Some diagnostic }
 
     let resolveLayout terminalColumns mode =
         match mode with

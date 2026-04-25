@@ -1,0 +1,8 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core -> /home/developer/projects/sk-Dashboard/src/Core/bin/Release/net10.0/Core.dll
+  Dashboard -> /home/developer/projects/sk-Dashboard/src/Dashboard/bin/Release/net10.0/sk-dashboard.dll
+  Dashboard -> /home/developer/projects/sk-Dashboard/src/Dashboard/bin/Release/net10.0/sk-dashboard.dll
+  Dashboard -> /home/developer/projects/sk-Dashboard/src/Dashboard/bin/Release/net10.0/publish/
+  The package sk-Dashboard.0.1.6 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/projects/sk-Dashboard/specs/003-dashboard-display-controls/readiness/package/sk-Dashboard.0.1.6.nupkg'.
