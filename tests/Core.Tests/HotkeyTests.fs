@@ -14,6 +14,12 @@ let hotkeyTests =
                 |> Set.ofList
 
             Expect.equal commands.Count 14 "Every primary command has a default binding."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FeaturePrevious)).KeySequence "k" "Feature previous defaults to k."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = FeatureNext)).KeySequence "j" "Feature next defaults to j."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = StoryPrevious)).KeySequence "up" "Story previous defaults to up arrow."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = StoryNext)).KeySequence "down" "Story next defaults to down arrow."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = TaskPrevious)).KeySequence "left" "Task previous defaults to left arrow."
+            Expect.equal (Hotkeys.defaultBindings |> List.find (fun binding -> binding.Command = TaskNext)).KeySequence "right" "Task next defaults to right arrow."
         }
 
         test "validateBindings_reports duplicate keys" {

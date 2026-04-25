@@ -125,8 +125,30 @@ module App =
 
         { snapshot with Features = features; SelectedFeatureId = selectedId }
 
+    let selectedFeatureRoot (snapshot: DashboardSnapshot) =
+        snapshot.SelectedFeatureId
+        |> Option.bind (fun selectedId -> snapshot.Features |> List.tryFind (fun feature -> feature.Id = selectedId))
+        |> Option.bind _.ArtifactRoot
+
+    let rebuildTaskGraphForStory selectedStoryId (snapshot: DashboardSnapshot) =
+        match selectedFeatureRoot snapshot with
+        | None ->
+            { snapshot with
+                SelectedStoryId = selectedStoryId
+                TaskGraph = None
+                SelectedTaskId = None }
+        | Some featureRoot ->
+            let tasks, diagnostics = SpeckitArtifacts.parseTasks (Path.Combine(featureRoot, "tasks.md"))
+            let graph = TaskGraphBuilder.build selectedStoryId tasks diagnostics
+
+            { snapshot with
+                SelectedStoryId = selectedStoryId
+                TaskGraph = Some graph
+                SelectedTaskId = graph.SelectedTaskId }
+
     let selectStory offset (snapshot: DashboardSnapshot) =
-        { snapshot with SelectedStoryId = moveSelection offset snapshot.SelectedStoryId (fun (story: UserStory) -> story.Id) snapshot.Stories }
+        let selectedStoryId = moveSelection offset snapshot.SelectedStoryId (fun (story: UserStory) -> story.Id) snapshot.Stories
+        rebuildTaskGraphForStory selectedStoryId snapshot
 
     let selectTask offset (snapshot: DashboardSnapshot) =
         match snapshot.TaskGraph with
@@ -136,6 +158,42 @@ module App =
             { snapshot with
                 SelectedTaskId = selectedTaskId
                 TaskGraph = Some { graph with SelectedTaskId = selectedTaskId } }
+
+    let keepSelectedId previousId getId items fallbackId =
+        previousId
+        |> Option.filter (fun selected -> items |> List.exists (fun item -> getId item = selected))
+        |> Option.orElse fallbackId
+
+    let preserveSelections (previous: DashboardSnapshot) (next: DashboardSnapshot) =
+        let selectedFeatureId =
+            keepSelectedId previous.SelectedFeatureId (fun (feature: Feature) -> feature.Id) next.Features next.SelectedFeatureId
+
+        let selectedStoryId =
+            keepSelectedId previous.SelectedStoryId (fun (story: UserStory) -> story.Id) next.Stories next.SelectedStoryId
+
+        let features =
+            next.Features
+            |> List.map (fun feature -> { feature with IsSelected = Some feature.Id = selectedFeatureId })
+
+        let nextWithSelections =
+            { next with
+                Features = features
+                SelectedFeatureId = selectedFeatureId
+                SelectedStoryId = selectedStoryId }
+            |> rebuildTaskGraphForStory selectedStoryId
+
+        let selectedTaskId =
+            match nextWithSelections.TaskGraph with
+            | None -> None
+            | Some graph -> keepSelectedId previous.SelectedTaskId (fun (task: SpeckitTask) -> task.Id) graph.Nodes nextWithSelections.SelectedTaskId
+
+        let taskGraph =
+            nextWithSelections.TaskGraph
+            |> Option.map (fun graph -> { graph with SelectedTaskId = selectedTaskId })
+
+        { nextWithSelections with
+            SelectedTaskId = selectedTaskId
+            TaskGraph = taskGraph }
 
     let checkoutSelectedFeature projectPath snapshot =
         let selected =

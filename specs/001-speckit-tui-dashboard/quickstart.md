@@ -33,7 +33,7 @@ Useful options:
 sk-dashboard --no-auto-checkout .
 sk-dashboard --config ~/.config/sk-dashboard/hotkeys.json .
 sk-dashboard --refresh-interval 250 .
-sk-dashboard --keys K,enter,j .
+sk-dashboard --keys j,enter,down .
 ```
 
 Expected behavior:

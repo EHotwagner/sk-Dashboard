@@ -51,7 +51,7 @@ For scripted smoke checks, `--keys` accepts comma-separated key sequences using
 the active bindings:
 
 ```bash
-sk-dashboard --keys K,enter,j .
+sk-dashboard --keys j,enter,down .
 ```
 
 ## Layout

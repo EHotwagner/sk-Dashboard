@@ -63,13 +63,13 @@ module Hotkeys =
         | _ -> None
 
     let defaultBindings =
-        [ { Command = FeaturePrevious; KeySequence = "K"; Scope = "dashboard"; Source = "default" }
-          { Command = FeatureNext; KeySequence = "J"; Scope = "dashboard"; Source = "default" }
+        [ { Command = FeaturePrevious; KeySequence = "k"; Scope = "dashboard"; Source = "default" }
+          { Command = FeatureNext; KeySequence = "j"; Scope = "dashboard"; Source = "default" }
           { Command = FeatureCheckout; KeySequence = "enter"; Scope = "dashboard"; Source = "default" }
-          { Command = StoryPrevious; KeySequence = "k"; Scope = "dashboard"; Source = "default" }
-          { Command = StoryNext; KeySequence = "j"; Scope = "dashboard"; Source = "default" }
-          { Command = TaskPrevious; KeySequence = "h"; Scope = "dashboard"; Source = "default" }
-          { Command = TaskNext; KeySequence = "l"; Scope = "dashboard"; Source = "default" }
+          { Command = StoryPrevious; KeySequence = "up"; Scope = "dashboard"; Source = "default" }
+          { Command = StoryNext; KeySequence = "down"; Scope = "dashboard"; Source = "default" }
+          { Command = TaskPrevious; KeySequence = "left"; Scope = "dashboard"; Source = "default" }
+          { Command = TaskNext; KeySequence = "right"; Scope = "dashboard"; Source = "default" }
           { Command = PaneNext; KeySequence = "tab"; Scope = "dashboard"; Source = "default" }
           { Command = PanePrevious; KeySequence = "shift+tab"; Scope = "dashboard"; Source = "default" }
           { Command = DetailsOpen; KeySequence = "d"; Scope = "dashboard"; Source = "default" }
@@ -79,7 +79,18 @@ module Hotkeys =
           { Command = Quit; KeySequence = "q"; Scope = "dashboard"; Source = "default" } ]
 
     let supportedKey key =
-        let known = Set.ofList [ "enter"; "esc"; "tab"; "shift+tab" ]
+        let known =
+            Set.ofList
+                [ "enter"
+                  "esc"
+                  "tab"
+                  "shift+tab"
+                  "up"
+                  "down"
+                  "left"
+                  "right"
+                  "shift+left"
+                  "shift+right" ]
 
         not (String.IsNullOrWhiteSpace key)
         && (key.Length = 1 || Set.contains (key.ToLowerInvariant()) known)

@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Version>0.1.0</Version>
+    <Version>0.1.4</Version>
     <Authors>$(USER)</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
