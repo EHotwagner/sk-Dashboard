@@ -20,6 +20,17 @@ type DashboardCommand =
     | FullScreenStory
     | FullScreenPlan
     | FullScreenTask
+    | TableScrollLeft
+    | TableScrollRight
+    | DetailScrollUp
+    | DetailScrollDown
+    | DetailScrollLeft
+    | DetailScrollRight
+    | SettingsOpen
+    | SettingsSave
+    | SettingsDiscard
+    | SettingsReload
+    | SettingsOverwrite
     | Refresh
     | HotkeysReload
     | Quit
@@ -53,6 +64,17 @@ module Hotkeys =
         | FullScreenStory -> "fullscreen.story"
         | FullScreenPlan -> "fullscreen.plan"
         | FullScreenTask -> "fullscreen.task"
+        | TableScrollLeft -> "table.scrollLeft"
+        | TableScrollRight -> "table.scrollRight"
+        | DetailScrollUp -> "detail.scrollUp"
+        | DetailScrollDown -> "detail.scrollDown"
+        | DetailScrollLeft -> "detail.scrollLeft"
+        | DetailScrollRight -> "detail.scrollRight"
+        | SettingsOpen -> "settings.open"
+        | SettingsSave -> "settings.save"
+        | SettingsDiscard -> "settings.discard"
+        | SettingsReload -> "settings.reload"
+        | SettingsOverwrite -> "settings.overwrite"
         | Refresh -> "refresh"
         | HotkeysReload -> "hotkeys.reload"
         | Quit -> "quit"
@@ -74,30 +96,139 @@ module Hotkeys =
         | "fullscreen.story" -> Some FullScreenStory
         | "fullscreen.plan" -> Some FullScreenPlan
         | "fullscreen.task" -> Some FullScreenTask
+        | "table.scrollLeft" -> Some TableScrollLeft
+        | "table.scrollRight" -> Some TableScrollRight
+        | "detail.scrollUp" -> Some DetailScrollUp
+        | "detail.scrollDown" -> Some DetailScrollDown
+        | "detail.scrollLeft" -> Some DetailScrollLeft
+        | "detail.scrollRight" -> Some DetailScrollRight
+        | "settings.open" -> Some SettingsOpen
+        | "settings.save" -> Some SettingsSave
+        | "settings.discard" -> Some SettingsDiscard
+        | "settings.reload" -> Some SettingsReload
+        | "settings.overwrite" -> Some SettingsOverwrite
         | "refresh" -> Some Refresh
         | "hotkeys.reload" -> Some HotkeysReload
         | "quit" -> Some Quit
         | _ -> None
 
     let defaultBindings =
-        [ { Command = FeaturePrevious; KeySequence = "k"; Scope = "dashboard"; Source = "default" }
-          { Command = FeatureNext; KeySequence = "j"; Scope = "dashboard"; Source = "default" }
-          { Command = FeatureCheckout; KeySequence = "enter"; Scope = "dashboard"; Source = "default" }
-          { Command = StoryPrevious; KeySequence = "up"; Scope = "dashboard"; Source = "default" }
-          { Command = StoryNext; KeySequence = "down"; Scope = "dashboard"; Source = "default" }
-          { Command = TaskPrevious; KeySequence = "left"; Scope = "dashboard"; Source = "default" }
-          { Command = TaskNext; KeySequence = "right"; Scope = "dashboard"; Source = "default" }
-          { Command = PaneNext; KeySequence = "tab"; Scope = "dashboard"; Source = "default" }
-          { Command = PanePrevious; KeySequence = "shift+tab"; Scope = "dashboard"; Source = "default" }
-          { Command = DetailsOpen; KeySequence = "d"; Scope = "dashboard"; Source = "default" }
-          { Command = DetailsClose; KeySequence = "esc"; Scope = "dashboard"; Source = "default" }
-          { Command = FullScreenFeature; KeySequence = "F"; Scope = "dashboard"; Source = "default" }
-          { Command = FullScreenStory; KeySequence = "S"; Scope = "dashboard"; Source = "default" }
-          { Command = FullScreenPlan; KeySequence = "P"; Scope = "dashboard"; Source = "default" }
-          { Command = FullScreenTask; KeySequence = "T"; Scope = "dashboard"; Source = "default" }
-          { Command = Refresh; KeySequence = "r"; Scope = "dashboard"; Source = "default" }
-          { Command = HotkeysReload; KeySequence = "R"; Scope = "dashboard"; Source = "default" }
-          { Command = Quit; KeySequence = "q"; Scope = "dashboard"; Source = "default" } ]
+        [ { Command = FeaturePrevious
+            KeySequence = "k"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FeatureNext
+            KeySequence = "j"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FeatureCheckout
+            KeySequence = "enter"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = StoryPrevious
+            KeySequence = "up"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = StoryNext
+            KeySequence = "down"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = TaskPrevious
+            KeySequence = "left"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = TaskNext
+            KeySequence = "right"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = PaneNext
+            KeySequence = "tab"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = PanePrevious
+            KeySequence = "shift+tab"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailsOpen
+            KeySequence = "d"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailsClose
+            KeySequence = "esc"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FullScreenFeature
+            KeySequence = "F"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FullScreenStory
+            KeySequence = "S"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FullScreenPlan
+            KeySequence = "P"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = FullScreenTask
+            KeySequence = "T"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = TableScrollLeft
+            KeySequence = "h"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = TableScrollRight
+            KeySequence = "l"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailScrollUp
+            KeySequence = "u"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailScrollDown
+            KeySequence = "v"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailScrollLeft
+            KeySequence = "shift+left"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = DetailScrollRight
+            KeySequence = "shift+right"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = SettingsOpen
+            KeySequence = ","
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = SettingsSave
+            KeySequence = "1"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsDiscard
+            KeySequence = "2"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsReload
+            KeySequence = "3"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsOverwrite
+            KeySequence = "4"
+            Scope = "settings"
+            Source = "default" }
+          { Command = Refresh
+            KeySequence = "r"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = HotkeysReload
+            KeySequence = "R"
+            Scope = "dashboard"
+            Source = "default" }
+          { Command = Quit
+            KeySequence = "q"
+            Scope = "dashboard"
+            Source = "default" } ]
 
     let supportedKey key =
         let known =
@@ -138,19 +269,33 @@ module Hotkeys =
         unsupported @ conflicts
 
     let mergeBindings userBindings =
-        let userByCommand = userBindings |> List.map (fun binding -> binding.Command, binding) |> Map.ofList
+        let userByCommand =
+            userBindings |> List.map (fun binding -> binding.Command, binding) |> Map.ofList
 
         defaultBindings
         |> List.map (fun binding -> Map.tryFind binding.Command userByCommand |> Option.defaultValue binding)
 
-    let colorRoleDefaults () =
-        Domain.defaultUiPreferences.Colors
+    let colorRoleDefaults () = Domain.defaultUiPreferences.Colors
 
     let parseLayoutMode (value: string) =
         match value.Trim().ToLowerInvariant() with
         | "auto" -> Some Auto
         | "widescreen" -> Some Widescreen
         | "vertical" -> Some Vertical
+        | _ -> None
+
+    let readBoolProperty (element: JsonElement) (name: string) =
+        match element.TryGetProperty(name) with
+        | true, value when value.ValueKind = JsonValueKind.True -> Some true
+        | true, value when value.ValueKind = JsonValueKind.False -> Some false
+        | _ -> None
+
+    let readIntProperty (element: JsonElement) (name: string) =
+        match element.TryGetProperty(name) with
+        | true, value when value.ValueKind = JsonValueKind.Number ->
+            match value.TryGetInt32() with
+            | true, parsed -> Some parsed
+            | _ -> None
         | _ -> None
 
     let knownNamedColors =
@@ -182,7 +327,10 @@ module Hotkeys =
 
         if text.Length = 7 && text[0] = '#' then
             let hex = text.Substring 1
-            match Int32.TryParse(hex, Globalization.NumberStyles.HexNumber, Globalization.CultureInfo.InvariantCulture) with
+
+            match
+                Int32.TryParse(hex, Globalization.NumberStyles.HexNumber, Globalization.CultureInfo.InvariantCulture)
+            with
             | true, rgb ->
                 let r = (rgb >>> 16) &&& 0xff
                 let g = (rgb >>> 8) &&& 0xff
@@ -194,7 +342,9 @@ module Hotkeys =
 
     let colorRgb (value: string) =
         let text = value.Trim()
-        tryHexRgb text |> Option.orElse (knownNamedColors |> Map.tryFind (text.ToLowerInvariant()))
+
+        tryHexRgb text
+        |> Option.orElse (knownNamedColors |> Map.tryFind (text.ToLowerInvariant()))
 
     let validColor (value: string) =
         let text = value.Trim()
@@ -203,7 +353,11 @@ module Hotkeys =
     let luminance (r, g, b) =
         let channel value =
             let c = float value / 255.0
-            if c <= 0.03928 then c / 12.92 else Math.Pow((c + 0.055) / 1.055, 2.4)
+
+            if c <= 0.03928 then
+                c / 12.92
+            else
+                Math.Pow((c + 0.055) / 1.055, 2.4)
 
         0.2126 * channel r + 0.7152 * channel g + 0.0722 * channel b
 
@@ -214,16 +368,14 @@ module Hotkeys =
         let dark = min a b
         (light + 0.05) / (dark + 0.05)
 
-    let source (path: string) =
-        Some { Path = path; Line = None }
+    let source (path: string) = Some { Path = path; Line = None }
 
     let diagnostic (path: string) severity message =
         Domain.diagnostic severity message (source path)
 
     let readStringProperty (element: JsonElement) (name: string) =
         match element.TryGetProperty(name) with
-        | true, value when value.ValueKind = JsonValueKind.String ->
-            value.GetString() |> Option.ofObj
+        | true, value when value.ValueKind = JsonValueKind.String -> value.GetString() |> Option.ofObj
         | _ -> None
 
     let parseBindings (path: string) (root: JsonElement) =
@@ -233,7 +385,8 @@ module Hotkeys =
             | _ -> None
 
         match bindingsElement with
-        | None -> defaultBindings, [ diagnostic path DiagnosticSeverity.Error "Hotkey config must contain a bindings array." ]
+        | None ->
+            defaultBindings, [ diagnostic path DiagnosticSeverity.Error "Hotkey config must contain a bindings array." ]
         | Some bindingsJson ->
             let mutable diagnostics = []
             let mutable userBindings = []
@@ -252,10 +405,15 @@ module Hotkeys =
                         :: userBindings
                 | None, _ ->
                     diagnostics <-
-                        diagnostic path DiagnosticSeverity.Error ("Unknown hotkey command: " + (commandText |> Option.defaultValue "(missing)"))
+                        diagnostic
+                            path
+                            DiagnosticSeverity.Error
+                            ("Unknown hotkey command: " + (commandText |> Option.defaultValue "(missing)"))
                         :: diagnostics
                 | _, _ ->
-                    diagnostics <- diagnostic path DiagnosticSeverity.Error "Hotkey binding is missing key." :: diagnostics
+                    diagnostics <-
+                        diagnostic path DiagnosticSeverity.Error "Hotkey binding is missing key."
+                        :: diagnostics
 
             let merged = mergeBindings (List.rev userBindings)
             let validationDiagnostics = validateBindings merged
@@ -283,23 +441,42 @@ module Hotkeys =
                 | None -> invalid (sprintf "Invalid color for %s: null" (Domain.colorRoleId role))
                 | Some value ->
                     match validatePart "foreground" value with
-                    | Choice1Of2 foreground -> Choice1Of2 { Foreground = foreground; Background = None }
+                    | Choice1Of2 foreground ->
+                        Choice1Of2
+                            { Foreground = foreground
+                              Background = None }
                     | Choice2Of2 diagnostic -> Choice2Of2 diagnostic
             | JsonValueKind.Object ->
                 match readStringProperty element "foreground", readStringProperty element "background" with
                 | Some foreground, Some background ->
                     match validatePart "foreground" foreground, validatePart "background" background with
-                    | Choice1Of2 fg, Choice1Of2 bg -> Choice1Of2 { Foreground = fg; Background = Some bg }
+                    | Choice1Of2 fg, Choice1Of2 bg ->
+                        Choice1Of2
+                            { Foreground = fg
+                              Background = Some bg }
                     | Choice2Of2 diagnostic, _
                     | _, Choice2Of2 diagnostic -> Choice2Of2 diagnostic
-                | _ -> invalid (sprintf "Color role %s must include foreground and background strings." (Domain.colorRoleId role))
-            | _ -> invalid (sprintf "Color role %s must be a string or foreground/background object." (Domain.colorRoleId role))
+                | _ ->
+                    invalid (
+                        sprintf
+                            "Color role %s must include foreground and background strings."
+                            (Domain.colorRoleId role)
+                    )
+            | _ ->
+                invalid (
+                    sprintf "Color role %s must be a string or foreground/background object." (Domain.colorRoleId role)
+                )
 
         match parsed with
         | Choice1Of2 style ->
             match style.Background |> Option.bind colorRgb, colorRgb style.Foreground with
             | Some background, Some foreground when contrastRatio foreground background < 4.5 ->
-                Choice2Of2(Domain.diagnostic Warning (sprintf "Low-contrast color pair for %s; using default colors." (Domain.colorRoleId role)) (source path))
+                Choice2Of2(
+                    Domain.diagnostic
+                        Warning
+                        (sprintf "Low-contrast color pair for %s; using default colors." (Domain.colorRoleId role))
+                        (source path)
+                )
             | _ -> Choice1Of2 style
         | Choice2Of2 diagnostic -> Choice2Of2 diagnostic
 
@@ -311,6 +488,9 @@ module Hotkeys =
         | true, ui ->
             let mutable diagnostics = []
             let mutable layout = Domain.defaultUiPreferences.Layout
+            let mutable table = Domain.defaultUiPreferences.Table
+            let mutable detail = Domain.defaultUiPreferences.Detail
+            let mutable liveReload = Domain.defaultUiPreferences.LiveReload
             let mutable colors = Domain.defaultUiPreferences.Colors
 
             match ui.TryGetProperty("layout") with
@@ -325,15 +505,165 @@ module Hotkeys =
             | true, value when value.ValueKind = JsonValueKind.Object ->
                 for property in value.EnumerateObject() do
                     match Domain.tryColorRole property.Name with
-                    | None -> diagnostics <- diagnostic path Warning ("Unknown color role ignored: " + property.Name) :: diagnostics
+                    | None ->
+                        diagnostics <-
+                            diagnostic path Warning ("Unknown color role ignored: " + property.Name)
+                            :: diagnostics
                     | Some role ->
                         match parseColorStyle path role property.Value with
                         | Choice1Of2 style -> colors <- Map.add role style colors
                         | Choice2Of2 d -> diagnostics <- d :: diagnostics
-            | true, _ -> diagnostics <- diagnostic path Warning "UI colors must be an object; using default colors." :: diagnostics
+            | true, _ ->
+                diagnostics <-
+                    diagnostic path Warning "UI colors must be an object; using default colors."
+                    :: diagnostics
             | false, _ -> ()
 
-            { Layout = layout; Colors = colors }, List.rev diagnostics
+            match ui.TryGetProperty("table") with
+            | true, value when value.ValueKind = JsonValueKind.Object ->
+                match readStringProperty value "border" |> Option.bind Domain.tryTableBorder with
+                | Some border -> table <- { table with Border = border }
+                | None when value.TryGetProperty("border") |> fst ->
+                    diagnostics <-
+                        diagnostic path Warning "Unsupported table border; using rounded."
+                        :: diagnostics
+                | None -> ()
+
+                match readIntProperty value "stickyColumns" with
+                | Some count when count >= 0 -> table <- { table with StickyColumns = count }
+                | Some _ ->
+                    diagnostics <-
+                        diagnostic path Warning "Table stickyColumns must be non-negative; using default."
+                        :: diagnostics
+                | None -> ()
+
+                match readIntProperty value "horizontalStep" with
+                | Some step when step > 0 -> table <- { table with HorizontalStep = step }
+                | Some _ ->
+                    diagnostics <-
+                        diagnostic path Warning "Table horizontalStep must be positive; using default."
+                        :: diagnostics
+                | None -> ()
+            | true, _ ->
+                diagnostics <-
+                    diagnostic path Warning "UI table preferences must be an object; using default table settings."
+                    :: diagnostics
+            | false, _ -> ()
+
+            match ui.TryGetProperty("detail") with
+            | true, value when value.ValueKind = JsonValueKind.Object ->
+                match readBoolProperty value "wrapText" with
+                | Some wrap -> detail <- { detail with WrapText = wrap }
+                | None -> ()
+
+                match readIntProperty value "horizontalStep" with
+                | Some step when step > 0 -> detail <- { detail with HorizontalStep = step }
+                | Some _ ->
+                    diagnostics <-
+                        diagnostic path Warning "Detail horizontalStep must be positive; using default."
+                        :: diagnostics
+                | None -> ()
+            | true, _ ->
+                diagnostics <-
+                    diagnostic path Warning "UI detail preferences must be an object; using default detail settings."
+                    :: diagnostics
+            | false, _ -> ()
+
+            match ui.TryGetProperty("liveReload") with
+            | true, value when value.ValueKind = JsonValueKind.Object ->
+                match readBoolProperty value "enabled" with
+                | Some enabled -> liveReload <- { liveReload with Enabled = enabled }
+                | None -> ()
+
+                match readIntProperty value "debounceMilliseconds" with
+                | Some ms when ms >= 50 && ms <= 2000 ->
+                    liveReload <-
+                        { liveReload with
+                            DebounceMilliseconds = ms }
+                | Some _ ->
+                    diagnostics <-
+                        diagnostic
+                            path
+                            Warning
+                            "Live reload debounceMilliseconds must be between 50 and 2000; using default."
+                        :: diagnostics
+                | None -> ()
+            | true, _ ->
+                diagnostics <-
+                    diagnostic
+                        path
+                        Warning
+                        "UI liveReload preferences must be an object; using default live reload settings."
+                    :: diagnostics
+            | false, _ -> ()
+
+            { Layout = layout
+              Table = table
+              Detail = detail
+              LiveReload = liveReload
+              Colors = colors },
+            List.rev diagnostics
+
+    let currentConfigVersion path =
+        if String.IsNullOrWhiteSpace path || not (File.Exists path) then
+            { Path = path
+              LastWriteTimeUtc = None
+              Length = None }
+        else
+            let info = FileInfo path
+
+            { Path = path
+              LastWriteTimeUtc = Some(DateTimeOffset info.LastWriteTimeUtc)
+              Length = Some info.Length }
+
+    let writePreferences (path: string) preferences =
+        let directory = Path.GetDirectoryName path |> Option.ofObj
+
+        match directory with
+        | Some value when not (String.IsNullOrWhiteSpace value) -> Directory.CreateDirectory value |> ignore
+        | _ -> ()
+
+        let border = Domain.tableBorderId preferences.Ui.Table.Border
+
+        let colorEntries =
+            preferences.Ui.Colors
+            |> Seq.map (fun kv ->
+                let role = Domain.colorRoleId kv.Key
+                let style = kv.Value
+
+                match style.Background with
+                | None -> sprintf "\"%s\":\"%s\"" role style.Foreground
+                | Some background ->
+                    sprintf "\"%s\":{\"foreground\":\"%s\",\"background\":\"%s\"}" role style.Foreground background)
+            |> String.concat ","
+
+        let bindings =
+            preferences.Bindings
+            |> List.map (fun binding ->
+                sprintf "{\"command\":\"%s\",\"key\":\"%s\"}" (commandId binding.Command) binding.KeySequence)
+            |> String.concat ","
+
+        let json =
+            sprintf
+                """{"version":1,"bindings":[%s],"ui":{"layout":"%s","table":{"border":"%s","stickyColumns":%d,"horizontalStep":%d},"detail":{"wrapText":%s,"horizontalStep":%d},"liveReload":{"enabled":%s,"debounceMilliseconds":%d},"colors":{%s}}}"""
+                bindings
+                (match preferences.Ui.Layout with
+                 | Auto -> "auto"
+                 | Widescreen -> "widescreen"
+                 | Vertical -> "vertical")
+                border
+                preferences.Ui.Table.StickyColumns
+                preferences.Ui.Table.HorizontalStep
+                (if preferences.Ui.Detail.WrapText then "true" else "false")
+                preferences.Ui.Detail.HorizontalStep
+                (if preferences.Ui.LiveReload.Enabled then
+                     "true"
+                 else
+                     "false")
+                preferences.Ui.LiveReload.DebounceMilliseconds
+                colorEntries
+
+        File.WriteAllText(path, json)
 
     let loadPreferences path =
         if String.IsNullOrWhiteSpace path || not (File.Exists path) then
@@ -353,7 +683,11 @@ module Hotkeys =
             with ex ->
                 { Bindings = defaultBindings
                   Ui = Domain.defaultUiPreferences
-                  Diagnostics = [ diagnostic path DiagnosticSeverity.Error ("Dashboard preferences could not be loaded: " + ex.Message) ] }
+                  Diagnostics =
+                    [ diagnostic
+                          path
+                          DiagnosticSeverity.Error
+                          ("Dashboard preferences could not be loaded: " + ex.Message) ] }
 
     let loadBindings path =
         let preferences = loadPreferences path

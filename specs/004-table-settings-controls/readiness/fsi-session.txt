@@ -1,0 +1,4 @@
+table viewport rowOffset=495 visibleRows=5
+detail viewport lineOffset=1990 visibleLines=10
+settings dirty=false border=heavy
+settings target=Some SettingsFullScreen diagnostics=1

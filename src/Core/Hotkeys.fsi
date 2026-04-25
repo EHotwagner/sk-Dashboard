@@ -16,6 +16,17 @@ type DashboardCommand =
     | FullScreenStory
     | FullScreenPlan
     | FullScreenTask
+    | TableScrollLeft
+    | TableScrollRight
+    | DetailScrollUp
+    | DetailScrollDown
+    | DetailScrollLeft
+    | DetailScrollRight
+    | SettingsOpen
+    | SettingsSave
+    | SettingsDiscard
+    | SettingsReload
+    | SettingsOverwrite
     | Refresh
     | HotkeysReload
     | Quit
@@ -32,10 +43,12 @@ type DashboardPreferences =
       Diagnostics: Diagnostic list }
 
 module Hotkeys =
-    val defaultBindings : HotkeyBinding list
-    val validateBindings : HotkeyBinding list -> Diagnostic list
-    val commandId : DashboardCommand -> string
-    val colorRoleDefaults : unit -> Map<DashboardColorRole, DashboardColorStyle>
-    val parseLayoutMode : string -> DashboardLayoutMode option
-    val loadPreferences : string -> DashboardPreferences
-    val loadBindings : string -> HotkeyBinding list * Diagnostic list
+    val defaultBindings: HotkeyBinding list
+    val validateBindings: HotkeyBinding list -> Diagnostic list
+    val commandId: DashboardCommand -> string
+    val colorRoleDefaults: unit -> Map<DashboardColorRole, DashboardColorStyle>
+    val parseLayoutMode: string -> DashboardLayoutMode option
+    val currentConfigVersion: string -> ConfigFileVersion
+    val writePreferences: string -> DashboardPreferences -> unit
+    val loadPreferences: string -> DashboardPreferences
+    val loadBindings: string -> HotkeyBinding list * Diagnostic list

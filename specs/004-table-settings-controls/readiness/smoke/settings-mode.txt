@@ -1,0 +1,11 @@
+sk-dashboard settings
+Config: specs/004-table-settings-controls/readiness/fixtures/dashboard-settings-valid.json
+Table border: heavy
+Sticky columns: 1
+Table horizontal step: 12
+Detail wrap: false
+Detail horizontal step: 12
+Live reload: true
+Live reload debounce: 150ms
+Diagnostics: none
+Settings status: ready

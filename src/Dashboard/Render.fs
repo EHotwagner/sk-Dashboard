@@ -26,6 +26,7 @@ module Render =
 
     let styleTag role ui =
         let style = styleFor role ui
+
         match style.Background with
         | Some background -> style.Foreground + " on " + background
         | None -> style.Foreground
@@ -36,20 +37,73 @@ module Render =
     let paddedMarkup role ui text =
         sprintf "[%s] %s [/]" (styleTag role ui) (Markup.Escape text)
 
-    let color role ui =
-        (styleFor role ui).Foreground
+    let color role ui = (styleFor role ui).Foreground
 
     let rowStripeRole index =
         if index % 2 = 0 then RowStripeEven else RowStripeOdd
 
-    let rowStripeTag index ui =
-        styleTag (rowStripeRole index) ui
+    let rowStripeTag index ui = styleTag (rowStripeRole index) ui
 
     let stripedMarkup index ui text =
         sprintf "[%s] %s [/]" (rowStripeTag index ui) (Markup.Escape text)
 
     let styledCellMarkup rowRole ui text =
         sprintf "[%s] %s [/]" (styleTag rowRole ui) (Markup.Escape text)
+
+    let tableBorder border =
+        match border with
+        | NoBorder -> TableBorder.None
+        | MinimalBorder -> TableBorder.Minimal
+        | RoundedBorder -> TableBorder.Rounded
+        | HeavyBorder -> TableBorder.Heavy
+
+    let dashboardTable (ui: DashboardUiPreferences) =
+        Table().Border(tableBorder ui.Table.Border).Expand()
+
+    let paneScroll kind (snapshot: DashboardSnapshot) =
+        snapshot.Panes
+        |> List.tryFind (fun pane -> pane.Kind = kind)
+        |> Option.map _.ScrollOffset
+        |> Option.defaultValue 0
+
+    let sliceText offset text =
+        if offset <= 0 || String.IsNullOrEmpty text then text
+        elif offset >= text.Length then ""
+        else text.Substring offset
+
+    let visibleRows selectedIndex visibleCount items =
+        let itemCount = List.length items
+        let visibleCount = max 1 (min 3 visibleCount)
+        let centeredOffset = selectedIndex - (visibleCount / 2)
+        let rowOffset = centeredOffset |> max 0 |> min (max 0 (itemCount - visibleCount))
+
+        let viewport =
+            { Domain.defaultTableViewport visibleCount 1 with
+                RowOffset = rowOffset }
+            |> Domain.clampTableViewport itemCount 1
+
+        items |> List.skip viewport.RowOffset |> List.truncate viewport.VisibleRows, viewport
+
+    let tableVisibleRowCount () = 3
+
+    let scrollIndicator viewport totalRows totalColumns =
+        let vertical =
+            if totalRows <= viewport.VisibleRows then
+                ""
+            else
+                sprintf
+                    " rows %d-%d/%d"
+                    (viewport.RowOffset + 1)
+                    (min totalRows (viewport.RowOffset + viewport.VisibleRows))
+                    totalRows
+
+        let horizontal =
+            if viewport.ColumnOffset <= 0 && totalColumns <= viewport.VisibleColumns then
+                ""
+            else
+                sprintf " col +%d" viewport.ColumnOffset
+
+        vertical + horizontal
 
     let artifactText state =
         match state with
@@ -102,26 +156,26 @@ module Render =
         |> Option.defaultValue []
 
     let storyProgress tasks storyId =
-        let storyTasks = tasks |> List.filter (fun task -> task.RelatedStoryId = Some storyId)
+        let storyTasks =
+            tasks |> List.filter (fun task -> task.RelatedStoryId = Some storyId)
+
         let total = List.length storyTasks
         let doneCount = storyTasks |> List.filter taskDone |> List.length
         doneCount, total
 
     let sourceLine (task: SpeckitTask) =
-        task.SourceLocation
-        |> Option.bind _.Line
-        |> Option.defaultValue 0
+        task.SourceLocation |> Option.bind _.Line |> Option.defaultValue 0
 
     let activityTask tasks =
         let storyTasks = tasks |> List.filter (fun task -> task.RelatedStoryId.IsSome)
+
         let active =
             storyTasks
             |> List.filter (fun task -> task.RawStatus.Trim() <> "[ ]")
             |> List.sortBy sourceLine
             |> List.tryLast
 
-        active
-        |> Option.orElse (storyTasks |> List.sortBy sourceLine |> List.tryLast)
+        active |> Option.orElse (storyTasks |> List.sortBy sourceLine |> List.tryLast)
 
     let activityStoryId tasks =
         activityTask tasks |> Option.bind _.RelatedStoryId
@@ -133,36 +187,77 @@ module Render =
             let width = 10
             let filled = int (Math.Round(float doneCount / float total * float width))
             let empty = width - filled
+
             let completeColor =
                 if doneCount = total then "green"
                 elif doneCount = 0 then color ProgressIncomplete ui
                 else "yellow"
 
             let completeColor =
-                if doneCount = total then color ProgressComplete ui else completeColor
+                if doneCount = total then
+                    color ProgressComplete ui
+                else
+                    completeColor
 
-            sprintf "[%s]%s[/][%s]%s[/] [bold]%d/%d[/]" completeColor (String('█', filled)) (color ProgressIncomplete ui) (String('░', empty)) doneCount total
+            sprintf
+                "[%s]%s[/][%s]%s[/] [bold]%d/%d[/]"
+                completeColor
+                (String('█', filled))
+                (color ProgressIncomplete ui)
+                (String('░', empty))
+                doneCount
+                total
 
     let panel title (renderable: IRenderable) =
         Panel(renderable).Header(PanelHeader(title)).Border(BoxBorder.Rounded)
 
     let featuresTable snapshot =
         let ui = snapshot.Ui
-        let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn(sprintf "[bold %s]Feature[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Checkout[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Artifacts[/]" (color Muted ui))) |> ignore
+        let columnOffset = paneScroll Features snapshot
+        let table = dashboardTable ui
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Feature[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Checkout[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Artifacts[/]" (color Muted ui)))
+        |> ignore
 
         match snapshot.Features with
         | [] ->
-            table.AddRow(Markup("[yellow]No feature artifacts found[/]"), Markup(""), Markup("[grey]Create specs with Speckit, then press r.[/]")) |> ignore
+            table.AddRow(
+                Markup("[yellow]No feature artifacts found[/]"),
+                Markup(""),
+                Markup("[grey]Create specs with Speckit, then press r.[/]")
+            )
+            |> ignore
         | features ->
-            for index, feature in features |> List.indexed do
+            let selectedIndex =
+                features
+                |> List.tryFindIndex (fun feature -> Some feature.Id = snapshot.SelectedFeatureId)
+                |> Option.defaultValue 0
+
+            let visible, viewport =
+                visibleRows selectedIndex (tableVisibleRowCount ()) features
+                |> fun (rows, view) ->
+                    rows,
+                    { view with
+                        ColumnOffset = columnOffset }
+
+            if not (String.IsNullOrWhiteSpace(scrollIndicator viewport features.Length 120)) then
+                table.Caption(
+                    TableTitle("[grey]" + Markup.Escape(scrollIndicator viewport features.Length 120) + "[/]")
+                )
+                |> ignore
+
+            for absoluteIndex, feature in visible |> List.mapi (fun i value -> viewport.RowOffset + i, value) do
                 let name =
                     if feature.IsSelected then
-                        styledCellMarkup Selected ui feature.DisplayName
+                        styledCellMarkup Selected ui (sliceText columnOffset feature.DisplayName)
                     else
-                        stripedMarkup index ui feature.DisplayName
+                        stripedMarkup absoluteIndex ui (sliceText columnOffset feature.DisplayName)
 
                 let artifacts =
                     match feature.Status with
@@ -176,8 +271,10 @@ module Render =
                             (artifactMarkup status.ChecklistState)
 
                 let checkout =
-                    if feature.IsSelected then styledCellMarkup Selected ui (checkoutText feature.CheckoutState)
-                    else stripedMarkup index ui (checkoutText feature.CheckoutState)
+                    if feature.IsSelected then
+                        styledCellMarkup Selected ui (checkoutText feature.CheckoutState)
+                    else
+                        stripedMarkup absoluteIndex ui (checkoutText feature.CheckoutState)
 
                 let artifactsText =
                     match feature.Status with
@@ -190,36 +287,67 @@ module Render =
                             (artifactText status.TasksState)
                             (artifactText status.ChecklistState)
 
-                let artifactsCell = if feature.IsSelected then artifacts else stripedMarkup index ui artifactsText
+                let artifactsCell =
+                    if feature.IsSelected then
+                        artifacts
+                    else
+                        stripedMarkup absoluteIndex ui artifactsText
+
                 table.AddRow(Markup(name), Markup(checkout), Markup(artifactsCell)) |> ignore
 
         table
 
     let storiesTable snapshot =
         let ui = snapshot.Ui
+        let columnOffset = paneScroll Stories snapshot
         let tasks = featureTasks snapshot
         let lastActivityStoryId = activityStoryId tasks
-        let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn(sprintf "[bold %s]Story[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Progress[/]" (color Muted ui))) |> ignore
+        let table = dashboardTable ui
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Story[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Progress[/]" (color Muted ui)))
+        |> ignore
 
         match snapshot.Stories with
         | [] -> table.AddRow(Markup("[yellow]No user stories[/]"), Markup("")) |> ignore
         | stories ->
-            for index, story in stories |> List.indexed do
+            let selectedIndex =
+                stories
+                |> List.tryFindIndex (fun story -> Some story.Id = snapshot.SelectedStoryId)
+                |> Option.defaultValue 0
+
+            let visible, viewport =
+                visibleRows selectedIndex (tableVisibleRowCount ()) stories
+                |> fun (rows, view) ->
+                    rows,
+                    { view with
+                        ColumnOffset = columnOffset }
+
+            if not (String.IsNullOrWhiteSpace(scrollIndicator viewport stories.Length 120)) then
+                table.Caption(TableTitle("[grey]" + Markup.Escape(scrollIndicator viewport stories.Length 120) + "[/]"))
+                |> ignore
+
+            for absoluteIndex, story in visible |> List.mapi (fun i value -> viewport.RowOffset + i, value) do
                 let doneCount, total = storyProgress tasks story.Id
+                let storyLabel = sliceText columnOffset (story.Id + " " + story.Title)
+
                 let storyText =
                     if Some story.Id = snapshot.SelectedStoryId then
-                        sprintf "[%s] %s %s [/]" (styleTag Selected ui) (Markup.Escape story.Id) (Markup.Escape story.Title)
+                        sprintf "[%s] %s [/]" (styleTag Selected ui) (Markup.Escape storyLabel)
                     elif Some story.Id = lastActivityStoryId then
-                        sprintf "[%s] %s [/][%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape story.Id) (styleTag LastActivity ui) (Markup.Escape story.Title)
+                        sprintf "[%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape storyLabel)
                     else
-                        stripedMarkup index ui (story.Id + " " + story.Title)
+                        stripedMarkup absoluteIndex ui storyLabel
 
                 let progress =
-                    if Some story.Id = snapshot.SelectedStoryId then styledCellMarkup Selected ui (sprintf "%d/%d" doneCount total)
-                    elif Some story.Id = lastActivityStoryId then styledCellMarkup LastActivity ui (sprintf "%d/%d" doneCount total)
-                    else stripedMarkup index ui (sprintf "%d/%d" doneCount total)
+                    if Some story.Id = snapshot.SelectedStoryId then
+                        styledCellMarkup Selected ui (sprintf "%d/%d" doneCount total)
+                    elif Some story.Id = lastActivityStoryId then
+                        styledCellMarkup LastActivity ui (sprintf "%d/%d" doneCount total)
+                    else
+                        stripedMarkup absoluteIndex ui (sprintf "%d/%d" doneCount total)
 
                 table.AddRow(Markup(storyText), Markup(progress)) |> ignore
 
@@ -231,26 +359,64 @@ module Render =
         | Some plan ->
             let text =
                 plan.Summary
-                |> Option.orElse (if String.IsNullOrWhiteSpace plan.RawContent then None else Some plan.RawContent)
+                |> Option.orElse (
+                    if String.IsNullOrWhiteSpace plan.RawContent then
+                        None
+                    else
+                        Some plan.RawContent
+                )
                 |> Option.defaultValue "Plan artifact is empty or missing."
 
             Markup("[white]" + Markup.Escape text + "[/]") :> IRenderable
 
     let tasksTable snapshot =
         let ui = snapshot.Ui
+        let columnOffset = paneScroll TaskGraph snapshot
         let lastActivityTaskId = featureTasks snapshot |> activityTask |> Option.map _.Id
-        let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn(sprintf "[bold %s]Task[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Status[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Title[/]" (color Muted ui))) |> ignore
+        let table = dashboardTable ui
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Task[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Status[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Title[/]" (color Muted ui)))
+        |> ignore
 
         match snapshot.TaskGraph with
-        | None -> table.AddRow(Markup("[yellow]No task graph[/]"), Markup(""), Markup("")) |> ignore
+        | None ->
+            table.AddRow(Markup("[yellow]No task graph[/]"), Markup(""), Markup(""))
+            |> ignore
         | Some graph when List.isEmpty graph.Nodes ->
-            table.AddRow(Markup("[yellow]No tasks for selected story[/]"), Markup(""), Markup("")) |> ignore
+            table.AddRow(Markup("[yellow]No tasks for selected story[/]"), Markup(""), Markup(""))
+            |> ignore
         | Some graph ->
-            graph.Nodes
-            |> List.iteri (fun index task ->
+            let selectedIndex =
+                graph.Nodes
+                |> List.tryFindIndex (fun task -> Some task.Id = graph.SelectedTaskId)
+                |> Option.defaultValue 0
+
+            let visible, viewport =
+                visibleRows selectedIndex (tableVisibleRowCount ()) graph.Nodes
+                |> fun (rows, view) ->
+                    rows,
+                    { view with
+                        ColumnOffset = columnOffset }
+
+            if not (String.IsNullOrWhiteSpace(scrollIndicator viewport graph.Nodes.Length 120)) then
+                table.Caption(
+                    TableTitle(
+                        "[grey]"
+                        + Markup.Escape(scrollIndicator viewport graph.Nodes.Length 120)
+                        + "[/]"
+                    )
+                )
+                |> ignore
+
+            visible
+            |> List.iteri (fun relativeIndex task ->
+                let index = viewport.RowOffset + relativeIndex
                 let selected = Some task.Id = graph.SelectedTaskId
                 let lastActivity = Some task.Id = lastActivityTaskId
 
@@ -274,38 +440,84 @@ module Render =
 
                 let title =
                     if selected then
-                        styledCellMarkup Selected ui task.Title
+                        styledCellMarkup Selected ui (sliceText columnOffset task.Title)
                     elif lastActivity then
-                        styledCellMarkup LastActivity ui task.Title
+                        styledCellMarkup LastActivity ui (sliceText columnOffset task.Title)
                     else
-                        stripedMarkup index ui task.Title
+                        stripedMarkup index ui (sliceText columnOffset task.Title)
 
-                table.AddRow(Markup(id), Markup(status), Markup(title)) |> ignore
-            )
+                table.AddRow(Markup(id), Markup(status), Markup(title)) |> ignore)
 
         table
 
     let detailRenderable snapshot =
+        let ui = snapshot.Ui
+
         match snapshot.TaskGraph, snapshot.SelectedTaskId with
         | Some graph, Some selectedTaskId ->
             graph.Nodes
             |> List.tryFind (fun task -> task.Id = selectedTaskId)
             |> Option.map (fun task ->
-                let deps = if List.isEmpty task.Dependencies then "(none)" else String.concat ", " task.Dependencies
+                let deps =
+                    if List.isEmpty task.Dependencies then
+                        "(none)"
+                    else
+                        String.concat ", " task.Dependencies
+
                 let source =
                     task.SourceLocation
-                    |> Option.map (fun source -> source.Path + ":" + (source.Line |> Option.map string |> Option.defaultValue "?"))
+                    |> Option.map (fun source ->
+                        source.Path
+                        + ":"
+                        + (source.Line |> Option.map string |> Option.defaultValue "?"))
                     |> Option.defaultValue "(unknown)"
 
                 let rows =
                     Rows(
-                        [| Markup("[bold white]" + Markup.Escape task.Title + "[/]") :> IRenderable
-                           Rule("[grey]details[/]") :> IRenderable
-                           Markup(sprintf "[grey]status[/] %s" (Markup.Escape task.RawStatus)) :> IRenderable
-                           Markup(sprintf "[grey]story[/] %s" (task.RelatedStoryId |> Option.defaultValue "(none)" |> Markup.Escape)) :> IRenderable
-                           Markup(sprintf "[grey]deps[/] %s" (Markup.Escape deps)) :> IRenderable
-                           Markup(sprintf "[grey]source[/] %s" (Markup.Escape source)) :> IRenderable
-                           Markup("[white]" + Markup.Escape(task.Description |> Option.defaultValue "") + "[/]") :> IRenderable |])
+                        [| Markup(sprintf "[bold %s]%s[/]" (color DetailHeading ui) (Markup.Escape task.Title))
+                           :> IRenderable
+                           Rule(sprintf "[%s]details[/]" (color Muted ui)) :> IRenderable
+                           Markup(
+                               sprintf
+                                   "[%s]status[/] [%s]%s[/]"
+                                   (color DetailLabel ui)
+                                   (color DetailBody ui)
+                                   (Markup.Escape task.RawStatus)
+                           )
+                           :> IRenderable
+                           Markup(
+                               sprintf
+                                   "[%s]story[/] [%s]%s[/]"
+                                   (color DetailLabel ui)
+                                   (color DetailBody ui)
+                                   (task.RelatedStoryId |> Option.defaultValue "(none)" |> Markup.Escape)
+                           )
+                           :> IRenderable
+                           Markup(
+                               sprintf
+                                   "[%s]deps[/] [%s]%s[/]"
+                                   (color DetailLabel ui)
+                                   (color DetailBody ui)
+                                   (Markup.Escape deps)
+                           )
+                           :> IRenderable
+                           Markup(
+                               sprintf
+                                   "[%s]source[/] [%s]%s[/]"
+                                   (color DetailLabel ui)
+                                   (color DetailSource ui)
+                                   (Markup.Escape source)
+                           )
+                           :> IRenderable
+                           Markup(
+                               "["
+                               + color DetailBody ui
+                               + "]"
+                               + Markup.Escape(task.Description |> Option.defaultValue "")
+                               + "[/]"
+                           )
+                           :> IRenderable |]
+                    )
 
                 rows :> IRenderable)
             |> Option.defaultValue (Markup("[grey]No selected task.[/]") :> IRenderable)
@@ -313,12 +525,18 @@ module Render =
 
     let diagnosticsRenderable snapshot =
         let ui = snapshot.Ui
-        let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn(sprintf "[bold %s]Severity[/]" (color Muted ui))) |> ignore
-        table.AddColumn(TableColumn(sprintf "[bold %s]Message[/]" (color Muted ui))) |> ignore
+        let table = dashboardTable ui
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Severity[/]" (color Muted ui)))
+        |> ignore
+
+        table.AddColumn(TableColumn(sprintf "[bold %s]Message[/]" (color Muted ui)))
+        |> ignore
 
         match snapshot.Diagnostics with
-        | [] -> table.AddRow(Markup("[green]ok[/]"), Markup("[grey]No diagnostics[/]")) |> ignore
+        | [] ->
+            table.AddRow(Markup("[green]ok[/]"), Markup("[grey]No diagnostics[/]"))
+            |> ignore
         | diagnostics ->
             for index, diagnostic in diagnostics |> List.indexed do
                 let role =
@@ -336,16 +554,27 @@ module Render =
 
                 match diagnostic.Severity with
                 | Info ->
-                    table.AddRow(Markup(stripedMarkup index ui (severityText diagnostic.Severity)), Markup(stripedMarkup index ui message)) |> ignore
+                    table.AddRow(
+                        Markup(stripedMarkup index ui (severityText diagnostic.Severity)),
+                        Markup(stripedMarkup index ui message)
+                    )
+                    |> ignore
                 | Warning
-                | Error -> table.AddRow(Markup(styledCellMarkup role ui (severityText diagnostic.Severity)), Markup(styledCellMarkup role ui message)) |> ignore
+                | Error ->
+                    table.AddRow(
+                        Markup(styledCellMarkup role ui (severityText diagnostic.Severity)),
+                        Markup(styledCellMarkup role ui message)
+                    )
+                    |> ignore
 
         table
 
     let readSourceText path =
         try
-            if File.Exists path then File.ReadAllText path
-            else "Source artifact is missing: " + path
+            if File.Exists path then
+                File.ReadAllText path
+            else
+                "Source artifact is missing: " + path
         with ex ->
             "Source artifact is unreadable: " + ex.Message
 
@@ -358,7 +587,12 @@ module Render =
         modal.SelectedStoryId
         |> Option.orElse snapshot.SelectedStoryId
         |> Option.bind (fun id -> snapshot.Stories |> List.tryFind (fun story -> story.Id = id))
-        |> Option.orElse (featureTasks snapshot |> activityTask |> Option.bind _.RelatedStoryId |> Option.bind (fun id -> snapshot.Stories |> List.tryFind (fun story -> story.Id = id)))
+        |> Option.orElse (
+            featureTasks snapshot
+            |> activityTask
+            |> Option.bind _.RelatedStoryId
+            |> Option.bind (fun id -> snapshot.Stories |> List.tryFind (fun story -> story.Id = id))
+        )
 
     let selectedTask (snapshot: DashboardSnapshot) (modal: FullScreenModal) =
         match snapshot.TaskGraph with
@@ -371,7 +605,9 @@ module Render =
 
     let sourceLocationText (source: SourceLocation option) =
         source
-        |> Option.map (fun location -> location.Path + (location.Line |> Option.map (sprintf ":%d") |> Option.defaultValue ""))
+        |> Option.map (fun location ->
+            location.Path
+            + (location.Line |> Option.map (sprintf ":%d") |> Option.defaultValue ""))
         |> Option.defaultValue "(unknown)"
 
     let fullScreenText (snapshot: DashboardSnapshot) (modal: FullScreenModal) =
@@ -412,9 +648,17 @@ module Render =
             match selectedStory snapshot modal with
             | None -> "No selected or active user story is available. Press esc to return."
             | Some story ->
-                let tasks = featureTasks snapshot |> List.filter (fun task -> task.RelatedStoryId = Some story.Id)
+                let tasks =
+                    featureTasks snapshot
+                    |> List.filter (fun task -> task.RelatedStoryId = Some story.Id)
+
                 let doneCount, total = storyProgress tasks story.Id
-                let related = tasks |> List.map (fun task -> task.Id + " " + task.RawStatus + " " + task.Title) |> String.concat "\n"
+
+                let related =
+                    tasks
+                    |> List.map (fun task -> task.Id + " " + task.RawStatus + " " + task.Title)
+                    |> String.concat "\n"
+
                 let source =
                     story.SourceLocation
                     |> Option.map (fun location -> readSourceText location.Path)
@@ -430,7 +674,10 @@ module Render =
                     (sourceLocationText story.SourceLocation)
                     story.Description
                     (String.concat "\n" story.AcceptanceScenarios)
-                    (if String.IsNullOrWhiteSpace related then "(none)" else related)
+                    (if String.IsNullOrWhiteSpace related then
+                         "(none)"
+                     else
+                         related)
                     source
         | PlanFullScreen ->
             match snapshot.Plan with
@@ -442,7 +689,10 @@ module Render =
                     (plan.Summary |> Option.defaultValue "(none)")
                     (plan.TechnicalContext |> Option.defaultValue "(none)")
                     (plan.ConstitutionCheck |> Option.defaultValue "(none)")
-                    (if String.IsNullOrWhiteSpace plan.RawContent then "Plan source text is unavailable." else plan.RawContent)
+                    (if String.IsNullOrWhiteSpace plan.RawContent then
+                         "Plan source text is unavailable."
+                     else
+                         plan.RawContent)
         | TaskFullScreen ->
             match selectedTask snapshot modal with
             | None -> "No selected or active task is available. Press esc to return."
@@ -458,11 +708,31 @@ module Render =
                     task.RawStatus
                     task.Title
                     (task.RelatedStoryId |> Option.defaultValue "(none)")
-                    (if List.isEmpty task.Dependencies then "(none)" else String.concat ", " task.Dependencies)
+                    (if List.isEmpty task.Dependencies then
+                         "(none)"
+                     else
+                         String.concat ", " task.Dependencies)
                     (sourceLocationText task.SourceLocation)
-                    (if Map.isEmpty task.Metadata then "(none)" else task.Metadata |> Seq.map (fun kv -> kv.Key + "=" + kv.Value) |> String.concat ", ")
+                    (if Map.isEmpty task.Metadata then
+                         "(none)"
+                     else
+                         task.Metadata
+                         |> Seq.map (fun kv -> kv.Key + "=" + kv.Value)
+                         |> String.concat ", ")
                     (task.Description |> Option.defaultValue "")
                     source
+        | SettingsFullScreen ->
+            let ui = snapshot.Ui
+
+            sprintf
+                "Settings\nTable border: %s\nSticky columns: %d\nTable horizontal step: %d\nDetail wrap: %b\nDetail horizontal step: %d\nLive reload: %b\nLive reload debounce: %dms\n\nh/l changes table border. Shift-left/right changes detail step. 1 saves, 2 discards, 3 reloads, 4 overwrites. Config can also be edited with sk-dashboard --settings --config <path>."
+                (Domain.tableBorderId ui.Table.Border)
+                ui.Table.StickyColumns
+                ui.Table.HorizontalStep
+                ui.Detail.WrapText
+                ui.Detail.HorizontalStep
+                ui.LiveReload.Enabled
+                ui.LiveReload.DebounceMilliseconds
 
     let fullScreenTitle target =
         match target with
@@ -470,15 +740,33 @@ module Render =
         | StoryFullScreen -> "User Story"
         | PlanFullScreen -> "Plan"
         | TaskFullScreen -> "Task"
+        | SettingsFullScreen -> "Settings"
 
     let fullScreenRenderable (snapshot: DashboardSnapshot) (modal: FullScreenModal) =
         let ui = snapshot.Ui
-        let text = fullScreenText snapshot modal
-        let rows =
-            text.Split('\n')
-            |> Array.map (fun line -> Markup("[white]" + Markup.Escape line + "[/]") :> IRenderable)
+        let rawText = fullScreenText snapshot modal
+        let lines = rawText.Split('\n')
+        let widest = lines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
+        let viewport = Domain.clampDetailViewport lines.Length widest modal.Viewport
 
-        panel (sprintf "[bold %s]%s Full Screen[/]" (color PanelAccent ui) (fullScreenTitle modal.Target)) (Rows rows)
+        let rows =
+            lines
+            |> Array.skip viewport.LineOffset
+            |> Array.truncate viewport.VisibleLines
+            |> Array.map (fun line ->
+                Markup("[white]" + Markup.Escape(sliceText viewport.ColumnOffset line) + "[/]") :> IRenderable)
+
+        let title =
+            sprintf
+                "[bold %s]%s Full Screen[/] [grey]lines %d-%d/%d col +%d[/]"
+                (color PanelAccent ui)
+                (fullScreenTitle modal.Target)
+                (viewport.LineOffset + 1)
+                (min lines.Length (viewport.LineOffset + viewport.VisibleLines))
+                lines.Length
+                viewport.ColumnOffset
+
+        panel title (Rows rows)
 
     let snapshotText (snapshot: DashboardSnapshot) =
         let featureText =
@@ -500,8 +788,18 @@ module Render =
             | stories ->
                 stories
                 |> List.map (fun story ->
-                    let marker = if Some story.Id = snapshot.SelectedStoryId then "> " else "  "
-                    let activity = if Some story.Id = lastActivityStoryId then " activity" else ""
+                    let marker =
+                        if Some story.Id = snapshot.SelectedStoryId then
+                            "> "
+                        else
+                            "  "
+
+                    let activity =
+                        if Some story.Id = lastActivityStoryId then
+                            " activity"
+                        else
+                            ""
+
                     let doneCount, total = storyProgress tasks story.Id
                     sprintf "%s%s%s %s %d/%d" marker story.Id activity story.Title doneCount total)
                 |> String.concat "\n"
@@ -515,25 +813,51 @@ module Render =
                 graph.Nodes
                 |> List.map (fun task ->
                     let marker = if Some task.Id = graph.SelectedTaskId then "> " else "  "
-                    let activity = if Some task.Id = lastActivityTaskId then " activity" else ""
+
+                    let activity =
+                        if Some task.Id = lastActivityTaskId then
+                            " activity"
+                        else
+                            ""
+
                     sprintf "%s%s%s %s %s" marker task.Id activity task.RawStatus task.Title)
                 |> String.concat "\n"
 
+        let paneOffsets =
+            snapshot.Panes
+            |> List.map (fun pane -> sprintf "%s:%d" pane.Id pane.ScrollOffset)
+            |> String.concat ","
+
+        let fullScreenState =
+            snapshot.FullScreen
+            |> Option.map (fun modal ->
+                sprintf
+                    "%s:%d:%d:%d:%d"
+                    (fullScreenTitle modal.Target)
+                    modal.Viewport.LineOffset
+                    modal.Viewport.ColumnOffset
+                    modal.Viewport.VisibleLines
+                    modal.Viewport.VisibleColumns)
+            |> Option.defaultValue "(none)"
+
         sprintf
-            "sk-dashboard %s\nRepository: %s\nCurrent branch: %s\nFeatures:\n%s\nStories:\n%s\nTasks:\n%s\nFullScreen:%s\nDiagnostics:%d"
+            "sk-dashboard %s\nRepository: %s\nCurrent branch: %s\nFeatures:\n%s\nStories:\n%s\nTasks:\n%s\nPanes:%s\nFullScreen:%s\nDiagnostics:%d"
             snapshot.Version.Label
             snapshot.RepositoryRoot
             (snapshot.CurrentBranch |> Option.defaultValue "(none)")
             featureText
             storyText
             taskText
-            (snapshot.FullScreen |> Option.map (fun modal -> fullScreenTitle modal.Target) |> Option.defaultValue "(none)")
+            paneOffsets
+            fullScreenState
             snapshot.Diagnostics.Length
 
     let snapshotRenderableForWidth width snapshot : IRenderable =
         let ui = snapshot.Ui
+
         let header =
             let branch = snapshot.CurrentBranch |> Option.defaultValue "(none)" |> Markup.Escape
+
             Panel(
                 Markup(
                     sprintf
@@ -543,32 +867,40 @@ module Render =
                         (color Muted ui)
                         (Markup.Escape snapshot.RepositoryRoot)
                         (color Muted ui)
-                        branch))
+                        branch
+                )
+            )
                 .Border(BoxBorder.None)
 
         let left = Layout("left").Ratio(3)
-        left.SplitRows(
-            Layout("features").Ratio(2),
-            Layout("stories").Ratio(3))
+
+        left.SplitRows(Layout("features").Ratio(2), Layout("stories").Ratio(3))
         |> ignore
 
-        left["features"].Update(panel "[bold deepskyblue1]Features[/]" (featuresTable snapshot)) |> ignore
-        left["stories"].Update(panel "[bold green]User Stories[/]" (storiesTable snapshot)) |> ignore
+        left["features"].Update(panel "[bold deepskyblue1]Features[/]" (featuresTable snapshot))
+        |> ignore
+
+        left["stories"].Update(panel "[bold green]User Stories[/]" (storiesTable snapshot))
+        |> ignore
 
         let right = Layout("right").Ratio(4)
-        right.SplitRows(
-            Layout("plan").Ratio(2),
-            Layout("tasks").Ratio(3),
-            Layout("detail").Ratio(2))
+
+        right.SplitRows(Layout("plan").Ratio(2), Layout("tasks").Ratio(3), Layout("detail").Ratio(2))
         |> ignore
 
-        right["plan"].Update(panel "[bold purple]Plan[/]" (planRenderable snapshot)) |> ignore
-        right["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot)) |> ignore
-        right["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot)) |> ignore
+        right["plan"].Update(panel "[bold purple]Plan[/]" (planRenderable snapshot))
+        |> ignore
+
+        right["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot))
+        |> ignore
+
+        right["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot))
+        |> ignore
 
         let resolvedLayout = Domain.resolveLayout width snapshot.Ui.Layout
 
         let main = Layout("main")
+
         match snapshot.FullScreen with
         | Some modal -> main.Update(fullScreenRenderable snapshot modal) |> ignore
         | None ->
@@ -580,35 +912,45 @@ module Render =
                     Layout("stories").Ratio(2),
                     Layout("plan").Ratio(2),
                     Layout("tasks").Ratio(3),
-                    Layout("detail").Ratio(2))
+                    Layout("detail").Ratio(2)
+                )
                 |> ignore
 
-                main["features"].Update(panel (sprintf "[bold %s]Features[/]" (color PanelAccent ui)) (featuresTable snapshot)) |> ignore
-                main["stories"].Update(panel "[bold green]User Stories[/]" (storiesTable snapshot)) |> ignore
-                main["plan"].Update(panel "[bold purple]Plan[/]" (planRenderable snapshot)) |> ignore
-                main["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot)) |> ignore
-                main["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot)) |> ignore
+                main["features"]
+                    .Update(panel (sprintf "[bold %s]Features[/]" (color PanelAccent ui)) (featuresTable snapshot))
+                |> ignore
+
+                main["stories"].Update(panel "[bold green]User Stories[/]" (storiesTable snapshot))
+                |> ignore
+
+                main["plan"].Update(panel "[bold purple]Plan[/]" (planRenderable snapshot))
+                |> ignore
+
+                main["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot))
+                |> ignore
+
+                main["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot))
+                |> ignore
 
         let footer =
             let actions =
                 if List.isEmpty snapshot.Features then
-                    "[bold]r[/] refresh  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
+                    "[bold]r[/] refresh  [bold],[/] settings  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
                 else
-                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]F/S/P/T[/] full screen  [bold]esc[/] close  [bold]r[/] refresh  [bold]enter[/] checkout  [bold]q[/] quit"
+                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]h/l[/] table scroll  [bold]F/S/P/T[/] full screen  [bold]arrows[/] scroll detail  [bold],[/] settings  [bold]r[/] refresh  [bold]q[/] quit"
 
             let rows =
                 Rows(
                     [| Rule("[grey]controls[/]") :> IRenderable
                        Markup(actions) :> IRenderable
-                       diagnosticsRenderable snapshot :> IRenderable |])
+                       diagnosticsRenderable snapshot :> IRenderable |]
+                )
 
             panel "[bold grey]Status[/]" rows
 
         let root = Layout("root")
-        root.SplitRows(
-            Layout("header").Size(3),
-            Layout("main"),
-            Layout("footer").Size(12))
+
+        root.SplitRows(Layout("header").Size(3), Layout("main"), Layout("footer").Size(12))
         |> ignore
 
         root["header"].Update(header) |> ignore
@@ -618,8 +960,10 @@ module Render =
 
     let snapshotRenderable snapshot : IRenderable =
         let width =
-            try Console.WindowWidth
-            with _ -> 120
+            try
+                Console.WindowWidth
+            with _ ->
+                120
 
         snapshotRenderableForWidth width snapshot
 

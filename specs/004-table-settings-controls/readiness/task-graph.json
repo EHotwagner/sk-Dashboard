@@ -1,0 +1,804 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature branch, spec, plan, contracts, data model, and quickstart are present for `004-table-settings-controls`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create readiness scaffolding under `specs/004-table-settings-controls/readiness/` for FSI transcripts, smoke logs, config fixtures, and rendered-output captures",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record the Tier 1 contract surfaces, affected modules, and required real-evidence paths in `specs/004-table-settings-controls/readiness/evidence-plan.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Map existing dashboard tables, detail surfaces, hotkeys, and config-loading entry points to the feature requirements",
+      "explicit_deps": [
+        "T001"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public Core `.fsi` signatures for table viewport state, detail viewport state, display settings, color roles, config file state, settings edit sessions, and new command identifiers",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic test scaffolding in `tests/Core.Tests` for settings parsing, validation defaults, hotkey command registration, viewport reducers, and conflict metadata",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add dashboard reducer and rendering smoke test scaffolding in `tests/Dashboard.Tests` for scrollable tables, detail scrolling, settings surfaces, and live reload",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft public signatures from FSI and capture the transcript in `specs/004-table-settings-controls/readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record public surface baselines for changed `.fsi` modules in `specs/004-table-settings-controls/readiness/surface-baseline.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define config diagnostics and safe fallback messages for invalid borders, colors, hotkeys, unreadable files, stale saves, and deferred reloads",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define shared JSON config fixtures covering defaults, unknown future fields, invalid known fields, border styles, detail color roles, and live reload settings",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the foundation test scaffolds once and capture the expected failing or pending evidence in `specs/004-table-settings-controls/readiness/foundation-test-baseline.txt`",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for table viewport clamping, selection-anchored vertical scrolling, horizontal offsets, sticky columns, empty rows, deleted selections, and terminal resize",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke fixtures with oversized feature, story, task, diagnostic, and detail-oriented table data including 500-row and wide-cell cases",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for full detail pages with at least 2,000 lines, vertical scrolling, horizontal scrolling, and close/reopen context restoration",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement typed table and detail viewport reducers in `src/Core/Domain.fs` with `.fsi` exposure and safe clamp behavior",
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire vertical selection-anchored scrolling into all dashboard table navigation paths in `src/Dashboard/App.fs` and `src/Dashboard/Input.fs`",
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire explicit horizontal table and detail scroll commands through `src/Core/Hotkeys.fs`, `src/Dashboard/Input.fs`, and dashboard state",
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `src/Dashboard/Render.fs` to render viewport slices, sticky identifying columns, horizontal offsets, empty placeholders, and scroll indicators for all table surfaces",
+      "explicit_deps": [
+        "T014",
+        "T017",
+        "T018"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Update full detail rendering and state transitions so long detail content scrolls without losing the selected feature, story, plan, task, or diagnostic context",
+      "explicit_deps": [
+        "T015",
+        "T018"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 independent evidence in readiness artifacts by running semantic tests plus dashboard smoke navigation for large and wide tables",
+      "explicit_deps": [
+        "T019",
+        "T020"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for table border preference parsing, validation, defaults, unknown fields, and diagnostic reporting",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for detail formatting and color role parsing, safe defaults, invalid colors, and low-readability pair fallback",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard rendering smoke tests proving every table surface applies `none`, `minimal`, `rounded`, and `heavy` borders consistently",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard rendering smoke tests for readable detail headings, labels, status values, metadata, body text, warnings, errors, and source text",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend the shared dashboard settings model and JSON parser in Core for `ui.table`, `ui.detail`, `ui.colors`, and per-field diagnostics",
+      "explicit_deps": [
+        "T022",
+        "T023"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Map supported border preferences to Spectre.Console table border variants and apply the chosen style to feature, story, task, diagnostic, settings, and detail-oriented tables",
+      "explicit_deps": [
+        "T024",
+        "T026"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Apply configurable detail formatting and color roles to all full detail render paths while preserving safe fallbacks for invalid settings",
+      "explicit_deps": [
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Surface configuration diagnostics in the dashboard without crashing or clearing the last valid display settings",
+      "explicit_deps": [
+        "T026",
+        "T027",
+        "T028"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 independent evidence with config fixtures, semantic tests, rendered smoke output for each supported border and detail role fallback, and maintainer readability review results in `specs/004-table-settings-controls/readiness/detail-readability-review.md`",
+      "explicit_deps": [
+        "T027",
+        "T028",
+        "T029"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for settings edit sessions, dirty state, loaded file versions, stale-save detection, reload, discard, and explicit overwrite",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for live reload state transitions, debounce values, last-valid settings retention, invalid config diagnostics, and deferred reloads for dirty sessions",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for opening the in-dashboard settings page by hotkey within 2 seconds, preserving current selection, saving, discarding, and showing validation feedback",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add CLI smoke tests for `sk-dashboard --settings --config <path>` reading, validating, saving, and detecting stale config changes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Register default hotkey bindings and command dispatch for `settings.open`, settings save/discard/reload/overwrite, table horizontal scroll, and detail scroll commands",
+      "explicit_deps": [
+        "T031"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the in-dashboard settings surface with editable sections for table behavior, borders, detail formatting, colors, hotkeys, and live reload",
+      "explicit_deps": [
+        "T033",
+        "T035"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement shared settings save/reload/discard/overwrite workflows with validation messages and stale-save conflict handling",
+      "explicit_deps": [
+        "T031",
+        "T036"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Add `sk-dashboard --settings` routing in `src/Dashboard/Program.fs` that uses the same config path and shared settings workflow as the running dashboard",
+      "explicit_deps": [
+        "T034",
+        "T037"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement debounced config file observation in the running dashboard with last-valid settings retention and clear diagnostics for invalid or unreadable changes",
+      "explicit_deps": [
+        "T032",
+        "T037"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Defer external reloads while a settings surface has unsaved edits and show pending conflict state until save, discard, reload, or overwrite",
+      "explicit_deps": [
+        "T032",
+        "T037",
+        "T039"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US3 independent evidence for hotkey settings, standalone settings mode, conflict handling, settings page open time under 2 seconds, locating and editing key settings under 60 seconds, and live reload applying valid changes within 2 seconds",
+      "explicit_deps": [
+        "T036",
+        "T038",
+        "T039",
+        "T040"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh public surface baselines for all changed `.fsi` files and confirm Tier 1 contract additions are intentional",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet fantomas` or the repository's formatter on changed F# source and test files where available",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet test sk-Dashboard.sln` and capture the full test transcript in readiness artifacts",
+      "explicit_deps": [
+        "T043"
+      ],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run quickstart smoke checks for dashboard launch, large-table navigation, detail scrolling, standalone settings mode, invalid config, and live reload",
+      "explicit_deps": [
+        "T044"
+      ],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update `specs/004-table-settings-controls/quickstart.md` with any final command or interaction changes discovered during implementation",
+      "explicit_deps": [
+        "T045"
+      ],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh --graph-only` and confirm no cycles, dangling refs, missing task ids, or unexpected propagation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh` and document a PASS verdict or every accepted synthetic-evidence override",
+      "explicit_deps": [
+        "T044",
+        "T045",
+        "T047"
+      ],
+      "phase_deps": [
+        "T041"
+      ],
+      "root_cause": []
+    }
+  ]
+}

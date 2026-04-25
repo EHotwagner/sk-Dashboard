@@ -1,0 +1,1 @@
+{"version":1,"bindings":[{"command":"settings.open","key":","}],"ui":{"table":{"border":"heavy","stickyColumns":1,"horizontalStep":12},"detail":{"wrapText":false,"horizontalStep":12},"liveReload":{"enabled":true,"debounceMilliseconds":150},"colors":{"detailHeading":"cyan","detailLabel":"yellow","detailBody":"white","detailSource":"grey"}}}

@@ -7,141 +7,305 @@ open SkDashboard.Dashboard
 
 [<Tests>]
 let renderingSmokeTests =
-    testList "Rendering" [
-        test "snapshotText_handles empty project state" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-").FullName
-            let text = App.load root |> Render.snapshotText
-            Expect.stringContains text "No feature artifacts found" "Empty state is visible."
-        }
+    testList
+        "Rendering"
+        [ test "snapshotText_handles empty project state" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-render-").FullName
+              let text = App.load root |> Render.snapshotText
+              Expect.stringContains text "No feature artifacts found" "Empty state is visible."
+          }
 
-        test "snapshotText_marks_last_story_activity" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-activity-").FullName
-            let featureRoot = Path.Combine(root, "specs", "001-a")
-            Directory.CreateDirectory(featureRoot) |> ignore
-            File.WriteAllText(
-                Path.Combine(featureRoot, "spec.md"),
-                "### User Story 1 - First (Priority: P1)\n\n### User Story 2 - Second (Priority: P1)\n")
-            File.WriteAllText(
-                Path.Combine(featureRoot, "tasks.md"),
-                "- [X] T001 [US1] Done first\n- [X] T002 [US2] Done second\n")
+          test "snapshotText_marks_last_story_activity" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-activity-").FullName
 
-            let text = App.load root |> App.selectStory 1 |> Render.snapshotText
-            Expect.stringContains text "US2 activity" "Last story-scoped task marks its story as active."
-            Expect.stringContains text "T002 activity" "Last story-scoped task is marked active."
-        }
+              let featureRoot = Path.Combine(root, "specs", "001-a")
+              Directory.CreateDirectory(featureRoot) |> ignore
 
-        test "layout_selection_uses_auto_threshold" {
-            Expect.equal (Domain.resolveLayout 119 Auto) VerticalLayout "Auto uses vertical below 120 columns."
-            Expect.equal (Domain.resolveLayout 120 Auto) WidescreenLayout "Auto uses widescreen at 120 columns."
-            Expect.equal (Domain.resolveLayout 80 Widescreen) WidescreenLayout "Explicit widescreen is honored."
-            Expect.equal (Domain.resolveLayout 160 Vertical) VerticalLayout "Explicit vertical is honored."
-        }
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "spec.md"),
+                  "### User Story 1 - First (Priority: P1)\n\n### User Story 2 - Second (Priority: P1)\n"
+              )
 
-        test "snapshotRenderable_supports_explicit_and_auto_layout_modes" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-layout-").FullName
-            let snapshot = App.load root
-            let withLayout layout = { snapshot with Ui = { snapshot.Ui with Layout = layout } }
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "tasks.md"),
+                  "- [X] T001 [US1] Done first\n- [X] T002 [US2] Done second\n"
+              )
 
-            Render.snapshotRenderableForWidth 160 (withLayout Widescreen) |> ignore
-            Render.snapshotRenderableForWidth 80 (withLayout Vertical) |> ignore
-            Render.snapshotRenderableForWidth 80 (withLayout Auto) |> ignore
-            Render.snapshotRenderableForWidth 160 (withLayout Auto) |> ignore
-            Expect.isTrue true "All layout renderables are produced."
-        }
+              let text = App.load root |> App.selectStory 1 |> Render.snapshotText
+              Expect.stringContains text "US2 activity" "Last story-scoped task marks its story as active."
+              Expect.stringContains text "T002 activity" "Last story-scoped task is marked active."
+          }
 
-        test "configured_colors_are_used_for_dashboard_roles" {
-            let ui =
-                { Layout = Auto
-                  Colors =
-                    Domain.defaultUiPreferences.Colors
-                    |> Map.add Selected { Foreground = "black"; Background = Some "green" }
-                    |> Map.add LastActivity { Foreground = "white"; Background = Some "#555555" }
-                    |> Map.add ProgressComplete { Foreground = "#00ff00"; Background = None }
-                    |> Map.add ProgressIncomplete { Foreground = "#555555"; Background = None }
-                    |> Map.add DiagnosticInfo { Foreground = "#7aa2f7"; Background = None }
-                    |> Map.add DiagnosticWarning { Foreground = "yellow"; Background = None }
-                    |> Map.add DiagnosticError { Foreground = "red"; Background = None }
-                    |> Map.add Muted { Foreground = "grey42"; Background = None }
-                    |> Map.add PanelAccent { Foreground = "#7aa2f7"; Background = None }
-                    |> Map.add RowStripeOdd { Foreground = "white"; Background = Some "#101820" }
-                    |> Map.add RowStripeEven { Foreground = "white"; Background = Some "#18232f" } }
+          test "layout_selection_uses_auto_threshold" {
+              Expect.equal (Domain.resolveLayout 119 Auto) VerticalLayout "Auto uses vertical below 120 columns."
+              Expect.equal (Domain.resolveLayout 120 Auto) WidescreenLayout "Auto uses widescreen at 120 columns."
+              Expect.equal (Domain.resolveLayout 80 Widescreen) WidescreenLayout "Explicit widescreen is honored."
+              Expect.equal (Domain.resolveLayout 160 Vertical) VerticalLayout "Explicit vertical is honored."
+          }
 
-            Expect.equal (Render.styleTag Selected ui) "black on green" "Selected role uses configured pair."
-            Expect.equal (Render.styleTag LastActivity ui) "white on #555555" "Last activity role uses configured pair."
-            Expect.stringContains (Render.progressMarkup ui 2 2) "#00ff00" "Progress complete color is used."
-            Expect.stringContains (Render.progressMarkup ui 1 2) "#555555" "Progress incomplete color is used."
-            Expect.equal (Render.markup DiagnosticInfo ui "info") "[#7aa2f7]info[/]" "Diagnostic info color is used."
-            Expect.equal (Render.color Muted ui) "grey42" "Muted color is used."
-            Expect.equal (Render.color PanelAccent ui) "#7aa2f7" "Panel accent color is used."
-            Expect.equal (Render.rowStripeTag 0 ui) "white on #18232f" "Even stripe role is used."
-            Expect.equal (Render.rowStripeTag 1 ui) "white on #101820" "Odd stripe role is used."
-        }
+          test "snapshotRenderable_supports_explicit_and_auto_layout_modes" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-render-layout-").FullName
+              let snapshot = App.load root
 
-        test "default_colors_are_used_without_custom_preferences" {
-            let ui = Domain.defaultUiPreferences
-            Expect.equal (Render.styleTag Selected ui) "black on deepskyblue1" "Default selected color is used."
-            Expect.equal (Render.color ProgressComplete ui) "green" "Default progress color is used."
-            Expect.equal (Render.color DiagnosticError ui) "red" "Default diagnostic error color is used."
-            Expect.equal (Render.color Muted ui) "grey" "Default muted color is used."
-            Expect.equal (Render.rowStripeTag 0 ui) "white on black" "Default even stripe is used."
-            Expect.equal (Render.rowStripeTag 1 ui) "white on grey7" "Default odd stripe is used."
-        }
+              let withLayout layout =
+                  { snapshot with
+                      Ui = { snapshot.Ui with Layout = layout } }
 
-        test "snapshotText_includes_dashboard_version" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-version-").FullName
-            let text = App.load root |> Render.snapshotText
-            Expect.stringContains text "sk-dashboard v" "Snapshot text exposes header version."
-        }
+              Render.snapshotRenderableForWidth 160 (withLayout Widescreen) |> ignore
+              Render.snapshotRenderableForWidth 80 (withLayout Vertical) |> ignore
+              Render.snapshotRenderableForWidth 80 (withLayout Auto) |> ignore
+              Render.snapshotRenderableForWidth 160 (withLayout Auto) |> ignore
+              Expect.isTrue true "All layout renderables are produced."
+          }
 
-        test "full_screen_text_renders_single_requested_target" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-fullscreen-").FullName
-            let featureRoot = Path.Combine(root, "specs", "001-a")
-            Directory.CreateDirectory(featureRoot) |> ignore
-            File.WriteAllText(
-                Path.Combine(featureRoot, "spec.md"),
-                "### User Story 1 - First (Priority: P1)\n\nDescription\n\n1. **Given** x, **When** y, **Then** z.\n")
-            File.WriteAllText(Path.Combine(featureRoot, "plan.md"), "## Summary\n\nPlan summary\n\n## Technical Context\n\nF#\n")
-            File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "- [ ] T001 [US1] First task\n")
+          test "configured_colors_are_used_for_dashboard_roles" {
+              let ui =
+                  { Layout = Auto
+                    Table = Domain.defaultUiPreferences.Table
+                    Detail = Domain.defaultUiPreferences.Detail
+                    LiveReload = Domain.defaultUiPreferences.LiveReload
+                    Colors =
+                      Domain.defaultUiPreferences.Colors
+                      |> Map.add
+                          Selected
+                          { Foreground = "black"
+                            Background = Some "green" }
+                      |> Map.add
+                          LastActivity
+                          { Foreground = "white"
+                            Background = Some "#555555" }
+                      |> Map.add
+                          ProgressComplete
+                          { Foreground = "#00ff00"
+                            Background = None }
+                      |> Map.add
+                          ProgressIncomplete
+                          { Foreground = "#555555"
+                            Background = None }
+                      |> Map.add
+                          DiagnosticInfo
+                          { Foreground = "#7aa2f7"
+                            Background = None }
+                      |> Map.add
+                          DiagnosticWarning
+                          { Foreground = "yellow"
+                            Background = None }
+                      |> Map.add
+                          DiagnosticError
+                          { Foreground = "red"
+                            Background = None }
+                      |> Map.add
+                          Muted
+                          { Foreground = "grey42"
+                            Background = None }
+                      |> Map.add
+                          PanelAccent
+                          { Foreground = "#7aa2f7"
+                            Background = None }
+                      |> Map.add
+                          RowStripeOdd
+                          { Foreground = "white"
+                            Background = Some "#101820" }
+                      |> Map.add
+                          RowStripeEven
+                          { Foreground = "white"
+                            Background = Some "#18232f" } }
 
-            let snapshot = App.load root
-            let planModal = App.openFullScreen PlanFullScreen snapshot
-            let text = planModal.FullScreen |> Option.map (Render.fullScreenText planModal) |> Option.defaultValue ""
+              Expect.equal (Render.styleTag Selected ui) "black on green" "Selected role uses configured pair."
 
-            Expect.stringContains text "Plan" "Plan target renders."
-            Expect.stringContains text "Plan summary" "Plan fields render."
-            Expect.isFalse (text.Contains "User Story US1") "Only the requested target type is rendered."
-        }
+              Expect.equal
+                  (Render.styleTag LastActivity ui)
+                  "white on #555555"
+                  "Last activity role uses configured pair."
 
-        test "navigation_state_is_preserved_across_layout_modes" {
-            let root = Directory.CreateTempSubdirectory("sk-dashboard-render-nav-layout-").FullName
-            let featureRoot = Path.Combine(root, "specs", "001-a")
-            Directory.CreateDirectory(featureRoot) |> ignore
-            File.WriteAllText(
-                Path.Combine(featureRoot, "spec.md"),
-                "### User Story 1 - First (Priority: P1)\n\n### User Story 2 - Second (Priority: P1)\n")
-            File.WriteAllText(
-                Path.Combine(featureRoot, "tasks.md"),
-                "- [ ] T001 [US1] First task\n- [ ] T002 [US2] Second task\n")
+              Expect.stringContains (Render.progressMarkup ui 2 2) "#00ff00" "Progress complete color is used."
+              Expect.stringContains (Render.progressMarkup ui 1 2) "#555555" "Progress incomplete color is used."
+              Expect.equal (Render.markup DiagnosticInfo ui "info") "[#7aa2f7]info[/]" "Diagnostic info color is used."
+              Expect.equal (Render.color Muted ui) "grey42" "Muted color is used."
+              Expect.equal (Render.color PanelAccent ui) "#7aa2f7" "Panel accent color is used."
+              Expect.equal (Render.rowStripeTag 0 ui) "white on #18232f" "Even stripe role is used."
+              Expect.equal (Render.rowStripeTag 1 ui) "white on #101820" "Odd stripe role is used."
+          }
 
-            let navigated =
-                App.load root
-                |> App.selectStory 1
-                |> App.selectTask 0
+          test "default_colors_are_used_without_custom_preferences" {
+              let ui = Domain.defaultUiPreferences
+              Expect.equal (Render.styleTag Selected ui) "black on deepskyblue1" "Default selected color is used."
+              Expect.equal (Render.color ProgressComplete ui) "green" "Default progress color is used."
+              Expect.equal (Render.color DiagnosticError ui) "red" "Default diagnostic error color is used."
+              Expect.equal (Render.color Muted ui) "grey" "Default muted color is used."
+              Expect.equal (Render.rowStripeTag 0 ui) "white on black" "Default even stripe is used."
+              Expect.equal (Render.rowStripeTag 1 ui) "white on grey7" "Default odd stripe is used."
+          }
 
-            for layout in [ Widescreen; Vertical; Auto ] do
-                let snapshot = { navigated with Ui = { navigated.Ui with Layout = layout } }
-                Render.snapshotRenderableForWidth 80 snapshot |> ignore
-                Expect.equal snapshot.SelectedStoryId (Some "US2") "Story selection remains stable."
-                Expect.equal snapshot.SelectedTaskId (Some "T002") "Task selection remains stable."
-        }
+          test "snapshotText_includes_dashboard_version" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-render-version-").FullName
+              let text = App.load root |> Render.snapshotText
+              Expect.stringContains text "sk-dashboard v" "Snapshot text exposes header version."
+          }
 
-        test "valid_ui_preferences_apply_when_sibling_values_are_invalid" {
-            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-render-invalid-sibling-").FullName, "dashboard.json")
-            File.WriteAllText(path, """{"version":1,"bindings":[],"ui":{"layout":"bogus","colors":{"panelAccent":"#7aa2f7","muted":"notacolor"}}}""")
+          test "full_screen_text_renders_single_requested_target" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-fullscreen-").FullName
 
-            let preferences = Hotkeys.loadPreferences path
-            Expect.equal preferences.Ui.Colors[PanelAccent].Foreground "#7aa2f7" "Valid sibling color applies."
-            Expect.equal preferences.Ui.Colors[Muted] Domain.defaultUiPreferences.Colors[Muted] "Invalid sibling color falls back."
-            Expect.isNonEmpty preferences.Diagnostics "Invalid sibling values are reported."
-        }
-    ]
+              let featureRoot = Path.Combine(root, "specs", "001-a")
+              Directory.CreateDirectory(featureRoot) |> ignore
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "spec.md"),
+                  "### User Story 1 - First (Priority: P1)\n\nDescription\n\n1. **Given** x, **When** y, **Then** z.\n"
+              )
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "plan.md"),
+                  "## Summary\n\nPlan summary\n\n## Technical Context\n\nF#\n"
+              )
+
+              File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "- [ ] T001 [US1] First task\n")
+
+              let snapshot = App.load root
+              let planModal = App.openFullScreen PlanFullScreen snapshot
+
+              let text =
+                  planModal.FullScreen
+                  |> Option.map (Render.fullScreenText planModal)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains text "Plan" "Plan target renders."
+              Expect.stringContains text "Plan summary" "Plan fields render."
+              Expect.isFalse (text.Contains "User Story US1") "Only the requested target type is rendered."
+          }
+
+          test "navigation_state_is_preserved_across_layout_modes" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-nav-layout-").FullName
+
+              let featureRoot = Path.Combine(root, "specs", "001-a")
+              Directory.CreateDirectory(featureRoot) |> ignore
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "spec.md"),
+                  "### User Story 1 - First (Priority: P1)\n\n### User Story 2 - Second (Priority: P1)\n"
+              )
+
+              File.WriteAllText(
+                  Path.Combine(featureRoot, "tasks.md"),
+                  "- [ ] T001 [US1] First task\n- [ ] T002 [US2] Second task\n"
+              )
+
+              let navigated = App.load root |> App.selectStory 1 |> App.selectTask 0
+
+              for layout in [ Widescreen; Vertical; Auto ] do
+                  let snapshot =
+                      { navigated with
+                          Ui = { navigated.Ui with Layout = layout } }
+
+                  Render.snapshotRenderableForWidth 80 snapshot |> ignore
+                  Expect.equal snapshot.SelectedStoryId (Some "US2") "Story selection remains stable."
+                  Expect.equal snapshot.SelectedTaskId (Some "T002") "Task selection remains stable."
+          }
+
+          test "valid_ui_preferences_apply_when_sibling_values_are_invalid" {
+              let path =
+                  Path.Combine(
+                      Directory.CreateTempSubdirectory("sk-dashboard-render-invalid-sibling-").FullName,
+                      "dashboard.json"
+                  )
+
+              File.WriteAllText(
+                  path,
+                  """{"version":1,"bindings":[],"ui":{"layout":"bogus","colors":{"panelAccent":"#7aa2f7","muted":"notacolor"}}}"""
+              )
+
+              let preferences = Hotkeys.loadPreferences path
+              Expect.equal preferences.Ui.Colors[PanelAccent].Foreground "#7aa2f7" "Valid sibling color applies."
+
+              Expect.equal
+                  preferences.Ui.Colors[Muted]
+                  Domain.defaultUiPreferences.Colors[Muted]
+                  "Invalid sibling color falls back."
+
+              Expect.isNonEmpty preferences.Diagnostics "Invalid sibling values are reported."
+          }
+
+          test "table_border_preferences_render_all_supported_styles" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-render-borders-").FullName
+              let snapshot = App.load root
+
+              for border in [ NoBorder; MinimalBorder; RoundedBorder; HeavyBorder ] do
+                  let ui =
+                      { snapshot.Ui with
+                          Table =
+                              { snapshot.Ui.Table with
+                                  Border = border } }
+
+                  let configured = { snapshot with Ui = ui }
+                  Render.featuresTable configured |> ignore
+                  Render.tasksTable configured |> ignore
+
+              Expect.isTrue true "All supported table borders produce table renderables."
+          }
+
+          test "settings_surface_lists_current_display_values" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-settings-").FullName
+
+              let snapshot = App.load root |> App.applyCommand root SettingsOpen
+
+              let text =
+                  snapshot.FullScreen
+                  |> Option.map (Render.fullScreenText snapshot)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains text "Settings" "Settings surface renders."
+              Expect.stringContains text "Table border" "Table border value is visible."
+              Expect.stringContains text "Live reload" "Live reload value is visible."
+          }
+
+          test "visibleRows_keeps_selected_item_visible_after_first_page" {
+              let rows = [ 1..50 ]
+              let visible, viewport = Render.visibleRows 37 12 rows
+              Expect.contains visible 38 "The selected row is included in the rendered slice."
+              Expect.equal viewport.RowOffset 36 "The viewport centers the selected row in a small render window."
+              Expect.equal visible [ 37; 38; 39 ] "The selected item appears in the middle of the focused slice."
+          }
+
+          test "fullscreen_renderable_accepts_horizontal_offset" {
+              let longText = String.replicate 20 "x" + "VISIBLE"
+
+              let modal =
+                  { Target = PlanFullScreen
+                    SelectedFeatureId = None
+                    SelectedStoryId = None
+                    SelectedTaskId = None
+                    Viewport =
+                      { Domain.defaultDetailViewport 5 8 with
+                          ColumnOffset = 20 } }
+
+              let snapshot =
+                  { RepositoryRoot = "."
+                    CurrentBranch = None
+                    Version = Domain.resolveDashboardVersion ()
+                    Features = []
+                    SelectedFeatureId = None
+                    Stories = []
+                    SelectedStoryId = None
+                    Plan =
+                      Some
+                          { Path = None
+                            Summary = None
+                            TechnicalContext = None
+                            ConstitutionCheck = None
+                            RawContent = longText
+                            Diagnostics = [] }
+                    TaskGraph = None
+                    SelectedTaskId = None
+                    Panes = Domain.defaultPanes
+                    Ui = Domain.defaultUiPreferences
+                    FullScreen = Some modal
+                    Diagnostics = []
+                    LastRefreshedAt = System.DateTimeOffset.UnixEpoch }
+
+              Render.fullScreenRenderable snapshot modal |> ignore
+              Expect.isTrue true "Full-screen rendering accepts a horizontal viewport offset."
+          } ]

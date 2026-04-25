@@ -1,0 +1,14 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/004-table-settings-controls
+
+[1/2] Computing task graph...
+task-graph: 48 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/004-table-settings-controls/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/004-table-settings-controls/readiness/task-graph.md
+  status: 48[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.

@@ -7,7 +7,9 @@ type DiagnosticSeverity =
     | Warning
     | Error
 
-type SourceLocation = { Path: string; Line: int option }
+type SourceLocation =
+    { Path: string
+      Line: int option }
 
 type Diagnostic =
     { Severity: DiagnosticSeverity
@@ -77,7 +79,8 @@ type SpeckitTask =
       Metadata: Map<string, string> }
 
 type TaskEdge =
-    { FromTaskId: string; ToTaskId: string }
+    { FromTaskId: string
+      ToTaskId: string }
 
 type TaskGraph =
     { SelectedStoryId: string option
@@ -143,7 +146,9 @@ type DashboardTablePreferences =
       StickyColumns: int
       HorizontalStep: int }
 
-type DashboardDetailPreferences = { WrapText: bool; HorizontalStep: int }
+type DashboardDetailPreferences =
+    { WrapText: bool
+      HorizontalStep: int }
 
 type DashboardLiveReloadPreferences =
     { Enabled: bool
@@ -229,31 +234,27 @@ type DashboardSnapshot =
       LastRefreshedAt: DateTimeOffset }
 
 module Domain =
-    val diagnostic: DiagnosticSeverity -> string -> SourceLocation option -> Diagnostic
-    val emptyFeatureStatus: DateTimeOffset -> FeatureStatus
-    val defaultPanes: Pane list
-    val defaultUiPreferences: DashboardUiPreferences
-    val colorRoleId: DashboardColorRole -> string
-    val tryColorRole: string -> DashboardColorRole option
-    val tableBorderId: TableBorderStyle -> string
-    val tryTableBorder: string -> TableBorderStyle option
-    val defaultTableViewport: int -> int -> TableViewport
-    val defaultDetailViewport: int -> int -> DetailViewport
-    val clampTableViewport: int -> int -> TableViewport -> TableViewport
-    val keepRowVisible: int -> int -> TableViewport -> TableViewport
-    val scrollTableColumns: int -> int -> TableViewport -> TableViewport
-    val resizeTableViewport: int -> int -> int -> int -> TableViewport -> TableViewport
-    val clampDetailViewport: int -> int -> DetailViewport -> DetailViewport
-    val scrollDetailLines: int -> int -> DetailViewport -> DetailViewport
-    val scrollDetailColumns: int -> int -> DetailViewport -> DetailViewport
-    val settingsSession: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
-    val updateSettingsDraft: DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
-    val markSettingsConflict: ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
-    val discardSettingsDraft: SettingsEditSession -> SettingsEditSession
-    val reloadSettingsDraft: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
-    val liveReloadState: DashboardUiPreferences -> LiveReloadState
-    val applyLiveReload: ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState
-    val deferLiveReload: ConfigFileVersion -> LiveReloadState -> LiveReloadState
-    val normalizeDashboardVersionLabel: string -> string option
-    val resolveDashboardVersion: unit -> DashboardVersionDisplay
-    val resolveLayout: int -> DashboardLayoutMode -> DashboardResolvedLayout
+    val diagnostic : DiagnosticSeverity -> string -> SourceLocation option -> Diagnostic
+    val emptyFeatureStatus : DateTimeOffset -> FeatureStatus
+    val defaultPanes : Pane list
+    val defaultUiPreferences : DashboardUiPreferences
+    val colorRoleId : DashboardColorRole -> string
+    val tryColorRole : string -> DashboardColorRole option
+    val tableBorderId : TableBorderStyle -> string
+    val tryTableBorder : string -> TableBorderStyle option
+    val defaultTableViewport : int -> int -> TableViewport
+    val defaultDetailViewport : int -> int -> DetailViewport
+    val clampTableViewport : int -> int -> TableViewport -> TableViewport
+    val keepRowVisible : int -> int -> TableViewport -> TableViewport
+    val scrollTableColumns : int -> int -> TableViewport -> TableViewport
+    val resizeTableViewport : int -> int -> int -> int -> TableViewport -> TableViewport
+    val clampDetailViewport : int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailLines : int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailColumns : int -> int -> DetailViewport -> DetailViewport
+    val settingsSession : DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
+    val updateSettingsDraft : DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
+    val markSettingsConflict : ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val discardSettingsDraft : SettingsEditSession -> SettingsEditSession
+    val reloadSettingsDraft : DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val liveReloadState : DashboardUiPreferences -> LiveReloadState
+    val applyLiveReload : ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState

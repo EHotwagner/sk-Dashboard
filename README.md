@@ -20,6 +20,8 @@ work.
   configurable alternating stripe backgrounds.
 - Modal full-screen views expand the current feature, user story, plan, or task
   without changing the current selection.
+- Large tables keep the selected row visible while navigating, and full-screen
+  detail views support vertical and horizontal scrolling.
 - Keyboard-only operation, including editor-integrated terminals such as Emacs
   vterm.
 
@@ -52,6 +54,7 @@ branch unless `--no-auto-checkout` is supplied.
 | `j` / `k` | Next / previous feature |
 | `up` / `down` | Previous / next user story |
 | `left` / `right` | Previous / next task |
+| `h` / `l` | Scroll table content left / right |
 | `enter` | Check out the selected feature branch |
 | `r` | Refresh project state |
 | `R` | Reload dashboard preferences |
@@ -59,6 +62,10 @@ branch unless `--no-auto-checkout` is supplied.
 | `S` | Open selected or active user story full screen |
 | `P` | Open selected feature plan full screen |
 | `T` | Open selected or active task full screen |
+| `up` / `down` in full screen | Scroll full-screen detail up / down |
+| `left` / `right` in full screen | Scroll full-screen detail left / right |
+| `,` | Open dashboard settings |
+| `1` / `2` / `3` / `4` in settings | Save / discard / reload / overwrite settings |
 | `esc` | Close a full-screen view |
 | `q` | Quit |
 
@@ -90,6 +97,7 @@ Useful options:
 ```bash
 sk-dashboard --no-auto-checkout .
 sk-dashboard --config ~/.config/sk-dashboard/hotkeys.json .
+sk-dashboard --settings --config ~/.config/sk-dashboard/hotkeys.json
 sk-dashboard --refresh-interval 250 .
 ```
 
@@ -120,6 +128,23 @@ The global dashboard preferences path resolves to
 otherwise to `~/.config/sk-dashboard/hotkeys.json` on typical Unix systems.
 The same JSON file stores keyboard bindings and optional UI preferences.
 
+You can edit that file directly, pass another path with `--config`, or open the
+standalone settings view:
+
+```bash
+sk-dashboard --settings
+sk-dashboard --settings --config ~/.config/sk-dashboard/hotkeys.json
+```
+
+When the dashboard is running, press `,` to open the in-dashboard settings
+surface. In that surface, `h`/`l` cycles the table border, `shift+left` and
+`shift+right` adjust the detail horizontal scroll step, `1` saves, `2`
+discards, `3` reloads from disk, and `4` overwrites after a conflict.
+
+The dashboard watches the config file while it is running. Valid changes are
+applied live. Invalid JSON or invalid settings are reported in the diagnostics
+pane while the last valid settings remain active.
+
 Example configuration:
 
 ```json
@@ -127,10 +152,28 @@ Example configuration:
   "version": 1,
   "bindings": [
     { "command": "story.next", "key": "n" },
-    { "command": "story.previous", "key": "p" }
+    { "command": "story.previous", "key": "p" },
+    { "command": "settings.open", "key": "," },
+    { "command": "table.scrollLeft", "key": "h" },
+    { "command": "table.scrollRight", "key": "l" },
+    { "command": "detail.scrollUp", "key": "u" },
+    { "command": "detail.scrollDown", "key": "v" }
   ],
   "ui": {
     "layout": "auto",
+    "table": {
+      "border": "rounded",
+      "stickyColumns": 1,
+      "horizontalStep": 8
+    },
+    "detail": {
+      "wrapText": false,
+      "horizontalStep": 8
+    },
+    "liveReload": {
+      "enabled": true,
+      "debounceMilliseconds": 250
+    },
     "colors": {
       "selected": { "foreground": "black", "background": "green" },
       "lastActivity": { "foreground": "white", "background": "#555555" },
@@ -142,7 +185,11 @@ Example configuration:
       "muted": "grey",
       "panelAccent": "#7aa2f7",
       "rowStripeOdd": { "foreground": "white", "background": "#101820" },
-      "rowStripeEven": { "foreground": "white", "background": "#18232f" }
+      "rowStripeEven": { "foreground": "white", "background": "#18232f" },
+      "detailHeading": "deepskyblue1",
+      "detailLabel": "yellow",
+      "detailBody": "white",
+      "detailSource": "grey"
     }
   }
 }
@@ -151,6 +198,10 @@ Example configuration:
 Supported layout modes are `auto`, `widescreen`, and `vertical`. `auto` uses
 the vertical layout below 120 terminal columns and the widescreen layout at
 120 columns or wider.
+
+Supported table borders are `none`, `minimal`, `rounded`, and `heavy`.
+`ui.table.horizontalStep` controls how far `h`/`l` move wide table text.
+`ui.detail.horizontalStep` controls full-screen detail horizontal scrolling.
 
 Color values can be named terminal colors such as `green`, `yellow`, and
 `deepskyblue1`, or hex RGB values such as `#7aa2f7`. Roles that use both text

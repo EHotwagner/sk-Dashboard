@@ -1,0 +1,26 @@
+ [1msk-dashboard[0m [1mv0.1.7[0m  repo /home/developer/projects/sk-Dashboard  branch        
+ 004-table-settings-controls                                                    
+                                                                                
+╭─[1mFeatures[0m─────────────────────────────────────────────────────────────────────╮
+╭─[1mUser Stories[0m────────────────────────────────────────────────╮                 
+│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓ │                 
+╭─[1mPlan[0m─────────────────────────────────────────────────────────────────────────╮
+╭─[1mTasks[0m────────────────────────────────────────────────────────────────────────╮
+│ ┏━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃ [1mTask[0m   ┃ [1mStatus[0m ┃ [1mTitle[0m                                                  ┃ │
+╭─[1mTask Detail[0m──────────────────────────────────────────────────────────────────╮
+│ [1m[P] [US1] Add Core semantic tests for table viewport clamping, [0m              │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mF/S/P/T[0m full screen  [1mesc[0m    │
+│ close  [1mr[0m refresh  [1menter[0m checkout  [1mq[0m quit                                     │
+│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃ [1mSeverity[0m                   ┃ [1mMessage[0m                                     ┃ │
+│ ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ │
+│ ┃ ok                         ┃ No diagnostics                              ┃ │
+│ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                
+                                                                                
+--- saved config ---
+{"version":1,"bindings":[{"command":"feature.previous","key":"k"},{"command":"feature.next","key":"j"},{"command":"feature.checkout","key":"enter"},{"command":"story.previous","key":"up"},{"command":"story.next","key":"down"},{"command":"task.previous","key":"left"},{"command":"task.next","key":"right"},{"command":"pane.next","key":"tab"},{"command":"pane.previous","key":"shift+tab"},{"command":"details.open","key":"d"},{"command":"details.close","key":"esc"},{"command":"fullscreen.feature","key":"F"},{"command":"fullscreen.story","key":"S"},{"command":"fullscreen.plan","key":"P"},{"command":"fullscreen.task","key":"T"},{"command":"table.scrollLeft","key":"h"},{"command":"table.scrollRight","key":"l"},{"command":"detail.scrollUp","key":"u"},{"command":"detail.scrollDown","key":"v"},{"command":"detail.scrollLeft","key":"shift+left"},{"command":"detail.scrollRight","key":"shift+right"},{"command":"settings.open","key":","},{"command":"settings.save","key":"1"},{"command":"settings.discard","key":"2"},{"command":"settings.reload","key":"3"},{"command":"settings.overwrite","key":"4"},{"command":"refresh","key":"r"},{"command":"hotkeys.reload","key":"R"},{"command":"quit","key":"q"}],"ui":{"layout":"auto","table":{"border":"heavy","stickyColumns":1,"horizontalStep":12},"detail":{"wrapText":false,"horizontalStep":12},"liveReload":{"enabled":true,"debounceMilliseconds":150},"colors":{"selected":{"foreground":"black","background":"deepskyblue1"},"lastActivity":{"foreground":"white","background":"grey23"},"progressComplete":"green","progressIncomplete":"grey","diagnosticInfo":"deepskyblue1","diagnosticWarning":"yellow","diagnosticError":"red","muted":"grey","panelAccent":"deepskyblue1","rowStripeOdd":{"foreground":"white","background":"grey7"},"rowStripeEven":{"foreground":"white","background":"black"},"detailHeading":"cyan","detailLabel":"yellow","detailBody":"white","detailSource":"grey"}}}
