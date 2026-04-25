@@ -1,0 +1,73 @@
+## Valid plan pane, cross-story graph, and task detail
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.hiDI06FIpJ                                              │
+│ Current branch: (none)                                                       │
+│ Features:   001-us4 checkout=not-attempted spec=present plan=present         │
+│ tasks=present checklist=missing                                              │
+│ Stories (left pane):                                                         │
+│ > US1 Inspect Tasks                                                          │
+│   US2 Dependency Story                                                       │
+│ Plan pane:                                                                   │
+│ Plan pane summary for US4.                                                   │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│   T001 [X] [US2] Prepare shared prerequisite                                 │
+│ > T002 [>] [US1] Build graph after T001                                      │
+│   T003 [ ] [US1] Review details after T002                                   │
+│ Edges:                                                                       │
+│ T001 -> T002                                                                 │
+│ T002 -> T003                                                                 │
+│ Graph diagnostics:                                                           │
+│ (none)                                                                       │
+│ Task detail pane:                                                            │
+│ [US1] Build graph after T001                                                 │
+│ status=[>]                                                                   │
+│ story=US1                                                                    │
+│ deps=T001                                                                    │
+│ source=/tmp/tmp.hiDI06FIpJ/specs/001-us4/tasks.md:3                          │
+│ Selected story task detail.                                                  │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ No diagnostics                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Malformed graph diagnostics
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.7j5fHxypmY                                              │
+│ Current branch: (none)                                                       │
+│ Features:   001-bad checkout=not-attempted spec=present plan=present         │
+│ tasks=present checklist=missing                                              │
+│ Stories (left pane):                                                         │
+│ > US1 Broken Graph                                                           │
+│ Plan pane:                                                                   │
+│ Malformed graph scenario.                                                    │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│ > T001 [ ] [US1] Depends on T002 and T404                                    │
+│   T002 [ ] [US1] Depends on T001                                             │
+│   T003 [ ] [US1] Duplicate one                                               │
+│   T003 [ ] [US1] Duplicate two                                               │
+│ Edges:                                                                       │
+│ T002 -> T001                                                                 │
+│ T001 -> T002                                                                 │
+│ Graph diagnostics:                                                           │
+│ [error] Duplicate task id: T003                                              │
+│ [error] Task T001 references missing dependency T404.                        │
+│ [error] Task dependency cycle detected: T001 -> T002 -> T001                 │
+│ [error] Task dependency cycle detected: T002 -> T001 -> T002                 │
+│ Task detail pane:                                                            │
+│ [US1] Depends on T002 and T404                                               │
+│ status=[ ]                                                                   │
+│ story=US1                                                                    │
+│ deps=T002, T404                                                              │
+│ source=/tmp/tmp.7j5fHxypmY/specs/001-bad/tasks.md:1                          │
+│                                                                              │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ [error] Duplicate task id: T003                                              │
+│ [error] Task T001 references missing dependency T404.                        │
+│ [error] Task dependency cycle detected: T001 -> T002 -> T001                 │
+│ [error] Task dependency cycle detected: T002 -> T001 -> T002                 │
+└──────────────────────────────────────────────────────────────────────────────┘

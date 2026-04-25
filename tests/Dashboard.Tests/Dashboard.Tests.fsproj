@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <Compile Include="StateReducerTests.fs" />
+    <Compile Include="RenderingSmokeTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
+    <ProjectReference Include="..\..\src\Dashboard\Dashboard.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

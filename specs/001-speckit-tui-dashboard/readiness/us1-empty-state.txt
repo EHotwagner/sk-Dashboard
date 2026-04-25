@@ -1,0 +1,43 @@
+## Empty project smoke
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.9cdz0ODWEx                                              │
+│ Features: No feature artifacts found                                         │
+│ Stories:                                                                     │
+│ No user stories                                                              │
+│ Actions: r refresh | q quit | create specs with Speckit to begin             │
+│ Diagnostics:                                                                 │
+│ [info] No Speckit feature artifacts were found. Use refresh after creating   │
+│ specs.                                                                       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Partial project smoke
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.krrpRXNAYd                                              │
+│ Features: 001-partial spec=present plan=missing tasks=missing                │
+│ checklist=missing                                                            │
+│ Stories:                                                                     │
+│ US1 Partial                                                                  │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Polling refresh smoke
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.qGAR0WWp6J                                              │
+│ Features: 001-refresh spec=present plan=missing tasks=missing                │
+│ checklist=missing                                                            │
+│ Stories:                                                                     │
+│ US1 Refresh                                                                  │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘

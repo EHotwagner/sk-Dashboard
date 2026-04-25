@@ -1,46 +1,65 @@
-# Speckit F# Library template
+# sk-Dashboard
 
-A minimal F# library scaffold that aligns with the fsharp-opinionated
-Speckit preset: `.fsi`-gated visibility, FSI-first workflow, FAKE-free
-verification via `dotnet test`.
+Keyboard-first terminal dashboard for local Speckit repositories.
 
-## Use as a `dotnet new` template
+## Build
 
 ```bash
-# Install the template pack (one-time per machine).
-dotnet new install /path/to/speckit-fsharp-tooling/templates/speckit-fsharp-lib
+dotnet build sk-Dashboard.sln
+```
 
-# Create a new library.
-dotnet new speckit-fsharp-lib -n MyLibrary -o MyLibrary
+## Test
+
+```bash
+dotnet test sk-Dashboard.sln
+```
+
+## Run
+
+```bash
+dotnet run --project src/Dashboard -- .
+```
+
+The dashboard accepts an optional project path. When omitted, it reads the
+current working directory. Startup attempts to check out the latest feature
+branch unless `--no-auto-checkout` is supplied.
+
+Useful options:
+
+```bash
+dotnet run --project src/Dashboard -- --no-auto-checkout .
+dotnet run --project src/Dashboard -- --config ~/.config/sk-dashboard/hotkeys.json .
+dotnet run --project src/Dashboard -- --refresh-interval 250 .
+```
+
+For scripted smoke checks, `--keys` accepts comma-separated key sequences using
+the active bindings:
+
+```bash
+dotnet run --project src/Dashboard -- --keys K,enter,j .
 ```
 
 ## Layout
 
-```
-.
-├── Directory.Build.props            # common MSBuild settings (FS0078-as-error etc.)
-├── sk_Dashboard.sln
-├── src/
-│   └── Lib/
-│       ├── Lib.fsproj
-│       ├── Library.fsi              # the public surface (Principle II)
-│       └── Library.fs               # implementation — no access modifiers
-├── tests/
-│   └── Lib.Tests/
-│       ├── Lib.Tests.fsproj         # Expecto
-│       ├── Tests.fs
-│       └── Program.fs
-└── scripts/
-    └── prelude.fsx                  # #load this in FSI (Principle I)
+```text
+src/Core          Speckit artifact, Git, task graph, and hotkey logic
+src/Dashboard     Spectre.Console terminal application
+tests/Core.Tests  Expecto coverage for core behavior
+tests/Dashboard.Tests  Expecto coverage for dashboard state and rendering
 ```
 
-## After `dotnet new speckit-fsharp-lib`
+The global hotkey config path resolves to
+`$XDG_CONFIG_HOME/sk-dashboard/hotkeys.json` when `XDG_CONFIG_HOME` is set,
+otherwise to `~/.config/sk-dashboard/hotkeys.json` on typical Unix systems.
 
-1. `dotnet test` — confirm the placeholder `add` passes.
-2. `dotnet pack -c Release -o ~/.local/share/nuget-local` — make the
-   library available to `scripts/prelude.fsx`.
-3. `dotnet fsi` then `#load "scripts/prelude.fsx"` — first interactive
-   session against the API.
-4. `specify init . --ai codex --ai-skills --preset ~/projects/speckit-fsharp-tooling/presets/fsharp-opinionated` — layer the
-   preset on top.
-5. `specify extension add ~/projects/speckit-fsharp-tooling/extensions/evidence` — enable the DAG + audit.
+Example hotkey configuration:
+
+```json
+{
+  "version": 1,
+  "bindings": [
+    { "command": "story.next", "key": "n" },
+    { "command": "story.previous", "key": "p" }
+  ]
+}
+```

@@ -1,0 +1,85 @@
+## Default bindings
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.xiZ3A3iroj                                              │
+│ Current branch: (none)                                                       │
+│ Features:   001-hotkeys checkout=not-attempted spec=present plan=missing     │
+│ tasks=missing checklist=missing                                              │
+│ Stories (left pane):                                                         │
+│ > US1 First Hotkey Story                                                     │
+│   US2 Custom Hotkey Story                                                    │
+│ Plan pane:                                                                   │
+│ Plan artifact is empty or missing                                            │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│ Edges:                                                                       │
+│ (none)                                                                       │
+│ Graph diagnostics:                                                           │
+│ [info] Tasks artifact is missing.                                            │
+│ Task detail pane:                                                            │
+│ No selected task                                                             │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Custom override and reload: R,n selects story.next
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.xiZ3A3iroj                                              │
+│ Current branch: (none)                                                       │
+│ Features:   001-hotkeys checkout=not-attempted spec=present plan=missing     │
+│ tasks=missing checklist=missing                                              │
+│ Stories (left pane):                                                         │
+│   US1 First Hotkey Story                                                     │
+│ > US2 Custom Hotkey Story                                                    │
+│ Plan pane:                                                                   │
+│ Plan artifact is empty or missing                                            │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│ Edges:                                                                       │
+│ (none)                                                                       │
+│ Graph diagnostics:                                                           │
+│ [info] Tasks artifact is missing.                                            │
+│ Task detail pane:                                                            │
+│ No selected task                                                             │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Conflict diagnostics fall back to defaults
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.xiZ3A3iroj                                              │
+│ Current branch: (none)                                                       │
+│ Features:   001-hotkeys checkout=not-attempted spec=present plan=missing     │
+│ tasks=missing checklist=missing                                              │
+│ Stories (left pane):                                                         │
+│ > US1 First Hotkey Story                                                     │
+│   US2 Custom Hotkey Story                                                    │
+│ Plan pane:                                                                   │
+│ Plan artifact is empty or missing                                            │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│ Edges:                                                                       │
+│ (none)                                                                       │
+│ Graph diagnostics:                                                           │
+│ [info] Tasks artifact is missing.                                            │
+│ Task detail pane:                                                            │
+│ No selected task                                                             │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+│ [error] Unsupported hotkey sequence: bad key                                 │
+│ [error] Conflicting hotkey binding: q                                        │
+└──────────────────────────────────────────────────────────────────────────────┘

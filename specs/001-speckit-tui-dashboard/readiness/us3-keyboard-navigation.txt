@@ -1,0 +1,39 @@
+## Startup selects latest feature
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.jX08LUM4JC                                              │
+│ Current branch: 003-feature                                                  │
+│ Features:   001-feature checkout=not-attempted                               │
+│   002-feature checkout=not-attempted                                         │
+│ > 003-feature checkout=checked-out spec=present plan=missing tasks=missing   │
+│ checklist=missing                                                            │
+│ Stories (left pane):                                                         │
+│ > US1 First story 003                                                        │
+│   US2 Second story 003                                                       │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Keyboard walkthrough: K, enter, j
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.jX08LUM4JC                                              │
+│ Current branch: 002-feature                                                  │
+│ Features:   001-feature checkout=not-attempted                               │
+│ > 002-feature checkout=checked-out spec=present plan=missing tasks=missing   │
+│ checklist=missing                                                            │
+│   003-feature checkout=not-attempted                                         │
+│ Stories (left pane):                                                         │
+│   US1 First story 002                                                        │
+│ > US2 Second story 002                                                       │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘

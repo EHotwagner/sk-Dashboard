@@ -1,20 +1,7 @@
-// prelude.fsx — load the packed library from your local NuGet cache.
-//
-// Principle I: every non-trivial change starts in FSI against the public
-// surface. This prelude gives you that surface in one #load.
-//
-// Usage from FSI (dotnet fsi or VS Code Ionide):
-//   dotnet fsi
-//   > #load "scripts/prelude.fsx" ;;
-//   > open sk_Dashboard ;;
-//   > Library.add 2 3 ;;
+// prelude.fsx - load the built Core public surface for FSI checks.
 
-// Resolve the latest locally-packed version from ~/.local/share/nuget-local/.
-// After `dotnet pack`, the patch version bumps; the #r below pulls the
-// highest SemVer.
-#i "nuget: file:///home/developer/.local/share/nuget-local/"
-#r "nuget: sk_Dashboard"
+#r "../src/Core/bin/Debug/net10.0/Core.dll"
 
-open sk_Dashboard
+open SkDashboard.Core
 
-printfn "prelude: sk_Dashboard loaded. Try: Library.add 2 3"
+printfn "prelude: SkDashboard.Core loaded. Try: SkDashboard.Core.SpeckitArtifacts.loadSnapshot \".\""

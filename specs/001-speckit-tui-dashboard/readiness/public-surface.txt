@@ -1,0 +1,12 @@
+Core public signatures:
+- Domain: diagnostics, artifact states, feature status, user stories, plans,
+  tasks, task graph, panes, and dashboard snapshots.
+- SpeckitArtifacts: repository/config path resolution, feature artifact
+  discovery, plan loading, story parsing, task parsing, snapshot loading.
+- GitFeatures: process result, feature branch parsing/listing, latest selection,
+  checkout result capture.
+- TaskGraphBuilder: scoped dependency graph construction.
+- Hotkeys: dashboard commands, default bindings, binding validation.
+- Hotkeys: command identifiers and JSON hotkey loading with default fallback.
+- Dashboard CLI: `PROJECT_PATH`, `--no-auto-checkout`, `--config PATH`,
+  `--refresh-interval MS`, and scripted `--keys` smoke-driver option.

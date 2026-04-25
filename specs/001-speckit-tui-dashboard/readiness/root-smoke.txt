@@ -1,0 +1,66 @@
+## Repository root smoke
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /home/developer/projects/sk-Dashboard                            │
+│ Current branch: 001-speckit-tui-dashboard                                    │
+│ Features: > 001-speckit-tui-dashboard checkout=checked-out spec=present      │
+│ plan=present tasks=present checklist=present                                 │
+│ Stories (left pane):                                                         │
+│ > US1 Open a Useful Dashboard from Any Project State                         │
+│   US2 Review the Latest Feature Status Automatically                         │
+│   US3 Navigate Features and User Stories by Keyboard                         │
+│   US4 Inspect Plan and Task Graph Details                                    │
+│   US5 Customize Keyboard Controls                                            │
+│ Plan pane:                                                                   │
+│ Build a keyboard-first terminal dashboard for local Speckit repositories.    │
+│ The implementation will be an F#/.NET 10 console application using           │
+│ Spectre.Console for terminal layout, rendering, and live updates, with a     │
+│ separate core library for Speckit artifact discovery, Git branch selection,  │
+│ user-story parsing, task graph construction, status reporting, and           │
+│ persistent hotkey configuration.                                             │
+│                                                                              │
+│ The dashboard must be robust from an empty project state through complete    │
+│ feature artifacts. Startup attempts to identify and check out the latest     │
+│ feature branch, reports checkout failures visibly, and continues rendering   │
+│ recoverable project state.                                                   │
+│ Task graph pane:                                                             │
+│ Nodes:                                                                       │
+│ > T021 [X] [P] [US1] Add Core.Tests coverage for no `specs/` directory,      │
+│ empty `specs/`, and missing feature artifacts                                │
+│   T022 [X] [P] [US1] Add Dashboard.Tests coverage for empty-state snapshot   │
+│ rendering without throwing                                                   │
+│   T023 [X] [P] [US1] Add Core.Tests coverage for partial artifacts producing │
+│ present/missing/unreadable states                                            │
+│   T024 [X] [P] [US1] Add Dashboard.Tests coverage for manual and automatic   │
+│ refresh events coalescing into a new snapshot                                │
+│   T025 [X] [US1] Implement Speckit artifact discovery for absent, partial,   │
+│ and complete feature directories                                             │
+│   T026 [X] [US1] Implement feature status summarization for spec, plan,      │
+│ tasks, and checklist artifact states, including missing, present,            │
+│ unreadable, malformed, and locally complete states                           │
+│   T027 [X] [US1] Implement dashboard startup state loading that returns an   │
+│ empty actionable state instead of exiting                                    │
+│   T028 [X] [US1] Implement file watcher plus polling fallback refresh        │
+│ orchestration                                                                │
+│   T029 [X] [US1] Render empty, partial, and diagnostic states with visible   │
+│ refresh, quit, branch-selection, and Speckit-artifact guidance actions when  │
+│ applicable                                                                   │
+│   T030 [X] [US1] Capture a manual smoke transcript for an empty project and  │
+│ partial artifact project in `readiness/us1-empty-state.txt`                  │
+│ Edges:                                                                       │
+│ (none)                                                                       │
+│ Graph diagnostics:                                                           │
+│ (none)                                                                       │
+│ Task detail pane:                                                            │
+│ [P] [US1] Add Core.Tests coverage for no `specs/` directory, empty `specs/`, │
+│ and missing feature artifacts                                                │
+│ status=[X]                                                                   │
+│ story=US1                                                                    │
+│ deps=(none)                                                                  │
+│ source=/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-dashboard │
+│ /tasks.md:84                                                                 │
+│                                                                              │
+│ Actions: J/K features | j/k stories | h/l tasks | tab panes | r refresh |    │
+│ enter checkout feature | q quit                                              │
+│ Diagnostics:                                                                 │
+│ No diagnostics                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘

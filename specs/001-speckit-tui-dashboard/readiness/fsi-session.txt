@@ -1,0 +1,274 @@
+
+Microsoft (R) F# Interactive version 14.0.104.0 for F# 10.0
+Copyright (c) Microsoft Corporation. All Rights Reserved.
+
+For help type #help;;
+
+> [Loading /home/developer/projects/sk-Dashboard/scripts/prelude.fsx]
+prelude: SkDashboard.Core loaded. Try: SpeckitArtifacts.loadSnapshot "."
+module FSI_0002.Prelude
+
+> val snapshot: SkDashboard.Core.DashboardSnapshot =
+  { RepositoryRoot = "/home/developer/projects/sk-Dashboard"
+    CurrentBranch = None
+    Features =
+     [{ Id = "001-speckit-tui-dashboard"
+        BranchName = None
+        DisplayName = "001-speckit-tui-dashboard"
+        OrderKey = Numeric 1
+        IsSelected = false
+        ArtifactRoot =
+         Some
+           "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-dashboard"
+        CheckoutState = NotAttempted
+        Status = None }]
+    SelectedFeatureId = Some "001-speckit-tui-dashboard"
+    Stories =
+     [{ Id = "US1"
+        Title = "Open a Useful Dashboard from Any Project State"
+        Priority = Some "P1"
+        Description = ""
+        AcceptanceScenarios = []
+        SourceLocation =
+         Some
+           { Path =
+              "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+             Line = Some 20 } };
+      { Id = "US2"
+        Title = "Review the Latest Feature Status Automatically"
+        Priority = Some "P1"
+        Description = ""
+        AcceptanceScenarios = []
+        SourceLocation =
+         Some
+           { Path =
+              "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+             Line = Some 36 } };
+      { Id = "US3"
+        Title = "Navigate Features and User Stories by Keyboard"
+        Priority = Some "P2"
+        Description = ""
+        AcceptanceScenarios = []
+        SourceLocation =
+         Some
+           { Path =
+              "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+             Line = Some 51 } };
+      { Id = "US4"
+        Title = "Inspect Plan and Task Graph Details"
+        Priority = Some "P2"
+        Description = ""
+        AcceptanceScenarios = []
+        SourceLocation =
+         Some
+           { Path =
+              "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+             Line = Some 67 } };
+      { Id = "US5"
+        Title = "Customize Keyboard Controls"
+        Priority = Some "P3"
+        Description = ""
+        AcceptanceScenarios = []
+        SourceLocation =
+         Some
+           { Path =
+              "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+             Line = Some 83 } }]
+    SelectedStoryId = Some "US1"
+    Plan =
+     Some
+       { Path =
+          Some
+            "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[16 chars]
+         Summary =
+          Some
+            "Build a keyboard-first terminal dashboard for local Speckit r"+[578 chars]
+         TechnicalContext =
+          Some
+            "**Language/Version**: F# on .NET 10 (`net10.0`; local SDK ver"+[1427 chars]
+         ConstitutionCheck =
+          Some
+            "*GATE: Must pass before Phase 0 research. Re-check after Phas"+[827 chars]
+         RawContent =
+          "# Implementation Plan: Speckit TUI Dashboard
+
+**Branch**: `00"+[4494 chars]
+         Diagnostics = [] }
+    TaskGraph =
+     Some
+       { SelectedStoryId = Some "US1"
+         Nodes =
+          [{ Id = "T021"
+             Title =
+              "[P] [US1] Add Core.Tests coverage for no `specs/` directory, "+[45 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 84 }
+             Metadata = map [] };
+           { Id = "T022"
+             Title =
+              "[P] [US1] Add Dashboard.Tests coverage for empty-state snapsh"+[29 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 85 }
+             Metadata = map [] };
+           { Id = "T023"
+             Title =
+              "[P] [US1] Add Core.Tests coverage for partial artifacts produ"+[38 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 86 }
+             Metadata = map [] };
+           { Id = "T024"
+             Title =
+              "[P] [US1] Add Dashboard.Tests coverage for manual and automat"+[48 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 87 }
+             Metadata = map [] };
+           { Id = "T025"
+             Title =
+              "[US1] Implement Speckit artifact discovery for absent, partia"+[35 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 91 }
+             Metadata = map [] };
+           { Id = "T026"
+             Title =
+              "[US1] Implement feature status summarization for spec, plan, "+[116 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 92 }
+             Metadata = map [] };
+           { Id = "T027"
+             Title =
+              "[US1] Implement dashboard startup state loading that returns "+[44 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 93 }
+             Metadata = map [] };
+           { Id = "T028"
+             Title =
+              "[US1] Implement file watcher plus polling fallback refresh orchestration"
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 94 }
+             Metadata = map [] };
+           { Id = "T029"
+             Title =
+              "[US1] Render empty, partial, and diagnostic states with visib"+[89 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 95 }
+             Metadata = map [] };
+           { Id = "T030"
+             Title =
+              "[US1] Capture a manual smoke transcript for an empty project "+[63 chars]
+             Description = None
+             RawStatus = "[ ]"
+             Dependencies = []
+             RelatedStoryId = Some "US1"
+             SourceLocation =
+              Some
+                { Path =
+                   "/home/developer/projects/sk-Dashboard/specs/001-speckit-tui-d"+[17 chars]
+                  Line = Some 96 }
+             Metadata = map [] }]
+         Edges = []
+         Diagnostics = []
+         SelectedTaskId = Some "T021" }
+    SelectedTaskId = Some "T021"
+    Panes =
+     [{ Id = "features"
+        Title = "Features"
+        Kind = Features
+        IsFocused = true
+        ScrollOffset = 0
+        Selection = None }; { Id = "stories"
+                              Title = "Stories"
+                              Kind = Stories
+                              IsFocused = false
+                              ScrollOffset = 0
+                              Selection = None }; { Id = "plan"
+                                                    Title = "Plan"
+                                                    Kind = Plan
+                                                    IsFocused = false
+                                                    ScrollOffset = 0
+                                                    Selection = None };
+      { Id = "tasks"
+        Title = "Tasks"
+        Kind = TaskGraph
+        IsFocused = false
+        ScrollOffset = 0
+        Selection = None }; { Id = "details"
+                              Title = "Details"
+                              Kind = Details
+                              IsFocused = false
+                              ScrollOffset = 0
+                              Selection = None }; { Id = "diagnostics"
+                                                    Title = "Diagnostics"
+                                                    Kind = Diagnostics
+                                                    IsFocused = false
+                                                    ScrollOffset = 0
+                                                    Selection = None }]
+    Diagnostics = []
+    LastRefreshedAt = 04/25/2026 10:33:21 +00:00 }
+
+> features=1 diagnostics=0
+val it: unit = ()
+
+> 

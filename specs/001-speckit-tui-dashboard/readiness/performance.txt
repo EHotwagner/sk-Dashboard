@@ -1,0 +1,36 @@
+## Performance checks
+empty project startup elapsed_ms=1091 exit=0
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.bRmGT7uHUg                                              │
+│ Current branch: (none)                                                       │
+│ Features: No feature artifacts found                                         │
+│ Stories (left pane):                                                         │
+│ No user stories                                                              │
+│ Plan pane:                                                                   │
+│ No plan                                                                      │
+│ Task graph pane:                                                             │
+│ No task graph                                                                │
+
+10-branch latest selection elapsed_ms=1108 exit=0
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.F5pk2MRc7s                                              │
+│ Current branch: 010-perf                                                     │
+│ Features:   001-perf checkout=not-attempted                                  │
+│   002-perf checkout=not-attempted                                            │
+│   003-perf checkout=not-attempted                                            │
+│   004-perf checkout=not-attempted                                            │
+│   005-perf checkout=not-attempted                                            │
+│   006-perf checkout=not-attempted                                            │
+│   007-perf checkout=not-attempted                                            │
+
+refresh interval smoke elapsed_ms=1228 exit=0
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.F5pk2MRc7s                                              │
+│ Current branch: 010-perf                                                     │
+│ Features:   001-perf checkout=not-attempted                                  │
+│   002-perf checkout=not-attempted                                            │
+│   003-perf checkout=not-attempted                                            │
+│   004-perf checkout=not-attempted                                            │
+│   005-perf checkout=not-attempted                                            │
+│   006-perf checkout=not-attempted                                            │
+│   007-perf checkout=not-attempted                                            │

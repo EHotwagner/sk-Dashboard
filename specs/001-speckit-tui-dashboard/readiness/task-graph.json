@@ -1,0 +1,1230 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update `Directory.Build.props` to target `net10.0` and preserve F# warning policies",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Scaffold `src/Core` F# library project and add it to the solution",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Scaffold `src/Dashboard` F# console project and add it to the solution",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add Spectre.Console dependency to `src/Dashboard/Dashboard.fsproj`",
+      "explicit_deps": [
+        "T003"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Scaffold `tests/Core.Tests` and `tests/Dashboard.Tests` Expecto projects and remove or migrate existing `src/Lib` and `tests/Lib.Tests` placeholder projects from the solution",
+      "explicit_deps": [
+        "T002",
+        "T003"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create `specs/001-speckit-tui-dashboard/readiness/` for transcripts, screenshots, and graph evidence",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Update `README.md` with build, run, and test commands for the dashboard app",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record feature tier, affected public surfaces, and evidence obligations in `readiness/evidence-plan.md`",
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public `.fsi` signatures for domain models, diagnostics, and dashboard snapshots in `src/Core`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public `.fsi` signatures for Speckit artifact discovery and parsing",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public `.fsi` signatures for Git feature discovery and checkout operations",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public `.fsi` signatures for task graph construction and validation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft public `.fsi` signatures for hotkey command maps and configuration validation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement shared domain records and diagnostic severity types in `src/Core/Domain.fs`",
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement safe process execution wrapper for Git CLI calls in `src/Core`",
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement repository path and user config path resolution helpers in `src/Core`",
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add baseline parser and state reducer test fixtures for empty, partial, complete, and malformed Speckit projects",
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add FSI/prelude session coverage for the drafted core public surface and save transcript to `readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record public surface baseline for `src/Core` signatures in `readiness/public-surface.txt`",
+      "explicit_deps": [
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Document unsupported terminal and repository-state diagnostics in `readiness/unsupported-scope.md`",
+      "explicit_deps": [
+        "T014",
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for no `specs/` directory, empty `specs/`, and missing feature artifacts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for empty-state snapshot rendering without throwing",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for partial artifacts producing present/missing/unreadable states",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for manual and automatic refresh events coalescing into a new snapshot",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Speckit artifact discovery for absent, partial, and complete feature directories",
+      "explicit_deps": [
+        "T021",
+        "T023"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement feature status summarization for spec, plan, tasks, and checklist artifact states, including missing, present, unreadable, malformed, and locally complete states",
+      "explicit_deps": [
+        "T023",
+        "T025"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement dashboard startup state loading that returns an empty actionable state instead of exiting",
+      "explicit_deps": [
+        "T022",
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement file watcher plus polling fallback refresh orchestration",
+      "explicit_deps": [
+        "T024",
+        "T027"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Render empty, partial, and diagnostic states with visible refresh, quit, branch-selection, and Speckit-artifact guidance actions when applicable",
+      "explicit_deps": [
+        "T022",
+        "T026",
+        "T027"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture a manual smoke transcript for an empty project and partial artifact project in `readiness/us1-empty-state.txt`",
+      "explicit_deps": [
+        "T027",
+        "T028",
+        "T029"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for numeric, timestamp, and fallback feature branch ordering",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for deterministic tie-breaking when feature branches share an order key",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add integration tests with a temporary Git repository containing at least 10 feature branches",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add integration test coverage for checkout failure caused by local project state",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Git feature branch listing and Speckit feature-name parsing",
+      "explicit_deps": [
+        "T031"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement latest-feature selection using parsed ordering and deterministic tie-breaking",
+      "explicit_deps": [
+        "T031",
+        "T032",
+        "T035"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement startup auto-checkout of the latest feature branch with visible error diagnostics",
+      "explicit_deps": [
+        "T034",
+        "T036"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire selected feature artifact loading after successful or failed checkout",
+      "explicit_deps": [
+        "T033",
+        "T037"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture readiness evidence for startup selection under 10 branches and checkout failure handling",
+      "explicit_deps": [
+        "T033",
+        "T037",
+        "T038"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for user story extraction from feature specifications",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for feature navigation commands updating selected feature state",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for story navigation commands updating selected story state",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement user story parsing with priority, acceptance scenarios, and source locations",
+      "explicit_deps": [
+        "T040"
+      ],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement default keyboard command routing for feature, story, pane, refresh, checkout, details, and quit commands",
+      "explicit_deps": [
+        "T041",
+        "T042"
+      ],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Render feature navigation and left-side story pane with selected item highlighting",
+      "explicit_deps": [
+        "T042",
+        "T043",
+        "T044"
+      ],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement manual checkout of older feature branches and visible blocked-action diagnostics",
+      "explicit_deps": [
+        "T041",
+        "T044"
+      ],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture keyboard-only manual walkthrough for feature and story navigation in `readiness/us3-keyboard-navigation.txt`",
+      "explicit_deps": [
+        "T045",
+        "T046"
+      ],
+      "phase_deps": [
+        "T039"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for plan extraction and missing-plan diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for task parsing with raw status preservation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for selected-story dependency chains including cross-story dependencies",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for missing task references, duplicate task IDs, and cycle diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for task node selection and detail pane state",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement plan loading and separate plan-pane model",
+      "explicit_deps": [
+        "T048"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement task artifact parsing with raw status, dependencies, story relationship, and source location",
+      "explicit_deps": [
+        "T049"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement DAG construction for selected-story tasks plus dependency chains",
+      "explicit_deps": [
+        "T050",
+        "T051",
+        "T054"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T056",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Render task graph, raw task statuses, malformed-relationship diagnostics, and keyboard node selection",
+      "explicit_deps": [
+        "T052",
+        "T055"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T057",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Render task detail pane containing title, description, raw status, dependencies, story relationship, and source location",
+      "explicit_deps": [
+        "T052",
+        "T054",
+        "T056"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T058",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture readiness evidence for plan pane, task graph, cross-story dependency, and malformed graph scenarios",
+      "explicit_deps": [
+        "T053",
+        "T056",
+        "T057"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T059",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for default command bindings covering every primary command",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T060",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for global config loading, unsupported key sequences, and conflict diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T061",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for hotkey reload applying valid overrides",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T062",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement global hotkey config path resolution and JSON loading",
+      "explicit_deps": [
+        "T060"
+      ],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T063",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement hotkey validation, conflict reporting, and fallback to defaults",
+      "explicit_deps": [
+        "T059",
+        "T060",
+        "T062"
+      ],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T064",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire validated custom bindings into dashboard command routing and reload command",
+      "explicit_deps": [
+        "T061",
+        "T063"
+      ],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T065",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture readiness evidence for default bindings, custom override, and conflict diagnostics",
+      "explicit_deps": [
+        "T064"
+      ],
+      "phase_deps": [
+        "T058"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T066",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run full `dotnet test` and fix failures across core, dashboard, and integration suites",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T067",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet run --project src/Dashboard -- .` smoke test from the repository root and capture transcript",
+      "explicit_deps": [
+        "T066"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T068",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Verify operation in Emacs vterm or capture an equivalent terminal transcript documenting compatibility",
+      "explicit_deps": [
+        "T067"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T069",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Verify compact terminal layout keeps all panes reachable through focus changes or scrolling",
+      "explicit_deps": [
+        "T067"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T070",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Verify performance targets for empty project startup, 10-branch latest selection, and 2-second refresh behavior",
+      "explicit_deps": [
+        "T067"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T071",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh README and quickstart documentation with final command names and configuration path details",
+      "explicit_deps": [
+        "T067"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T072",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh public surface baseline after implementation changes",
+      "explicit_deps": [
+        "T066"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T073",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh --graph-only` and confirm no cycles or dangling refs",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T074",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh` and record PASS or any accepted synthetic evidence rationale",
+      "explicit_deps": [
+        "T073"
+      ],
+      "phase_deps": [
+        "T065"
+      ],
+      "root_cause": []
+    }
+  ]
+}

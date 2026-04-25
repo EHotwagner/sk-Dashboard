@@ -1,0 +1,52 @@
+## Latest selection with 10 feature branches
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.X8vSpwk8ob                                              │
+│ Current branch: 010-feature                                                  │
+│ Features: 001-feature checkout=not-attempted                                 │
+│ 002-feature checkout=not-attempted                                           │
+│ 003-feature checkout=not-attempted                                           │
+│ 004-feature checkout=not-attempted                                           │
+│ 005-feature checkout=not-attempted                                           │
+│ 006-feature checkout=not-attempted                                           │
+│ 007-feature checkout=not-attempted                                           │
+│ 008-feature checkout=not-attempted                                           │
+│ 009-feature checkout=not-attempted                                           │
+│ 010-feature checkout=checked-out spec=present plan=missing tasks=missing     │
+│ checklist=missing                                                            │
+│ Stories:                                                                     │
+│ US1 Branch 010                                                               │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## Checkout failure from local project state
+┌─sk-dashboard─────────────────────────────────────────────────────────────────┐
+│ Repository: /tmp/tmp.q4tRQO44cB                                              │
+│ Current branch: 001-old                                                      │
+│ Features: 001-old checkout=not-attempted spec=present plan=missing           │
+│ tasks=missing checklist=missing                                              │
+│ 002-new checkout=failed: error: Your local changes to the following files    │
+│ would be overwritten by checkout:                                            │
+│ 	conflict.txt                                                                  │
+│ Please commit your changes or stash them before you switch branches.         │
+│ Aborting                                                                     │
+│ Stories:                                                                     │
+│ US1 Old                                                                      │
+│ Actions: j/k stories | tab panes | r refresh | enter checkout feature | q    │
+│ quit                                                                         │
+│ Diagnostics:                                                                 │
+│ [info] plan.md is missing.                                                   │
+│ [info] tasks.md is missing.                                                  │
+│ [info] Plan artifact is missing.                                             │
+│ [info] Tasks artifact is missing.                                            │
+│ [error] Checkout of 002-new failed: error: Your local changes to the         │
+│ following files would be overwritten by checkout:                            │
+│ 	conflict.txt                                                                  │
+│ Please commit your changes or stash them before you switch branches.         │
+│ Aborting                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘

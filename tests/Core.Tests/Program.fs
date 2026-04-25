@@ -1,4 +1,4 @@
-module sk_Dashboard.Program
+module SkDashboard.Core.Tests.Program
 
 open Expecto
 

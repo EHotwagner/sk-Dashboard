@@ -1,0 +1,10 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/001-speckit-tui-dashboard
+
+[1/2] Computing task graph...
+task-graph: 74 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/001-speckit-tui-dashboard/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/001-speckit-tui-dashboard/readiness/task-graph.md
+  status: 72[X], 2[ ]
+
+graph-only mode; skipping diff scan.

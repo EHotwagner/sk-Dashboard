@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageId>sk-Dashboard.Core</PackageId>
+    <Description>Core Speckit dashboard discovery and state model.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Domain.fsi" />
+    <Compile Include="Domain.fs" />
+    <Compile Include="TaskGraph.fsi" />
+    <Compile Include="TaskGraph.fs" />
+    <Compile Include="SpeckitArtifacts.fsi" />
+    <Compile Include="SpeckitArtifacts.fs" />
+    <Compile Include="GitFeatures.fsi" />
+    <Compile Include="GitFeatures.fs" />
+    <Compile Include="Hotkeys.fsi" />
+    <Compile Include="Hotkeys.fs" />
+  </ItemGroup>
+
+</Project>
