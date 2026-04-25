@@ -323,5 +323,6 @@ module SpeckitArtifacts =
       TaskGraph = taskGraph
       SelectedTaskId = taskGraph |> Option.bind (_.SelectedTaskId)
       Panes = Domain.defaultPanes
+      Ui = Domain.defaultUiPreferences
       Diagnostics = diagnostics
       LastRefreshedAt = now }

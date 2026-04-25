@@ -1,0 +1,21 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui
+
+[1/2] Computing task graph...
+task-graph: 57 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui/readiness/task-graph.md
+  status: 57[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 2 blocking, 0 advisory
+
+=== Verdict ===
+✗ NEEDS-EVIDENCE
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  blocking diff-scan hits:         (see above)
+
+  --accept-synthetic recorded: Diff scan false positives are quoted governance examples in .specify/memory/constitution.md, not executable production or test code for this feature.
+  logged to /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui/readiness/synthetic-evidence.json
+  audit still reports failure; merge is a human decision.

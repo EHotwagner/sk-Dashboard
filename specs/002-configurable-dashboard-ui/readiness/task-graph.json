@@ -1,0 +1,968 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create `specs/002-configurable-dashboard-ui/readiness/` for FSI transcripts, layout smoke captures, and validation evidence",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record Tier 1 public-surface impact and evidence obligations in `specs/002-configurable-dashboard-ui/readiness/evidence-plan.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add preference contract examples from `contracts/dashboard-ui-preferences.md` to readiness fixtures",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Review existing hotkey config docs and identify README/quickstart sections that must mention UI preferences",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft updated public `.fsi` signatures for dashboard preferences, UI preferences, color roles, layout modes, and validation diagnostics in `src/Core`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for parsing a combined dashboard preferences file containing both `bindings` and `ui`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for default UI preferences when `ui` is absent",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for named color values and hex RGB color values",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for invalid colors, unknown color roles, unsupported layout modes, and partial fallback diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for low-contrast foreground/background pairs falling back to defaults",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for automatic layout selection below 120 columns and at 120+ columns",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the drafted preference-loading public surface from FSI and save transcript to `readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement core preference domain types and defaults for UI settings in `src/Core`",
+      "explicit_deps": [
+        "T005",
+        "T006",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement dashboard preference loading that preserves existing hotkey behavior while adding optional UI settings",
+      "explicit_deps": [
+        "T013",
+        "T006",
+        "T007",
+        "T009"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement color value parsing and validation for named terminal colors and hex RGB colors",
+      "explicit_deps": [
+        "T013",
+        "T008",
+        "T009"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement low-contrast detection and fallback diagnostics for foreground/background color pairs",
+      "explicit_deps": [
+        "T013",
+        "T010"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement layout mode parsing and automatic layout decision rules",
+      "explicit_deps": [
+        "T013",
+        "T011"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh public surface baseline for changed Core signatures in `readiness/public-surface.txt`",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests rendering coverage for configured colors appearing on selected rows, last activity, progress, diagnostics, muted text, and panel accents",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage that built-in colors are used when no custom colors are configured",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add dashboard smoke scenario using a real preference file with named colors and hex RGB colors",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Route validated UI color preferences from startup and reload paths into dashboard render state",
+      "explicit_deps": [
+        "T014",
+        "T019",
+        "T020"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Replace hardcoded renderer color literals with configurable color role lookups in `src/Dashboard/Render.fs`",
+      "explicit_deps": [
+        "T022",
+        "T019"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Apply color role preferences consistently to feature rows, story rows, task rows, progress bars, diagnostics, muted text, and panel accents",
+      "explicit_deps": [
+        "T023",
+        "T019"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Surface invalid color and low-contrast fallback diagnostics in the dashboard diagnostics pane",
+      "explicit_deps": [
+        "T016",
+        "T024"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Document color roles, named color values, hex RGB values, and fallback behavior in README and quickstart",
+      "explicit_deps": [
+        "T024"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture manual color-configuration evidence in `readiness/us1-configurable-colors.txt`",
+      "explicit_deps": [
+        "T021",
+        "T024",
+        "T025"
+      ],
+      "phase_deps": [
+        "T055"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage for explicit `widescreen`, explicit `vertical`, and `auto` layout modes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage that `auto` uses vertical below 120 columns and widescreen at 120+ columns",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add rendering smoke coverage that vertical layout keeps primary section headers readable in a narrow terminal",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement layout selection plumbing from validated UI preferences into dashboard rendering",
+      "explicit_deps": [
+        "T017",
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Split the current renderer into reusable section renderables that can be composed as widescreen or vertical layouts",
+      "explicit_deps": [
+        "T031",
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement widescreen layout preserving side-by-side navigation and detail context",
+      "explicit_deps": [
+        "T032",
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement vertical layout stacking primary sections in readable order",
+      "explicit_deps": [
+        "T032",
+        "T030"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement automatic layout selection based on the 120-column threshold",
+      "explicit_deps": [
+        "T031",
+        "T029"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Preserve selected feature, story, and task state across layout changes and preference reloads",
+      "explicit_deps": [
+        "T031",
+        "T035"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Document layout modes and automatic threshold in README and quickstart",
+      "explicit_deps": [
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture wide and narrow layout evidence in `readiness/us2-layout-options.txt`",
+      "explicit_deps": [
+        "T030",
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core.Tests coverage for unreadable, empty, malformed, and partially valid dashboard preference files",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage that valid preferences still apply when sibling UI preferences are invalid",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add dashboard smoke scenario for invalid layout and invalid color values producing visible diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure preference loading accumulates actionable diagnostics for every invalid UI setting",
+      "explicit_deps": [
+        "T014",
+        "T039"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure invalid UI preferences never prevent dashboard startup or live reload",
+      "explicit_deps": [
+        "T042",
+        "T039"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure valid hotkeys and valid UI preferences continue to apply when other preference values are invalid",
+      "explicit_deps": [
+        "T042",
+        "T040"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Render preference diagnostics with source context where available",
+      "explicit_deps": [
+        "T042",
+        "T041"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Document invalid preference recovery behavior and examples in README and quickstart",
+      "explicit_deps": [
+        "T043",
+        "T044",
+        "T045"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture invalid-preference recovery evidence in `readiness/us3-invalid-preferences.txt`",
+      "explicit_deps": [
+        "T041",
+        "T043",
+        "T044",
+        "T045"
+      ],
+      "phase_deps": [
+        "T038"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run full `dotnet test` and fix failures across Core.Tests and Dashboard.Tests",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run FSI/prelude evidence for the final public preference-loading surface and refresh `readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T048"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run dashboard smoke checks for default, configured-color, widescreen, vertical, auto, and invalid-preference scenarios",
+      "explicit_deps": [
+        "T048"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update `README.md` and `specs/002-configurable-dashboard-ui/quickstart.md` with final preference examples and commands",
+      "explicit_deps": [
+        "T026",
+        "T037",
+        "T046"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Bump package version in `Directory.Build.props`, pack to `~/.local/share/nuget-local`, and update the global `sk-dashboard` tool",
+      "explicit_deps": [
+        "T048",
+        "T050",
+        "T051"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh --graph-only` and record PASS in `readiness/final-graph-audit.txt`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh` and record PASS or accepted-synthetic rationale in `readiness/final-evidence-audit.txt`",
+      "explicit_deps": [
+        "T053"
+      ],
+      "phase_deps": [
+        "T047"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Validate changed public surface baseline with an automated test covering the updated Core `.fsi` signatures",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T056",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard.Tests coverage that feature, story, and task keyboard navigation works in widescreen, vertical, and auto layout modes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T057",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture smoke evidence for keyboard navigation in widescreen, vertical, and auto layout modes",
+      "explicit_deps": [
+        "T033",
+        "T034",
+        "T035",
+        "T036",
+        "T056"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    }
+  ]
+}

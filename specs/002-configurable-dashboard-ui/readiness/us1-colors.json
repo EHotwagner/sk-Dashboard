@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "bindings": [],
+  "ui": {
+    "layout": "auto",
+    "colors": {
+      "selected": { "foreground": "black", "background": "green" },
+      "lastActivity": { "foreground": "white", "background": "#555555" },
+      "progressComplete": "#00ff00",
+      "progressIncomplete": "#555555",
+      "diagnosticInfo": "#7aa2f7",
+      "diagnosticWarning": "yellow",
+      "diagnosticError": "red",
+      "muted": "grey42",
+      "panelAccent": "#7aa2f7"
+    }
+  }
+}

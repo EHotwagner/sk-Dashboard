@@ -67,6 +67,7 @@ let stateReducerTests =
                   TaskGraph = None
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -95,6 +96,7 @@ let stateReducerTests =
                   TaskGraph = None
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -132,6 +134,7 @@ let stateReducerTests =
                   TaskGraph = None
                   SelectedTaskId = None
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -173,6 +176,7 @@ let stateReducerTests =
                   TaskGraph = Some graph
                   SelectedTaskId = Some "T001"
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -233,6 +237,7 @@ let stateReducerTests =
                   TaskGraph = Some graph
                   SelectedTaskId = Some "T001"
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 
@@ -298,6 +303,7 @@ let stateReducerTests =
                   TaskGraph = Some graph
                   SelectedTaskId = selectedTask
                   Panes = Domain.defaultPanes
+                  Ui = Domain.defaultUiPreferences
                   Diagnostics = []
                   LastRefreshedAt = DateTimeOffset.UnixEpoch }
 

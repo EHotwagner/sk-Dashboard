@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "accept_synthetic": {
+    "timestamp": "2026-04-25T14:49:13.993280+00:00",
+    "justification": "Diff scan false positives are quoted governance examples in .specify/memory/constitution.md, not executable production or test code for this feature."
+  },
+  "graph_summary": {
+    "synthetic": 0,
+    "auto_synthetic": 0
+  },
+  "diff_scan": {
+    "base_ref": null,
+    "blocking": [
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 90,
+        "pattern": "not-implemented",
+        "severity": "block",
+        "reason": "Placeholder exception in production code",
+        "match": "substitutes, `NotImplementedException` placeholders, `failwith \"TODO\"`,"
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 139,
+        "pattern": "skipped-tests",
+        "severity": "block",
+        "reason": "Skipped or ignored test",
+        "match": "`[<Skip>]` attribute, or the test framework's skip mechanism) with written"
+      }
+    ],
+    "advisory": []
+  }
+}

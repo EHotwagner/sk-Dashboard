@@ -105,6 +105,34 @@ type Pane =
       ScrollOffset: int
       Selection: string option }
 
+type DashboardLayoutMode =
+    | Auto
+    | Widescreen
+    | Vertical
+
+type DashboardResolvedLayout =
+    | WidescreenLayout
+    | VerticalLayout
+
+type DashboardColorRole =
+    | Selected
+    | LastActivity
+    | ProgressComplete
+    | ProgressIncomplete
+    | DiagnosticInfo
+    | DiagnosticWarning
+    | DiagnosticError
+    | Muted
+    | PanelAccent
+
+type DashboardColorStyle =
+    { Foreground: string
+      Background: string option }
+
+type DashboardUiPreferences =
+    { Layout: DashboardLayoutMode
+      Colors: Map<DashboardColorRole, DashboardColorStyle> }
+
 type DashboardSnapshot =
     { RepositoryRoot: string
       CurrentBranch: string option
@@ -116,6 +144,7 @@ type DashboardSnapshot =
       TaskGraph: TaskGraph option
       SelectedTaskId: string option
       Panes: Pane list
+      Ui: DashboardUiPreferences
       Diagnostics: Diagnostic list
       LastRefreshedAt: DateTimeOffset }
 
@@ -140,3 +169,49 @@ module Domain =
           { Id = "tasks"; Title = "Tasks"; Kind = TaskGraph; IsFocused = false; ScrollOffset = 0; Selection = None }
           { Id = "details"; Title = "Details"; Kind = Details; IsFocused = false; ScrollOffset = 0; Selection = None }
           { Id = "diagnostics"; Title = "Diagnostics"; Kind = Diagnostics; IsFocused = false; ScrollOffset = 0; Selection = None } ]
+
+    let colorRoleId role =
+        match role with
+        | Selected -> "selected"
+        | LastActivity -> "lastActivity"
+        | ProgressComplete -> "progressComplete"
+        | ProgressIncomplete -> "progressIncomplete"
+        | DiagnosticInfo -> "diagnosticInfo"
+        | DiagnosticWarning -> "diagnosticWarning"
+        | DiagnosticError -> "diagnosticError"
+        | Muted -> "muted"
+        | PanelAccent -> "panelAccent"
+
+    let tryColorRole text =
+        match text with
+        | "selected" -> Some Selected
+        | "lastActivity" -> Some LastActivity
+        | "progressComplete" -> Some ProgressComplete
+        | "progressIncomplete" -> Some ProgressIncomplete
+        | "diagnosticInfo" -> Some DiagnosticInfo
+        | "diagnosticWarning" -> Some DiagnosticWarning
+        | "diagnosticError" -> Some DiagnosticError
+        | "muted" -> Some Muted
+        | "panelAccent" -> Some PanelAccent
+        | _ -> None
+
+    let defaultUiPreferences =
+        { Layout = Auto
+          Colors =
+            [ Selected, { Foreground = "black"; Background = Some "deepskyblue1" }
+              LastActivity, { Foreground = "white"; Background = Some "grey23" }
+              ProgressComplete, { Foreground = "green"; Background = None }
+              ProgressIncomplete, { Foreground = "grey"; Background = None }
+              DiagnosticInfo, { Foreground = "deepskyblue1"; Background = None }
+              DiagnosticWarning, { Foreground = "yellow"; Background = None }
+              DiagnosticError, { Foreground = "red"; Background = None }
+              Muted, { Foreground = "grey"; Background = None }
+              PanelAccent, { Foreground = "deepskyblue1"; Background = None } ]
+            |> Map.ofList }
+
+    let resolveLayout terminalColumns mode =
+        match mode with
+        | Widescreen -> WidescreenLayout
+        | Vertical -> VerticalLayout
+        | Auto when terminalColumns >= 120 -> WidescreenLayout
+        | Auto -> VerticalLayout

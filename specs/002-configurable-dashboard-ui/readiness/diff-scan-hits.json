@@ -1,0 +1,22 @@
+{
+  "base_ref": null,
+  "blocking": [
+    {
+      "file": ".specify/memory/constitution.md",
+      "line": 90,
+      "pattern": "not-implemented",
+      "severity": "block",
+      "reason": "Placeholder exception in production code",
+      "match": "substitutes, `NotImplementedException` placeholders, `failwith \"TODO\"`,"
+    },
+    {
+      "file": ".specify/memory/constitution.md",
+      "line": 139,
+      "pattern": "skipped-tests",
+      "severity": "block",
+      "reason": "Skipped or ignored test",
+      "match": "`[<Skip>]` attribute, or the test framework's skip mechanism) with written"
+    }
+  ],
+  "advisory": []
+}

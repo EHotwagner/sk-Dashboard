@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m  repo                                                             
+ /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui/read 
+ iness/smoke-project  branch 002-configurable-dashboard-ui                      
+╭─[1mFeatures[0m─────────────────────────────────────────────────────────────────────╮
+╭─[1mUser Stories[0m──────────────────╮                                               
+│ [1mStory[0m       [1mProgress[0m          │                                               
+╭─[1mPlan[0m────────────────────────────────────╮                                     
+╭─[1mTasks[0m────────────────────────────────────────────────╮                        
+│ [1mTask[0m   [1mStatus[0m [1mTitle[0m                                  │                        
+│  T001   [X]    [US1] Completed first story task      │                        
+╭─[1mTask Detail[0m──────────────────────────────────────────────────────────────────╮
+│ [1m[US1] Completed first story task[0m                                             │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mr[0m refresh  [1menter[0m checkout   │
+│ [1mq[0m quit                                                                       │
+│ [1mSeverity[0m                    [1mMessage[0m                                          │
+│ ok                          No diagnostics                                   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

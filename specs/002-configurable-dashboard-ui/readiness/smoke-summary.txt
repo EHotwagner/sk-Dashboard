@@ -1,0 +1,1 @@
+default configured-color widescreen vertical auto invalid preference smoke captures refreshed

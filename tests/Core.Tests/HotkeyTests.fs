@@ -49,4 +49,102 @@ let hotkeyTests =
             Expect.stringContains messages "Conflicting hotkey binding" "Conflicts are reported."
             Expect.stringContains messages "Unknown hotkey command" "Unknown commands are reported."
         }
+
+        test "loadPreferences_parses combined bindings_and_ui" {
+            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-").FullName, "dashboard.json")
+            File.WriteAllText(path, """{"version":1,"bindings":[{"command":"story.next","key":"n"}],"ui":{"layout":"vertical","colors":{"selected":{"foreground":"black","background":"green"},"panelAccent":"#7aa2f7"}}}""")
+
+            let preferences = Hotkeys.loadPreferences path
+            Expect.isEmpty preferences.Diagnostics "Valid combined preferences have no diagnostics."
+            Expect.equal (preferences.Bindings |> List.find (fun binding -> binding.Command = StoryNext)).KeySequence "n" "Hotkey override is active."
+            Expect.equal preferences.Ui.Layout Vertical "Layout is parsed."
+            Expect.equal preferences.Ui.Colors[Selected] { Foreground = "black"; Background = Some "green" } "Selected pair is parsed."
+            Expect.equal preferences.Ui.Colors[PanelAccent] { Foreground = "#7aa2f7"; Background = None } "Hex color is parsed."
+        }
+
+        test "loadPreferences_defaults_ui_when_absent" {
+            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-default-").FullName, "dashboard.json")
+            File.WriteAllText(path, """{"version":1,"bindings":[{"command":"story.next","key":"n"}]}""")
+
+            let preferences = Hotkeys.loadPreferences path
+            Expect.isEmpty preferences.Diagnostics "Missing UI is valid."
+            Expect.equal preferences.Ui Domain.defaultUiPreferences "Default UI preferences are used."
+        }
+
+        test "loadPreferences_accepts_named_and_hex_colors" {
+            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-colors-").FullName, "dashboard.json")
+            File.WriteAllText(path, """{"version":1,"bindings":[],"ui":{"colors":{"progressComplete":"green","diagnosticInfo":"#00bfff"}}}""")
+
+            let preferences = Hotkeys.loadPreferences path
+            Expect.isEmpty preferences.Diagnostics "Named and hex colors are valid."
+            Expect.equal preferences.Ui.Colors[ProgressComplete].Foreground "green" "Named color is retained."
+            Expect.equal preferences.Ui.Colors[DiagnosticInfo].Foreground "#00bfff" "Hex color is retained."
+        }
+
+        test "loadPreferences_reports_invalid_ui_values_with_partial_fallback" {
+            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-invalid-").FullName, "dashboard.json")
+            File.WriteAllText(path, """{"version":1,"bindings":[{"command":"story.next","key":"n"}],"ui":{"layout":"cinema","colors":{"progressComplete":"green","muted":"notacolor","extraRole":"red"}}}""")
+
+            let preferences = Hotkeys.loadPreferences path
+            let messages = preferences.Diagnostics |> List.map _.Message |> String.concat "\n"
+            Expect.equal (preferences.Bindings |> List.find (fun binding -> binding.Command = StoryNext)).KeySequence "n" "Valid hotkeys still apply."
+            Expect.equal preferences.Ui.Layout Auto "Invalid layout falls back."
+            Expect.equal preferences.Ui.Colors[ProgressComplete].Foreground "green" "Valid sibling colors apply."
+            Expect.equal preferences.Ui.Colors[Muted] Domain.defaultUiPreferences.Colors[Muted] "Invalid color role falls back."
+            Expect.stringContains messages "Unsupported layout mode" "Unsupported layout is reported."
+            Expect.stringContains messages "Invalid color" "Invalid color is reported."
+            Expect.stringContains messages "Unknown color role" "Unknown roles are reported."
+        }
+
+        test "loadPreferences_reports_low_contrast_pairs_and_uses_defaults" {
+            let path = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-contrast-").FullName, "dashboard.json")
+            File.WriteAllText(path, """{"version":1,"bindings":[],"ui":{"colors":{"selected":{"foreground":"white","background":"#eeeeee"},"panelAccent":"red"}}}""")
+
+            let preferences = Hotkeys.loadPreferences path
+            Expect.equal preferences.Ui.Colors[Selected] Domain.defaultUiPreferences.Colors[Selected] "Low-contrast pair falls back."
+            Expect.equal preferences.Ui.Colors[PanelAccent].Foreground "red" "Valid sibling value still applies."
+            Expect.exists preferences.Diagnostics (fun diagnostic -> diagnostic.Message.Contains "Low-contrast") "Low contrast is reported."
+        }
+
+        test "loadPreferences_recovers_from_empty_and_malformed_files" {
+            let emptyPath = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-empty-").FullName, "dashboard.json")
+            let malformedPath = Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-prefs-malformed-").FullName, "dashboard.json")
+            File.WriteAllText(emptyPath, "")
+            File.WriteAllText(malformedPath, """{"version":1,"bindings":[""")
+
+            let empty = Hotkeys.loadPreferences emptyPath
+            let malformed = Hotkeys.loadPreferences malformedPath
+
+            Expect.equal empty.Bindings Hotkeys.defaultBindings "Empty file uses default bindings."
+            Expect.equal empty.Ui Domain.defaultUiPreferences "Empty file uses default UI."
+            Expect.isNonEmpty empty.Diagnostics "Empty file reports a diagnostic."
+            Expect.equal malformed.Bindings Hotkeys.defaultBindings "Malformed file uses default bindings."
+            Expect.equal malformed.Ui Domain.defaultUiPreferences "Malformed file uses default UI."
+            Expect.isNonEmpty malformed.Diagnostics "Malformed file reports a diagnostic."
+        }
+
+        test "public_preference_surface_exposes_ui_contract_types" {
+            let preferences: DashboardPreferences =
+                { Bindings = Hotkeys.defaultBindings
+                  Ui = Domain.defaultUiPreferences
+                  Diagnostics = [] }
+
+            let roles =
+                [ Selected
+                  LastActivity
+                  ProgressComplete
+                  ProgressIncomplete
+                  DiagnosticInfo
+                  DiagnosticWarning
+                  DiagnosticError
+                  Muted
+                  PanelAccent ]
+
+            Expect.equal (Hotkeys.parseLayoutMode "auto") (Some Auto) "Auto layout is exposed."
+            Expect.equal (Hotkeys.parseLayoutMode "widescreen") (Some Widescreen) "Widescreen layout is exposed."
+            Expect.equal (Hotkeys.parseLayoutMode "vertical") (Some Vertical) "Vertical layout is exposed."
+            Expect.equal (Domain.resolveLayout 119 preferences.Ui.Layout) VerticalLayout "Resolved layout type is exposed."
+            Expect.equal roles.Length 9 "All required color roles are exposed."
+            Expect.isTrue (roles |> List.forall (fun role -> preferences.Ui.Colors.ContainsKey role)) "Default colors cover every exposed role."
+        }
     ]

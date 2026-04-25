@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "bindings": [
+    { "command": "story.next", "key": "n" }
+  ],
+  "ui": {
+    "layout": "cinema",
+    "colors": {
+      "selected": { "foreground": "white", "background": "#eeeeee" },
+      "progressComplete": "notacolor",
+      "panelAccent": "#7aa2f7"
+    }
+  }
+}

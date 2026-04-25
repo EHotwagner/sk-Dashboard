@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m  repo                                                             
+ /home/developer/projects/sk-Dashboard/specs/002-configurable-dashboard-ui/read 
+ iness/smoke-project  branch 002-configurable-dashboard-ui                      
+╭─[1mFeatures[0m───────────────────────╮╭─[1mPlan[0m────────────────────────────────────╮   
+│ [1mFeature[0m  [1mCheckout[0m [1mArtifac…[0m     ││ Demo plan for dashboard smoke evidence. │   
+│          current  no           │╰─────────────────────────────────────────╯   
+│ 002-conf          artifact     │╭─[1mTasks[0m──────────────────────────╮            
+╭─[1mUser Stories[0m───────────────────╮│ [1mTask[0m          [1mStatus[0m [1mTitle[0m     │            
+│ [1mStory[0m        [1mProgress[0m          ││ No task graph                  │            
+│ US1 First               0/0    │╰────────────────────────────────╯            
+│  US2  Second            0/0    │                                              
+╰────────────────────────────────╯╭─[1mTask Detail[0m───────╮                         
+                                  │ No selected task. │                         
+                                  ╰───────────────────╯                         
+                                                                                
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mr[0m refresh  [1menter[0m checkout   │
+│ [1mq[0m quit                                                                       │
+│ [1mSeverity[0m                    [1mMessage[0m                                          │
+│ ok                          No diagnostics                                   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                
+                                                                                

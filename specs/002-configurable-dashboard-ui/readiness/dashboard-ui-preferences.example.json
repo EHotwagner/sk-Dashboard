@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "bindings": [
+    { "command": "story.next", "key": "down" }
+  ],
+  "ui": {
+    "layout": "auto",
+    "colors": {
+      "selected": { "foreground": "black", "background": "green" },
+      "lastActivity": { "foreground": "white", "background": "#555555" },
+      "progressComplete": "green",
+      "progressIncomplete": "grey",
+      "diagnosticInfo": "deepskyblue1",
+      "diagnosticWarning": "yellow",
+      "diagnosticError": "red",
+      "muted": "grey",
+      "panelAccent": "#7aa2f7"
+    }
+  }
+}

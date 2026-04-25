@@ -15,9 +15,26 @@ module Render =
 
     let severityColor severity =
         match severity with
-        | Info -> "deepskyblue1"
-        | Warning -> "yellow"
-        | Error -> "red"
+        | Info -> Domain.colorRoleId DiagnosticInfo
+        | Warning -> Domain.colorRoleId DiagnosticWarning
+        | Error -> Domain.colorRoleId DiagnosticError
+
+    let styleFor role (ui: DashboardUiPreferences) =
+        ui.Colors
+        |> Map.tryFind role
+        |> Option.defaultValue (Domain.defaultUiPreferences.Colors[role])
+
+    let styleTag role ui =
+        let style = styleFor role ui
+        match style.Background with
+        | Some background -> style.Foreground + " on " + background
+        | None -> style.Foreground
+
+    let markup role ui text =
+        sprintf "[%s]%s[/]" (styleTag role ui) (Markup.Escape text)
+
+    let color role ui =
+        (styleFor role ui).Foreground
 
     let artifactText state =
         match state with
@@ -94,28 +111,32 @@ module Render =
     let activityStoryId tasks =
         activityTask tasks |> Option.bind _.RelatedStoryId
 
-    let progressMarkup doneCount total =
+    let progressMarkup ui doneCount total =
         if total = 0 then
-            "[grey]          [/][grey] 0/0[/]"
+            sprintf "[%s]          [/][%s] 0/0[/]" (color ProgressIncomplete ui) (color Muted ui)
         else
             let width = 10
             let filled = int (Math.Round(float doneCount / float total * float width))
             let empty = width - filled
-            let color =
+            let completeColor =
                 if doneCount = total then "green"
-                elif doneCount = 0 then "grey"
+                elif doneCount = 0 then color ProgressIncomplete ui
                 else "yellow"
 
-            sprintf "[%s]%s[/][grey]%s[/] [bold]%d/%d[/]" color (String('█', filled)) (String('░', empty)) doneCount total
+            let completeColor =
+                if doneCount = total then color ProgressComplete ui else completeColor
+
+            sprintf "[%s]%s[/][%s]%s[/] [bold]%d/%d[/]" completeColor (String('█', filled)) (color ProgressIncomplete ui) (String('░', empty)) doneCount total
 
     let panel title (renderable: IRenderable) =
         Panel(renderable).Header(PanelHeader(title)).Border(BoxBorder.Rounded)
 
     let featuresTable snapshot =
+        let ui = snapshot.Ui
         let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn("[bold grey]Feature[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Checkout[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Artifacts[/]")) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Feature[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Checkout[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Artifacts[/]" (color Muted ui))) |> ignore
 
         match snapshot.Features with
         | [] ->
@@ -124,7 +145,7 @@ module Render =
             for feature in features do
                 let name =
                     if feature.IsSelected then
-                        sprintf "[black on deepskyblue1] %s [/]" (Markup.Escape feature.DisplayName)
+                        sprintf "[%s] %s [/]" (styleTag Selected ui) (Markup.Escape feature.DisplayName)
                     else
                         sprintf "[white]  %s[/]" (Markup.Escape feature.DisplayName)
 
@@ -144,11 +165,12 @@ module Render =
         table
 
     let storiesTable snapshot =
+        let ui = snapshot.Ui
         let tasks = featureTasks snapshot
         let lastActivityStoryId = activityStoryId tasks
         let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn("[bold grey]Story[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Progress[/]")) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Story[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Progress[/]" (color Muted ui))) |> ignore
 
         match snapshot.Stories with
         | [] -> table.AddRow(Markup("[yellow]No user stories[/]"), Markup("")) |> ignore
@@ -157,13 +179,13 @@ module Render =
                 let doneCount, total = storyProgress tasks story.Id
                 let storyText =
                     if Some story.Id = snapshot.SelectedStoryId then
-                        sprintf "[black on green] %s [/][white] %s[/]" (Markup.Escape story.Id) (Markup.Escape story.Title)
+                        sprintf "[%s] %s [/][white] %s[/]" (styleTag Selected ui) (Markup.Escape story.Id) (Markup.Escape story.Title)
                     elif Some story.Id = lastActivityStoryId then
-                        sprintf "[black on grey42] %s [/][white on grey23] %s [/]" (Markup.Escape story.Id) (Markup.Escape story.Title)
+                        sprintf "[%s] %s [/][%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape story.Id) (styleTag LastActivity ui) (Markup.Escape story.Title)
                     else
-                        sprintf "[deepskyblue1]%s[/] [white]%s[/]" (Markup.Escape story.Id) (Markup.Escape story.Title)
+                        sprintf "[%s]%s[/] [white]%s[/]" (color PanelAccent ui) (Markup.Escape story.Id) (Markup.Escape story.Title)
 
-                table.AddRow(Markup(storyText), Markup(progressMarkup doneCount total)) |> ignore
+                table.AddRow(Markup(storyText), Markup(progressMarkup ui doneCount total)) |> ignore
 
         table
 
@@ -179,43 +201,50 @@ module Render =
             Markup("[white]" + Markup.Escape text + "[/]") :> IRenderable
 
     let tasksTable snapshot =
+        let ui = snapshot.Ui
         let lastActivityTaskId = featureTasks snapshot |> activityTask |> Option.map _.Id
         let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn("[bold grey]Task[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Status[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Title[/]")) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Task[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Status[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Title[/]" (color Muted ui))) |> ignore
 
         match snapshot.TaskGraph with
         | None -> table.AddRow(Markup("[yellow]No task graph[/]"), Markup(""), Markup("")) |> ignore
         | Some graph when List.isEmpty graph.Nodes ->
             table.AddRow(Markup("[yellow]No tasks for selected story[/]"), Markup(""), Markup("")) |> ignore
         | Some graph ->
-            for task in graph.Nodes do
+            graph.Nodes
+            |> List.iteri (fun index task ->
                 let selected = Some task.Id = graph.SelectedTaskId
                 let lastActivity = Some task.Id = lastActivityTaskId
+                let rowBackground = if index % 2 = 0 then "black" else "grey7"
+                let striped foreground text =
+                    sprintf "[%s on %s] %s [/]" foreground rowBackground (Markup.Escape text)
+
                 let id =
                     if selected then
-                        sprintf "[black on yellow] %s [/]" (Markup.Escape task.Id)
+                        sprintf "[%s] %s [/]" (styleTag Selected ui) (Markup.Escape task.Id)
                     elif lastActivity then
-                        sprintf "[black on grey42] %s [/]" (Markup.Escape task.Id)
+                        sprintf "[%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape task.Id)
                     else
-                        sprintf "[deepskyblue1]%s[/]" (Markup.Escape task.Id)
+                        striped (color PanelAccent ui) task.Id
 
                 let status =
                     if lastActivity then
-                        "[black on grey42] " + Markup.Escape task.RawStatus + " [/]"
+                        sprintf "[%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape task.RawStatus)
                     elif taskDone task then
-                        "[green]" + Markup.Escape task.RawStatus + "[/]"
+                        striped (color ProgressComplete ui) task.RawStatus
                     else
-                        "[grey]" + Markup.Escape task.RawStatus + "[/]"
+                        striped (color ProgressIncomplete ui) task.RawStatus
 
                 let title =
                     if lastActivity && not selected then
-                        "[white on grey23] " + Markup.Escape task.Title + " [/]"
+                        sprintf "[%s] %s [/]" (styleTag LastActivity ui) (Markup.Escape task.Title)
                     else
-                        Markup.Escape task.Title
+                        striped "white" task.Title
 
                 table.AddRow(Markup(id), Markup(status), Markup(title)) |> ignore
+            )
 
         table
 
@@ -246,16 +275,29 @@ module Render =
         | _ -> Markup("[grey]No selected task.[/]") :> IRenderable
 
     let diagnosticsRenderable snapshot =
+        let ui = snapshot.Ui
         let table = Table().NoBorder().Expand()
-        table.AddColumn(TableColumn("[bold grey]Severity[/]")) |> ignore
-        table.AddColumn(TableColumn("[bold grey]Message[/]")) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Severity[/]" (color Muted ui))) |> ignore
+        table.AddColumn(TableColumn(sprintf "[bold %s]Message[/]" (color Muted ui))) |> ignore
 
         match snapshot.Diagnostics with
         | [] -> table.AddRow(Markup("[green]ok[/]"), Markup("[grey]No diagnostics[/]")) |> ignore
         | diagnostics ->
             for diagnostic in diagnostics do
-                let color = severityColor diagnostic.Severity
-                table.AddRow(Markup(sprintf "[%s]%s[/]" color (severityText diagnostic.Severity)), Markup(Markup.Escape diagnostic.Message)) |> ignore
+                let role =
+                    match diagnostic.Severity with
+                    | Info -> DiagnosticInfo
+                    | Warning -> DiagnosticWarning
+                    | Error -> DiagnosticError
+
+                let message =
+                    match diagnostic.Source with
+                    | None -> diagnostic.Message
+                    | Some source ->
+                        let line = source.Line |> Option.map (sprintf ":%d") |> Option.defaultValue ""
+                        diagnostic.Message + " (" + source.Path + line + ")"
+
+                table.AddRow(Markup(markup role ui (severityText diagnostic.Severity)), Markup(Markup.Escape message)) |> ignore
 
         table
 
@@ -307,14 +349,18 @@ module Render =
             taskText
             snapshot.Diagnostics.Length
 
-    let snapshotRenderable snapshot : IRenderable =
+    let snapshotRenderableForWidth width snapshot : IRenderable =
+        let ui = snapshot.Ui
         let header =
             let branch = snapshot.CurrentBranch |> Option.defaultValue "(none)" |> Markup.Escape
             Panel(
                 Markup(
                     sprintf
-                        "[bold deepskyblue1]sk-dashboard[/]  [grey]repo[/] [white]%s[/]  [grey]branch[/] [yellow]%s[/]"
+                        "[bold %s]sk-dashboard[/]  [%s]repo[/] [white]%s[/]  [%s]branch[/] [yellow]%s[/]"
+                        (color PanelAccent ui)
+                        (color Muted ui)
                         (Markup.Escape snapshot.RepositoryRoot)
+                        (color Muted ui)
                         branch))
                 .Border(BoxBorder.None)
 
@@ -338,8 +384,25 @@ module Render =
         right["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot)) |> ignore
         right["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot)) |> ignore
 
+        let resolvedLayout = Domain.resolveLayout width snapshot.Ui.Layout
+
         let main = Layout("main")
-        main.SplitColumns(left, right) |> ignore
+        match resolvedLayout with
+        | WidescreenLayout -> main.SplitColumns(left, right) |> ignore
+        | VerticalLayout ->
+            main.SplitRows(
+                Layout("features").Ratio(2),
+                Layout("stories").Ratio(2),
+                Layout("plan").Ratio(2),
+                Layout("tasks").Ratio(3),
+                Layout("detail").Ratio(2))
+            |> ignore
+
+            main["features"].Update(panel (sprintf "[bold %s]Features[/]" (color PanelAccent ui)) (featuresTable snapshot)) |> ignore
+            main["stories"].Update(panel "[bold green]User Stories[/]" (storiesTable snapshot)) |> ignore
+            main["plan"].Update(panel "[bold purple]Plan[/]" (planRenderable snapshot)) |> ignore
+            main["tasks"].Update(panel "[bold yellow]Tasks[/]" (tasksTable snapshot)) |> ignore
+            main["detail"].Update(panel "[bold white]Task Detail[/]" (detailRenderable snapshot)) |> ignore
 
         let footer =
             let actions =
@@ -360,13 +423,20 @@ module Render =
         root.SplitRows(
             Layout("header").Size(3),
             Layout("main"),
-            Layout("footer").Size(7))
+            Layout("footer").Size(12))
         |> ignore
 
         root["header"].Update(header) |> ignore
         root["main"].Update(main) |> ignore
         root["footer"].Update(footer) |> ignore
         root :> IRenderable
+
+    let snapshotRenderable snapshot : IRenderable =
+        let width =
+            try Console.WindowWidth
+            with _ -> 120
+
+        snapshotRenderableForWidth width snapshot
 
     let renderSnapshot snapshot =
         AnsiConsole.Write(snapshotRenderable snapshot)

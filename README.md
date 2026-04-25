@@ -7,7 +7,8 @@ work.
 
 ## Features
 
-- Live terminal UI with colored panels, tables, rulers, and progress bars.
+- Live terminal UI with configurable colored panels, tables, rulers, and
+  progress bars.
 - Automatic feature discovery from local `specs/` artifacts and Git branches.
 - Startup selection of the latest feature branch, with visible checkout errors.
 - User-story progress bars computed from story-scoped task completion.
@@ -49,7 +50,7 @@ branch unless `--no-auto-checkout` is supplied.
 | `left` / `right` | Previous / next task |
 | `enter` | Check out the selected feature branch |
 | `r` | Refresh project state |
-| `R` | Reload hotkey configuration |
+| `R` | Reload dashboard preferences |
 | `q` | Quit |
 
 ## Install As A Tool
@@ -102,13 +103,14 @@ tests/Core.Tests  Expecto coverage for core behavior
 tests/Dashboard.Tests  Expecto coverage for dashboard state and rendering
 ```
 
-## Hotkeys
+## Dashboard Preferences
 
-The global hotkey config path resolves to
+The global dashboard preferences path resolves to
 `$XDG_CONFIG_HOME/sk-dashboard/hotkeys.json` when `XDG_CONFIG_HOME` is set,
 otherwise to `~/.config/sk-dashboard/hotkeys.json` on typical Unix systems.
+The same JSON file stores keyboard bindings and optional UI preferences.
 
-Example hotkey configuration:
+Example configuration:
 
 ```json
 {
@@ -116,6 +118,35 @@ Example hotkey configuration:
   "bindings": [
     { "command": "story.next", "key": "n" },
     { "command": "story.previous", "key": "p" }
-  ]
+  ],
+  "ui": {
+    "layout": "auto",
+    "colors": {
+      "selected": { "foreground": "black", "background": "green" },
+      "lastActivity": { "foreground": "white", "background": "#555555" },
+      "progressComplete": "green",
+      "progressIncomplete": "grey",
+      "diagnosticInfo": "deepskyblue1",
+      "diagnosticWarning": "yellow",
+      "diagnosticError": "red",
+      "muted": "grey",
+      "panelAccent": "#7aa2f7"
+    }
+  }
 }
 ```
+
+Supported layout modes are `auto`, `widescreen`, and `vertical`. `auto` uses
+the vertical layout below 120 terminal columns and the widescreen layout at
+120 columns or wider.
+
+Color values can be named terminal colors such as `green`, `yellow`, and
+`deepskyblue1`, or hex RGB values such as `#7aa2f7`. Roles that use both text
+and a background can be configured as `{ "foreground": "...", "background":
+"..." }`.
+
+Missing UI preferences use built-in defaults. Invalid colors, unsupported
+layout modes, unknown color roles, and low-contrast foreground/background pairs
+are reported in the dashboard diagnostics pane while safe defaults keep the
+dashboard running. Press `R` to reload the preferences during a dashboard
+session.
