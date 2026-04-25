@@ -1,0 +1,56 @@
+schema_version: "1.0"
+
+preset:
+  id: "fsharp-opinionated"
+  name: "F# Opinionated"
+  version: "1.0.0"
+  description: "Opinionated pure-F# constitution, FSI-first workflow, and synthetic-evidence discipline. Pairs with the evidence extension for DAG-aware task tracking and merge-readiness audits."
+  author: "EHotwagner"
+  repository: "https://github.com/EHotwagner/speckit-fsharp-tooling"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.7.0"
+
+provides:
+  templates:
+    - type: "template"
+      name: "constitution-template"
+      file: "templates/constitution-template.md"
+      description: "Six-principle F# constitution with LOCKED/TAILORABLE section markers"
+      replaces: "constitution-template"
+
+    - type: "template"
+      name: "tasks-template"
+      file: "templates/tasks-template.md"
+      description: "Tasks checklist with [S] synthetic-evidence status marker and [S*] propagation awareness"
+      replaces: "tasks-template"
+
+    - type: "template"
+      name: "tasks-deps-template"
+      file: "templates/tasks-deps-template.yml"
+      description: "Sibling YAML seed for task-graph topology (consumed by speckit.tasks)"
+
+    - type: "command"
+      name: "speckit.constitution"
+      file: "commands/speckit.constitution.md"
+      description: "Fill constitution placeholders while respecting LOCKED markers"
+      replaces: "speckit.constitution"
+
+    - type: "command"
+      name: "speckit.tasks"
+      file: "commands/speckit.tasks.md"
+      description: "Emit tasks.md and tasks.deps.yml in lockstep"
+      replaces: "speckit.tasks"
+
+    - type: "command"
+      name: "speckit.implement"
+      file: "commands/speckit.implement.md"
+      description: "Implement tasks with [S] synthetic-evidence marking discipline"
+      replaces: "speckit.implement"
+
+tags:
+  - "fsharp"
+  - "opinionated"
+  - "fsi-first"
+  - "synthetic-evidence"

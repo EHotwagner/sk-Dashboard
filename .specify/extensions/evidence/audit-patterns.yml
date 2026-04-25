@@ -1,0 +1,95 @@
+schema_version: "1.0"
+
+# Diff-scan patterns for the synthetic-evidence audit.
+#
+# The audit runs `git diff <feature-base>..HEAD` and greps for these
+# patterns. Every hit contributes to the NEEDS-EVIDENCE verdict (hard block
+# unless --accept-synthetic).
+#
+# Patterns are regex. Whitelist entries (matched per-file or per-line) are
+# applied AFTER pattern matches to suppress known false positives.
+
+patterns:
+  # Work markers
+  - id: todo
+    regex: '\bTODO\b|\bFIXME\b|\bXXX\b|\bHACK\b'
+    severity: block
+    reason: "Unfinished work marker"
+
+  # Placeholder exceptions
+  - id: not-implemented
+    regex: 'NotImplementedException|raise \(\)\s*$|failwith\s+"TODO|failwith\s+"not implemented|failwith\s+"unimplemented'
+    severity: block
+    reason: "Placeholder exception in production code"
+
+  # Mock / stub / fake identifiers
+  - id: mock-identifiers
+    regex: '\b(mock|stub|fake|dummy)[A-Z_][A-Za-z0-9_]*\b'
+    severity: block
+    reason: "Mock/stub/fake identifier"
+
+  # Disabled tests
+  - id: skipped-tests
+    regex: '\[<(Skip|Ignore|Explicit)(\s|\(|>)|\[Skip\]|\[Ignore\]|it\.skip|xit\(|xdescribe\(|\bpytest\.mark\.skip'
+    severity: block
+    reason: "Skipped or ignored test"
+
+  # Commented-out assertions (F#, C#, xUnit/NUnit, FsUnit)
+  - id: commented-assertions
+    regex: '^\s*//\s*(Assert\.|should|Expect\.)|^\s*\(\*\s*(Assert\.|should|Expect\.)'
+    severity: block
+    reason: "Commented-out assertion"
+
+  # Synthetic banner from Principle IV — informational, not blocking.
+  # These are HOW the preset enforces disclosure. Seeing them is GOOD; they
+  # surface because the code is honestly labeled. The audit logs them as
+  # advisory so reviewers can confirm the synthetic-evidence inventory is
+  # complete.
+  - id: synthetic-banner
+    regex: 'SYNTHETIC(\s|:|_|!|\*|$)|Synthetic(\s|$)'
+    severity: advisory
+    reason: "Synthetic-evidence disclosure (Principle IV)"
+
+# Whitelist: suppress a pattern's hits when the condition matches.
+# file_glob matches the file path of the hit; line_regex matches the matched
+# line. Either or both may be specified.
+whitelist:
+  # Anything inside docs is commentary, not code.
+  - pattern_id: todo
+    file_glob: "docs/**"
+
+  - pattern_id: todo
+    file_glob: "**/*.md"
+
+  # Constitution template itself contains the word TODO in examples.
+  - pattern_id: todo
+    file_glob: ".specify/memory/constitution.md"
+
+  # The audit patterns file legitimately references the words.
+  - pattern_id: mock-identifiers
+    file_glob: "**/audit-patterns.yml"
+
+  # The preset templates contain disclosure examples.
+  - pattern_id: mock-identifiers
+    file_glob: ".specify/presets/**/commands/*.md"
+
+  - pattern_id: mock-identifiers
+    file_glob: ".specify/presets/**/templates/*.md"
+
+  # The debug-loop skill references these terms to teach disallowed actions.
+  - pattern_id: skipped-tests
+    file_glob: "**/.codex/skills/**"
+
+  - pattern_id: skipped-tests
+    file_glob: "**/.claude/**"
+
+# Severity escalation rules.
+#
+# The audit produces a verdict per the strictness configured here:
+#   - block     → contributes to NEEDS-EVIDENCE; hard-blocks unless --accept-synthetic
+#   - advisory  → printed in the report, never blocks
+#
+# Per-project override: create .specify/audit-patterns.overrides.yml with
+# a "severity_overrides" section mapping pattern_id → severity.
+
+severity_overrides: {}

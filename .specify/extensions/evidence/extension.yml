@@ -1,0 +1,48 @@
+schema_version: "1.0"
+
+extension:
+  id: evidence
+  name: "Synthetic-Evidence Audit + Task DAG"
+  version: "1.0.0"
+  description: "Adds DAG-aware task tracking (tasks.deps.yml) and a merge-gate audit that hard-blocks on unresolved [S]/[S*] tasks and diff-scan hits unless explicitly overridden with --accept-synthetic."
+  author: EHotwagner
+  license: MIT
+
+requires:
+  speckit_version: ">=0.7.0"
+  tools:
+    - name: bash
+      required: true
+    - name: python3
+      required: true
+      minimum_version: "3.9"
+    - name: git
+      required: true
+
+provides:
+  commands:
+    - name: speckit.evidence.graph
+      file: commands/speckit.evidence.graph.md
+      description: "Parse tasks.md + tasks.deps.yml, validate the DAG, compute effective status propagation, render task-graph.{json,md}"
+    - name: speckit.evidence.audit
+      file: commands/speckit.evidence.audit.md
+      description: "Run graph compute then diff-scan; emit PASS / NEEDS-EVIDENCE verdict. Hard-blocks on unresolved [S]/[S*] or diff-scan hits unless --accept-synthetic is set"
+
+hooks:
+  before_implement:
+    command: speckit.evidence.graph
+    optional: false
+    prompt: "Validate task DAG before implementation begins?"
+    description: "Refuse to start /speckit.implement on a broken graph (cycles, dangling refs)"
+  after_implement:
+    command: speckit.evidence.audit
+    optional: false
+    prompt: "Run evidence audit now?"
+    description: "Merge-gate audit — hard-blocks on [S]/[S*] or diff-scan hits unless --accept-synthetic"
+
+tags:
+  - evidence
+  - audit
+  - synthetic
+  - dag
+  - merge-gate

@@ -1,13 +1,6 @@
 ---
-name: speckit-constitution
-description: Create or update project governing principles and development guidelines.
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:fsharp-opinionated
+description: "Fill the constitution template while respecting LOCKED markers."
 ---
-
-# Speckit Constitution Skill
 
 # /speckit.constitution
 

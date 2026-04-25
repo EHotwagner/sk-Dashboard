@@ -1,13 +1,6 @@
 ---
-name: speckit-tasks
-description: Break down implementation plans into actionable task lists.
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:fsharp-opinionated
+description: "Emit tasks.md and tasks.deps.yml in lockstep, then validate the DAG."
 ---
-
-# Speckit Tasks Skill
 
 # /speckit.tasks
 
