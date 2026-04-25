@@ -19,13 +19,21 @@ dotnet build
 dotnet run --project src/Dashboard -- .
 ```
 
+## Install As A Tool
+
+```bash
+dotnet pack src/Dashboard/Dashboard.fsproj -c Release -o ~/.local/share/nuget-local
+dotnet tool install -g sk-Dashboard --add-source ~/.local/share/nuget-local
+sk-dashboard .
+```
+
 Useful options:
 
 ```bash
-dotnet run --project src/Dashboard -- --no-auto-checkout .
-dotnet run --project src/Dashboard -- --config ~/.config/sk-dashboard/hotkeys.json .
-dotnet run --project src/Dashboard -- --refresh-interval 250 .
-dotnet run --project src/Dashboard -- --keys K,enter,j .
+sk-dashboard --no-auto-checkout .
+sk-dashboard --config ~/.config/sk-dashboard/hotkeys.json .
+sk-dashboard --refresh-interval 250 .
+sk-dashboard --keys K,enter,j .
 ```
 
 Expected behavior:

@@ -4,6 +4,10 @@
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
     <AssemblyName>sk-dashboard</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>sk-dashboard</ToolCommandName>
+    <PackageId>sk-Dashboard</PackageId>
+    <Description>Keyboard-first terminal dashboard for local Speckit repositories.</Description>
   </PropertyGroup>
 
   <ItemGroup>
