@@ -1,7 +1,9 @@
 namespace SkDashboard.Dashboard
 
 open System
+open System.Collections.Concurrent
 open System.Threading
+open Spectre.Console
 open SkDashboard.Core
 
 module Program =
@@ -12,31 +14,12 @@ module Program =
           ConfigPath: string option
           Keys: string list }
 
-    let rec parseArgs args options =
-        match args with
-        | [] -> options
-        | "--no-auto-checkout" :: rest -> parseArgs rest { options with AutoCheckout = false }
-        | "--config" :: value :: rest -> parseArgs rest { options with ConfigPath = Some value }
-        | "--keys" :: value :: rest ->
-            let keys =
-                value.Split(',', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
-                |> Array.toList
+    type InteractiveEvent =
+        | KeyPressed of string
+        | SnapshotLoaded of DashboardSnapshot
+        | RefreshFailed of Diagnostic
 
-            parseArgs rest { options with Keys = options.Keys @ keys }
-        | "--refresh-interval" :: value :: rest ->
-            match Int32.TryParse value with
-            | true, ms when ms > 0 -> parseArgs rest { options with RefreshInterval = Some(TimeSpan.FromMilliseconds(float ms)) }
-            | _ -> invalidArg "--refresh-interval" "Refresh interval must be a positive integer in milliseconds."
-        | value :: rest when value.StartsWith "--" -> invalidArg value "Unsupported option."
-        | value :: rest -> parseArgs rest { options with ProjectPath = Some value }
-
-    [<EntryPoint>]
-    let main argv =
-        let options = parseArgs (Array.toList argv) { ProjectPath = None; RefreshInterval = None; AutoCheckout = true; ConfigPath = None; Keys = [] }
-        let projectPath = options.ProjectPath |> Option.defaultValue "."
-        let configPath = options.ConfigPath |> Option.defaultValue (SpeckitArtifacts.resolveUserConfigPath ())
-        let bindings, hotkeyDiagnostics = Hotkeys.loadBindings configPath
-
+    let runScriptedKeys projectPath configPath bindings hotkeyDiagnostics options =
         let snapshot =
             match options.RefreshInterval with
             | None -> App.loadWithAutoCheckout options.AutoCheckout projectPath
@@ -73,8 +56,104 @@ module Program =
                         let reloaded, diagnostics = Hotkeys.loadBindings configPath
                         activeBindings <- reloaded
                         { state with Diagnostics = state.Diagnostics @ diagnostics }
+                    | Some Quit -> state
                     | Some command -> App.applyCommand projectPath command state)
                 snapshot
 
         Render.renderSnapshot finalSnapshot
+
+    let runInteractive projectPath configPath bindings hotkeyDiagnostics options =
+        let refreshInterval = options.RefreshInterval |> Option.defaultValue (TimeSpan.FromSeconds 2.0)
+        let mutable snapshot =
+            App.loadWithAutoCheckout options.AutoCheckout projectPath
+            |> fun loaded -> { loaded with Diagnostics = loaded.Diagnostics @ hotkeyDiagnostics }
+
+        let mutable activeBindings = bindings
+        let mutable running = true
+        use events = new BlockingCollection<InteractiveEvent>()
+
+        let enqueue event =
+            if not events.IsAddingCompleted then
+                events.Add event
+
+        let inputThread =
+            Thread(ThreadStart(fun () ->
+                while running do
+                    Input.readKeySequence () |> KeyPressed |> enqueue))
+
+        inputThread.IsBackground <- true
+
+        use refreshHandle =
+            App.startRefreshOrchestration
+                projectPath
+                refreshInterval
+                (SnapshotLoaded >> enqueue)
+                (RefreshFailed >> enqueue)
+
+        let applyEvent event =
+            match event with
+            | SnapshotLoaded next -> snapshot <- App.preserveSelections snapshot next
+            | RefreshFailed diagnostic -> snapshot <- { snapshot with Diagnostics = snapshot.Diagnostics @ [ diagnostic ] }
+            | KeyPressed key ->
+                match Input.commandForKeyWithBindings activeBindings key with
+                | None -> ()
+                | Some Quit -> running <- false
+                | Some HotkeysReload ->
+                    let reloaded, diagnostics = Hotkeys.loadBindings configPath
+                    activeBindings <- reloaded
+                    snapshot <- { snapshot with Diagnostics = snapshot.Diagnostics @ diagnostics }
+                | Some command -> snapshot <- App.applyCommand projectPath command snapshot
+
+        try
+            Console.CursorVisible <- false
+            inputThread.Start()
+
+            AnsiConsole
+                .Live(Render.snapshotRenderable snapshot)
+                .AutoClear(false)
+                .Start(fun context ->
+                    while running do
+                        let mutable event = Unchecked.defaultof<InteractiveEvent>
+
+                        if events.TryTake(&event, 100) then
+                            let previousText = Render.snapshotText snapshot
+                            applyEvent event
+
+                            if running && Render.snapshotText snapshot <> previousText then
+                                context.UpdateTarget(Render.snapshotRenderable snapshot)
+                                context.Refresh())
+        finally
+            events.CompleteAdding()
+            Console.CursorVisible <- true
+
+    let rec parseArgs args options =
+        match args with
+        | [] -> options
+        | "--no-auto-checkout" :: rest -> parseArgs rest { options with AutoCheckout = false }
+        | "--config" :: value :: rest -> parseArgs rest { options with ConfigPath = Some value }
+        | "--keys" :: value :: rest ->
+            let keys =
+                value.Split(',', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
+                |> Array.toList
+
+            parseArgs rest { options with Keys = options.Keys @ keys }
+        | "--refresh-interval" :: value :: rest ->
+            match Int32.TryParse value with
+            | true, ms when ms > 0 -> parseArgs rest { options with RefreshInterval = Some(TimeSpan.FromMilliseconds(float ms)) }
+            | _ -> invalidArg "--refresh-interval" "Refresh interval must be a positive integer in milliseconds."
+        | value :: rest when value.StartsWith "--" -> invalidArg value "Unsupported option."
+        | value :: rest -> parseArgs rest { options with ProjectPath = Some value }
+
+    [<EntryPoint>]
+    let main argv =
+        let options = parseArgs (Array.toList argv) { ProjectPath = None; RefreshInterval = None; AutoCheckout = true; ConfigPath = None; Keys = [] }
+        let projectPath = options.ProjectPath |> Option.defaultValue "."
+        let configPath = options.ConfigPath |> Option.defaultValue (SpeckitArtifacts.resolveUserConfigPath ())
+        let bindings, hotkeyDiagnostics = Hotkeys.loadBindings configPath
+
+        if List.isEmpty options.Keys && not Console.IsInputRedirected then
+            runInteractive projectPath configPath bindings hotkeyDiagnostics options
+        else
+            runScriptedKeys projectPath configPath bindings hotkeyDiagnostics options
+
         0

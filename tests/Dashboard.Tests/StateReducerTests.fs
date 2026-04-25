@@ -15,11 +15,21 @@ let stateReducerTests =
             Expect.isSome (Input.commandForKey "q") "Quit is reachable."
         }
 
+        test "keySequenceFromConsoleKey_normalizes interactive keys" {
+            Expect.equal (Input.keySequenceFromConsoleKey (ConsoleKeyInfo('q', ConsoleKey.Q, false, false, false))) "q" "Printable keys are preserved."
+            Expect.equal (Input.keySequenceFromConsoleKey (ConsoleKeyInfo('\000', ConsoleKey.Enter, false, false, false))) "enter" "Enter is named."
+            Expect.equal (Input.keySequenceFromConsoleKey (ConsoleKeyInfo('\t', ConsoleKey.Tab, true, false, false))) "shift+tab" "Shift-tab is named."
+            Expect.equal (Input.keySequenceFromConsoleKey (ConsoleKeyInfo('\000', ConsoleKey.DownArrow, false, false, false))) "down" "Down arrow is named."
+            Expect.equal (Input.keySequenceFromConsoleKey (ConsoleKeyInfo('\000', ConsoleKey.RightArrow, true, false, false))) "shift+right" "Shift-right is named."
+        }
+
         test "commandForKey_maps feature and story navigation" {
-            Expect.equal (Input.commandForKey "K") (Some FeaturePrevious) "Feature previous is reachable."
-            Expect.equal (Input.commandForKey "J") (Some FeatureNext) "Feature next is reachable."
-            Expect.equal (Input.commandForKey "k") (Some StoryPrevious) "Story previous is reachable."
-            Expect.equal (Input.commandForKey "j") (Some StoryNext) "Story next is reachable."
+            Expect.equal (Input.commandForKey "k") (Some FeaturePrevious) "Feature previous is reachable."
+            Expect.equal (Input.commandForKey "j") (Some FeatureNext) "Feature next is reachable."
+            Expect.equal (Input.commandForKey "up") (Some StoryPrevious) "Story previous is reachable."
+            Expect.equal (Input.commandForKey "down") (Some StoryNext) "Story next is reachable."
+            Expect.equal (Input.commandForKey "left") (Some TaskPrevious) "Task previous is reachable."
+            Expect.equal (Input.commandForKey "right") (Some TaskNext) "Task next is reachable."
         }
 
         test "commandForKeyWithBindings_applies valid override" {
@@ -169,6 +179,136 @@ let stateReducerTests =
             let next = App.selectTask 1 snapshot
             Expect.equal next.SelectedTaskId (Some "T002") "Next task is selected."
             Expect.equal (next.TaskGraph |> Option.bind _.SelectedTaskId) (Some "T002") "Graph selected task follows."
+        }
+
+        test "selectStory_rebuilds_task_graph_for_selected_story" {
+            let root = Directory.CreateTempSubdirectory("sk-dashboard-story-").FullName
+            let featureRoot = Path.Combine(root, "specs", "001-a")
+            Directory.CreateDirectory(featureRoot) |> ignore
+            File.WriteAllText(
+                Path.Combine(featureRoot, "tasks.md"),
+                "- [ ] T001 [US1] First story task\n- [ ] T002 [US2] Second story task\n")
+
+            let feature =
+                { Id = "001-a"
+                  BranchName = Some "001-a"
+                  DisplayName = "001-a"
+                  OrderKey = Fallback "001-a"
+                  IsSelected = true
+                  ArtifactRoot = Some featureRoot
+                  CheckoutState = NotAttempted
+                  Status = None }
+
+            let story id =
+                { Id = id
+                  Title = id
+                  Priority = None
+                  Description = ""
+                  AcceptanceScenarios = []
+                  SourceLocation = None }
+
+            let graph =
+                { SelectedStoryId = Some "US1"
+                  Nodes =
+                    [ { Id = "T001"
+                        Title = "[US1] First story task"
+                        Description = None
+                        RawStatus = "[ ]"
+                        Dependencies = []
+                        RelatedStoryId = Some "US1"
+                        SourceLocation = None
+                        Metadata = Map.empty } ]
+                  Edges = []
+                  Diagnostics = []
+                  SelectedTaskId = Some "T001" }
+
+            let snapshot =
+                { RepositoryRoot = root
+                  CurrentBranch = None
+                  Features = [ feature ]
+                  SelectedFeatureId = Some "001-a"
+                  Stories = [ story "US1"; story "US2" ]
+                  SelectedStoryId = Some "US1"
+                  Plan = None
+                  TaskGraph = Some graph
+                  SelectedTaskId = Some "T001"
+                  Panes = Domain.defaultPanes
+                  Diagnostics = []
+                  LastRefreshedAt = DateTimeOffset.UnixEpoch }
+
+            let next = App.selectStory 1 snapshot
+            Expect.equal next.SelectedStoryId (Some "US2") "Story selection moved."
+            Expect.equal (next.TaskGraph |> Option.map _.Nodes |> Option.defaultValue [] |> List.map _.Id) [ "T002" ] "Task graph was rebuilt for the new story."
+            Expect.equal next.SelectedTaskId (Some "T002") "Task selection follows rebuilt graph."
+        }
+
+        test "preserveSelections_keeps_visible_selection_across_refresh" {
+            let root = Directory.CreateTempSubdirectory("sk-dashboard-preserve-").FullName
+            let featureRoot id =
+                let path = Path.Combine(root, "specs", id)
+                Directory.CreateDirectory(path) |> ignore
+                File.WriteAllText(
+                    Path.Combine(path, "tasks.md"),
+                    "- [ ] T001 [US1] First task\n- [ ] T002 [US2] Second task\n")
+                path
+
+            let feature id selected =
+                { Id = id
+                  BranchName = Some id
+                  DisplayName = id
+                  OrderKey = Fallback id
+                  IsSelected = selected
+                  ArtifactRoot = Some(featureRoot id)
+                  CheckoutState = NotAttempted
+                  Status = None }
+
+            let story id =
+                { Id = id
+                  Title = id
+                  Priority = None
+                  Description = ""
+                  AcceptanceScenarios = []
+                  SourceLocation = None }
+
+            let task id =
+                { Id = id
+                  Title = id
+                  Description = None
+                  RawStatus = "[ ]"
+                  Dependencies = []
+                  RelatedStoryId = Some "US1"
+                  SourceLocation = None
+                  Metadata = Map.empty }
+
+            let snapshot selectedFeature selectedStory selectedTask =
+                let graph =
+                    { SelectedStoryId = Some "US1"
+                      Nodes = [ task "T001"; task "T002" ]
+                      Edges = []
+                      Diagnostics = []
+                      SelectedTaskId = selectedTask }
+
+                { RepositoryRoot = "."
+                  CurrentBranch = None
+                  Features = [ feature "001-a" (selectedFeature = Some "001-a"); feature "002-b" (selectedFeature = Some "002-b") ]
+                  SelectedFeatureId = selectedFeature
+                  Stories = [ story "US1"; story "US2" ]
+                  SelectedStoryId = selectedStory
+                  Plan = None
+                  TaskGraph = Some graph
+                  SelectedTaskId = selectedTask
+                  Panes = Domain.defaultPanes
+                  Diagnostics = []
+                  LastRefreshedAt = DateTimeOffset.UnixEpoch }
+
+            let previous = snapshot (Some "002-b") (Some "US2") (Some "T002")
+            let refreshed = snapshot (Some "001-a") (Some "US1") (Some "T001")
+            let next = App.preserveSelections previous refreshed
+
+            Expect.equal next.SelectedFeatureId (Some "002-b") "Feature selection is preserved."
+            Expect.equal next.SelectedStoryId (Some "US2") "Story selection is preserved."
+            Expect.equal next.SelectedTaskId (Some "T002") "Task selection is preserved."
+            Expect.equal (next.Features |> List.map _.IsSelected) [ false; true ] "Feature selection flags follow preserved state."
         }
 
         test "refresh events coalesce into one pending snapshot load" {
