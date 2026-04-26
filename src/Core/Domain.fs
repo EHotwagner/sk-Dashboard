@@ -550,7 +550,7 @@ module Domain =
             "magenta"
             "grey"
 
-    let defaultMarkdownSpacing = markdownSpacing 1 0 1 1 0
+    let defaultMarkdownSpacing = markdownSpacing 0 0 1 1 0
 
     let defaultMarkdownPresentation =
         { Id = "default"
@@ -816,7 +816,7 @@ module Domain =
         let readable =
             markdownTheme "default" "Default" None defaultMarkdownColors defaultMarkdownSpacing
 
-        let comfortableSpacing = markdownSpacing 1 0 1 1 0
+        let comfortableSpacing = markdownSpacing 0 0 1 1 0
 
         let draculaDark =
             markdownTheme

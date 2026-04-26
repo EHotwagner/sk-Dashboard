@@ -260,14 +260,27 @@ module Render =
         let theme = ui.Markdown
 
         let sourceLines =
+            let mutable inCode = false
+
             fallbackMarkdownLines text
             |> Array.collect (fun line ->
                 let trimmed = line.TrimStart()
+                let isFence = line.Trim().StartsWith("```")
+                let isHeading = not inCode && trimmed.StartsWith("#")
 
-                if trimmed.StartsWith("#") && theme.Spacing.BeforeHeading > 0 then
-                    Array.append (Array.create theme.Spacing.BeforeHeading "") [| line |]
-                else
-                    [| line |])
+                let expanded =
+                    if isHeading then
+                        Array.concat
+                            [ Array.create (max 0 theme.Spacing.BeforeHeading) ""
+                              [| line |]
+                              Array.create (max 0 theme.Spacing.AfterHeading) "" ]
+                    else
+                        [| line |]
+
+                if isFence then
+                    inCode <- not inCode
+
+                expanded)
 
         let widest = sourceLines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
         let viewport = Domain.clampDetailViewport sourceLines.Length widest viewport
@@ -365,7 +378,9 @@ module Render =
         let renderLine (inCode: bool) (line: string) =
             let trimmed = line.TrimStart()
 
-            if line.Trim().StartsWith("```") then
+            if String.IsNullOrWhiteSpace line then
+                Text(" ") :> IRenderable
+            elif line.Trim().StartsWith("```") then
                 Markup(wrap theme.Colors.CodeBlock (Markup.Escape line)) :> IRenderable
             elif inCode then
                 Markup(wrap theme.Colors.CodeBlock (Markup.Escape line)) :> IRenderable

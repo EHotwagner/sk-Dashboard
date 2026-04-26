@@ -416,6 +416,33 @@ let renderingSmokeTests =
               Expect.stringContains text "Todo" "Unchecked item content is rendered."
           }
 
+          test "markdown_heading_spacing_adds_margins_in_detail_rendering" {
+              Expect.equal Domain.defaultUiPreferences.Markdown.Spacing.BeforeHeading 0 "Default Markdown rendering stays tight before headings."
+              Expect.equal Domain.defaultUiPreferences.Markdown.Spacing.AfterHeading 0 "Default Markdown rendering stays tight after headings."
+
+              let ui =
+                  { Domain.defaultUiPreferences with
+                      Markdown =
+                        { Domain.defaultUiPreferences.Markdown with
+                            Spacing =
+                              { Domain.defaultUiPreferences.Markdown.Spacing with
+                                  BeforeHeading = 2
+                                  AfterHeading = 1 } } }
+
+              let rows, lineCount, viewport, _, _ =
+                  Render.markdownRows ui "# Heading\nBody\n```# Not heading\n```" None (Domain.defaultDetailViewport 10 80)
+
+              let text = renderToText (Rows rows)
+              let normalized = text.Replace("\r\n", "\n").Replace('\r', '\n')
+              Expect.equal lineCount 7 "Heading spacing contributes visible detail rows."
+              Expect.equal viewport.VisibleLines 10 "Viewport keeps the requested visible line count."
+              Expect.stringContains normalized " \n \n" "Before-heading margins render as visible blank rows."
+              Expect.stringContains normalized "Heading\u001b[0m\n \n" "After-heading margin renders after the heading row."
+              Expect.stringContains text "Heading" "The heading still renders after spacing is applied."
+              Expect.stringContains text "Body" "Following body text remains visible."
+              Expect.stringContains text "# Not heading" "Code block content is not treated as a spaced heading."
+          }
+
           test "visibleRows_keeps_selected_item_visible_after_first_page" {
               let rows = [ 1..50 ]
               let visible, viewport = Render.visibleRows 37 12 rows
