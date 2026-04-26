@@ -147,10 +147,23 @@ let artifactParsingTests =
                   "gruvbox-light" ]
                 "Built-in app themes are ordered."
 
-            Expect.equal markdownIds [ "plain"; "default" ] "Built-in Markdown themes are ordered."
+            Expect.equal
+                markdownIds
+                [ "plain"
+                  "default"
+                  "dracula-dark"
+                  "nord-dark"
+                  "tokyo-night"
+                  "solarized-light"
+                  "github-light"
+                  "gruvbox-light" ]
+                "Built-in Markdown themes are ordered."
+
             Expect.all Domain.builtInAppThemes (fun theme -> not theme.AlternateRowShading) "Built-in row shading defaults off."
             Expect.hasLength (Domain.builtInAppThemes |> List.filter (fun theme -> theme.Mode = Some LightDisplayMode)) 4 "Light theme variants include the base theme."
             Expect.hasLength (Domain.builtInAppThemes |> List.filter (fun theme -> theme.Mode = Some DarkDisplayMode)) 4 "Dark theme variants include the base theme."
+            Expect.hasLength (Domain.builtInMarkdownThemes |> List.filter (fun theme -> theme.ModeCompatibility = Some LightDisplayMode)) 3 "Light Markdown variants are available."
+            Expect.hasLength (Domain.builtInMarkdownThemes |> List.filter (fun theme -> theme.ModeCompatibility = Some DarkDisplayMode)) 3 "Dark Markdown variants are available."
             Expect.equal (Domain.builtInAppThemes |> List.find (fun theme -> theme.Id = "light")).Mode (Some LightDisplayMode) "Light mode resolves explicitly."
             Expect.equal (Domain.builtInAppThemes |> List.find (fun theme -> theme.Id = "dark")).Mode (Some DarkDisplayMode) "Dark mode resolves explicitly."
         }

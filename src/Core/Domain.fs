@@ -495,7 +495,15 @@ module Domain =
               "solarized-light"
               "github-light"
               "gruvbox-light" ]
-          AvailableMarkdownThemes = [ "plain"; "default" ]
+          AvailableMarkdownThemes =
+            [ "plain"
+              "default"
+              "dracula-dark"
+              "nord-dark"
+              "tokyo-night"
+              "solarized-light"
+              "github-light"
+              "gruvbox-light" ]
           AppThemeFallback = false
           MarkdownThemeFallback = false }
 
@@ -774,13 +782,22 @@ module Domain =
           appTheme "gruvbox-light" "Gruvbox Light" (Some LightDisplayMode) defaults.Table false gruvboxLightColors ]
 
     let builtInMarkdownThemes =
-        let plain =
-            { Id = "plain"
-              DisplayName = "Plain"
+        let markdownTheme id displayName mode colors spacing =
+            { Id = id
+              DisplayName = displayName
               Source = BuiltInTheme
-              ModeCompatibility = None
-              Colors =
-                markdownColors
+              ModeCompatibility = mode
+              Colors = colors
+              Spacing = spacing
+              ValidationStatus = ThemeValid
+              Diagnostics = [] }
+
+        let plain =
+            markdownTheme
+                "plain"
+                "Plain"
+                None
+                (markdownColors
                     "white"
                     "white"
                     "white"
@@ -793,22 +810,148 @@ module Domain =
                     "green"
                     "yellow"
                     "grey"
-                    "grey"
-              Spacing = markdownSpacing 0 0 0 0 0
-              ValidationStatus = ThemeValid
-              Diagnostics = [] }
+                    "grey")
+                (markdownSpacing 0 0 0 0 0)
 
         let readable =
-            { Id = "default"
-              DisplayName = "Default"
-              Source = BuiltInTheme
-              ModeCompatibility = None
-              Colors = defaultMarkdownColors
-              Spacing = defaultMarkdownSpacing
-              ValidationStatus = ThemeValid
-              Diagnostics = [] }
+            markdownTheme "default" "Default" None defaultMarkdownColors defaultMarkdownSpacing
 
-        [ plain; readable ]
+        let comfortableSpacing = markdownSpacing 1 0 1 1 0
+
+        let draculaDark =
+            markdownTheme
+                "dracula-dark"
+                "Dracula Dark"
+                (Some DarkDisplayMode)
+                (markdownColors
+                    "#f8f8f2"
+                    "#bd93f9"
+                    "#ff79c6"
+                    "#f8f8f2"
+                    "#8be9fd"
+                    "#f1fa8c"
+                    "#6272a4"
+                    "#6272a4"
+                    "#ffb86c"
+                    "#50fa7b"
+                    "#ff5555"
+                    "#ff79c6"
+                    "#6272a4")
+                comfortableSpacing
+
+        let nordDark =
+            markdownTheme
+                "nord-dark"
+                "Nord Dark"
+                (Some DarkDisplayMode)
+                (markdownColors
+                    "#eceff4"
+                    "#88c0d0"
+                    "#b48ead"
+                    "#eceff4"
+                    "#81a1c1"
+                    "#ebcb8b"
+                    "#4c566a"
+                    "#81a1c1"
+                    "#8fbcbb"
+                    "#a3be8c"
+                    "#bf616a"
+                    "#d08770"
+                    "#81a1c1")
+                comfortableSpacing
+
+        let tokyoNight =
+            markdownTheme
+                "tokyo-night"
+                "Tokyo Night"
+                (Some DarkDisplayMode)
+                (markdownColors
+                    "#c0caf5"
+                    "#7aa2f7"
+                    "#bb9af7"
+                    "#c0caf5"
+                    "#7dcfff"
+                    "#e0af68"
+                    "#565f89"
+                    "#565f89"
+                    "#bb9af7"
+                    "#9ece6a"
+                    "#f7768e"
+                    "#e0af68"
+                    "#565f89")
+                comfortableSpacing
+
+        let solarizedLight =
+            markdownTheme
+                "solarized-light"
+                "Solarized Light"
+                (Some LightDisplayMode)
+                (markdownColors
+                    "#073642"
+                    "#268bd2"
+                    "#d33682"
+                    "#002b36"
+                    "#268bd2"
+                    "#b58900"
+                    "#657b83"
+                    "#93a1a1"
+                    "#2aa198"
+                    "#859900"
+                    "#dc322f"
+                    "#cb4b16"
+                    "#657b83")
+                comfortableSpacing
+
+        let githubLight =
+            markdownTheme
+                "github-light"
+                "GitHub Light"
+                (Some LightDisplayMode)
+                (markdownColors
+                    "#24292f"
+                    "#0969da"
+                    "#8250df"
+                    "#24292f"
+                    "#0969da"
+                    "#9a6700"
+                    "#6e7781"
+                    "#6e7781"
+                    "#0969da"
+                    "#1a7f37"
+                    "#cf222e"
+                    "#bf3989"
+                    "#6e7781")
+                comfortableSpacing
+
+        let gruvboxLight =
+            markdownTheme
+                "gruvbox-light"
+                "Gruvbox Light"
+                (Some LightDisplayMode)
+                (markdownColors
+                    "#3c3836"
+                    "#076678"
+                    "#8f3f71"
+                    "#3c3836"
+                    "#076678"
+                    "#b57614"
+                    "#7c6f64"
+                    "#928374"
+                    "#427b58"
+                    "#79740e"
+                    "#9d0006"
+                    "#af3a03"
+                    "#7c6f64")
+                comfortableSpacing
+
+        [ plain
+          readable
+          draculaDark
+          nordDark
+          tokyoNight
+          solarizedLight
+          githubLight
+          gruvboxLight ]
 
     let clamp minValue maxValue value = value |> max minValue |> min maxValue
 
