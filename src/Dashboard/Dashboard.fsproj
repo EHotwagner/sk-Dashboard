@@ -7,6 +7,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>sk-dashboard</ToolCommandName>
     <PackageId>sk-Dashboard</PackageId>
+    <Version>0.1.25</Version>
     <Description>Keyboard-first terminal dashboard for local Speckit repositories.</Description>
   </PropertyGroup>
 
