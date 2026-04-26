@@ -1,0 +1,4 @@
+app themes: ["default"; "light"; "dark"]
+markdown themes: ["plain"; "default"]
+checklist command: ("checklists.open", "Open checklists")
+checklist binding: L

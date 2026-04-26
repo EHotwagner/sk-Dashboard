@@ -11,7 +11,7 @@ let hotkeyTests =
         [ test "defaultBindings_cover primary commands" {
               let commands = Hotkeys.defaultBindings |> List.map _.Command |> Set.ofList
 
-              Expect.equal commands.Count 30 "Every primary command has a default binding."
+              Expect.equal commands.Count 35 "Every primary command has a default binding."
 
               Expect.equal
                   (Hotkeys.defaultBindings
@@ -97,10 +97,34 @@ let hotkeyTests =
 
               Expect.equal
                   (Hotkeys.defaultBindings
+                   |> List.find (fun binding -> binding.Command = ChecklistOpen))
+                      .KeySequence
+                  "L"
+                  "Checklist opens with the requested L binding."
+
+              Expect.equal (Hotkeys.commandId ChecklistOpen) "checklists.open" "Checklist command id is stable."
+              Expect.equal (Hotkeys.commandLabel ChecklistOpen) "Open checklists" "Checklist command has a label."
+
+              Expect.equal
+                  (Hotkeys.defaultBindings
                    |> List.find (fun binding -> binding.Command = SettingsOpen))
                       .KeySequence
                   ","
                   "Settings opens by hotkey."
+
+              Expect.equal
+                  (Hotkeys.defaultBindings
+                   |> List.find (fun binding -> binding.Command = SettingsAppThemeNext))
+                      .KeySequence
+                  "A"
+                  "App theme next is reachable in settings."
+
+              Expect.equal
+                  (Hotkeys.defaultBindings
+                   |> List.find (fun binding -> binding.Command = SettingsMarkdownThemeNext))
+                      .KeySequence
+                  "M"
+                  "Markdown theme next is reachable in settings."
 
               Expect.equal
                   (Hotkeys.defaultBindings
@@ -165,7 +189,7 @@ let hotkeyTests =
 
               File.WriteAllText(
                   path,
-                  """{"version":1,"bindings":[{"command":"story.next","key":"n"},{"command":"fullscreen.task","key":"x"}],"ui":{"layout":"vertical","table":{"border":"heavy","stickyColumns":2,"horizontalStep":12},"detail":{"wrapText":true,"horizontalStep":16},"liveReload":{"enabled":true,"debounceMilliseconds":150},"colors":{"selected":{"foreground":"black","background":"green"},"panelAccent":"#7aa2f7","rowStripeOdd":{"foreground":"white","background":"#101820"},"detailHeading":"cyan"}}}"""
+                  """{"version":1,"bindings":[{"command":"story.next","key":"n"},{"command":"fullscreen.task","key":"x"}],"ui":{"layout":"vertical","table":{"border":"heavy","stickyColumns":2,"horizontalStep":12},"detail":{"wrapText":true,"horizontalStep":16},"liveReload":{"enabled":true,"debounceMilliseconds":150},"themes":{"app":"light","markdown":"plain"},"colors":{"selected":{"foreground":"black","background":"green"},"panelAccent":"#7aa2f7","rowStripeOdd":{"foreground":"white","background":"#101820"},"detailHeading":"cyan"}}}"""
               )
 
               let preferences = Hotkeys.loadPreferences path
@@ -190,6 +214,8 @@ let hotkeyTests =
               Expect.isTrue preferences.Ui.Detail.WrapText "Detail wrap is parsed."
               Expect.equal preferences.Ui.Detail.HorizontalStep 16 "Detail horizontal step is parsed."
               Expect.equal preferences.Ui.LiveReload.DebounceMilliseconds 150 "Live reload debounce is parsed."
+              Expect.equal preferences.Ui.Themes.SelectedAppThemeId "light" "App theme id is parsed."
+              Expect.equal preferences.Ui.Themes.SelectedMarkdownThemeId "plain" "Markdown theme id is parsed."
 
               Expect.equal
                   preferences.Ui.Colors[Selected]
@@ -214,6 +240,37 @@ let hotkeyTests =
                   { Foreground = "cyan"
                     Background = None }
                   "Detail role is parsed."
+          }
+
+          test "writePreferences_persists_theme_selection_ids" {
+              let path =
+                  Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-theme-prefs-").FullName, "dashboard.json")
+
+              let preferences =
+                  { Bindings = Hotkeys.defaultBindings
+                    Ui =
+                      { Domain.defaultUiPreferences with
+                          Themes =
+                            { Domain.defaultThemeSelection with
+                                SelectedAppThemeId = "dark"
+                                SelectedMarkdownThemeId = "plain" } }
+                    Diagnostics = [] }
+
+              Hotkeys.writePreferences path preferences
+              let loaded = Hotkeys.loadPreferences path
+              Expect.equal loaded.Ui.Themes.SelectedAppThemeId "dark" "Saved app theme id is restored."
+              Expect.equal loaded.Ui.Themes.SelectedMarkdownThemeId "plain" "Saved Markdown theme id is restored."
+          }
+
+          test "loadPreferences_reports_missing_selected_app_theme_without_rewriting_selection" {
+              let path =
+                  Path.Combine(Directory.CreateTempSubdirectory("sk-dashboard-missing-theme-").FullName, "dashboard.json")
+
+              File.WriteAllText(path, """{"version":1,"bindings":[],"ui":{"themes":{"app":"missing-custom","markdown":"plain"}}}""")
+
+              let loaded = Hotkeys.loadPreferences path
+              Expect.equal loaded.Ui.Themes.SelectedAppThemeId "missing-custom" "Saved app id is preserved."
+              Expect.stringContains (loaded.Diagnostics |> List.map _.Message |> String.concat "\n") "unavailable" "Fallback is diagnostic."
           }
 
           test "viewport_reducers_clamp_scroll_and_selection" {

@@ -263,6 +263,7 @@ module App =
                       SelectedStoryId = snapshot.SelectedStoryId
                       SelectedTaskId = snapshot.SelectedTaskId
                       Document = None
+                      Checklist = None
                       Viewport = Domain.defaultDetailViewport 40 120 } }
 
     let constitutionPath projectPath =
@@ -331,7 +332,119 @@ module App =
                       SelectedStoryId = snapshot.SelectedStoryId
                       SelectedTaskId = snapshot.SelectedTaskId
                       Document = Some document
+                      Checklist = None
                       Viewport = Domain.defaultDetailViewport 40 120 } }
+
+    let dashboardContext snapshot =
+        { SelectedFeatureId = snapshot.SelectedFeatureId
+          SelectedStoryId = snapshot.SelectedStoryId
+          SelectedTaskId = snapshot.SelectedTaskId
+          FocusedPaneId = snapshot.Panes |> List.tryFind _.IsFocused |> Option.map _.Id
+          PreviousFullScreenTarget = snapshot.FullScreen |> Option.map _.Target }
+
+    let checklistDiagnostics (document: MarkdownDocument) =
+        document.Diagnostics
+        |> List.map (fun diagnostic ->
+            Domain.diagnostic
+                Warning
+                diagnostic.Message
+                (diagnostic.SourcePath |> Option.map (fun path -> { Path = path; Line = None })))
+
+    let checklistListDocument (checklists: ChecklistArtifact list) (diagnostics: Diagnostic list) =
+        let body =
+            match checklists with
+            | [] ->
+                "# Checklists\n\nNo checklists are available for the active feature."
+            | values ->
+                values
+                |> List.mapi (fun index checklist ->
+                    let marker = if index = 0 then ">" else "-"
+                    sprintf "%s %s" marker checklist.DisplayName)
+                |> String.concat "\n"
+                |> sprintf "# Checklists\n\n%s\n\nPress enter to open the selected checklist."
+
+        { Title = "Checklists"
+          RawContent = body
+          Source = None
+          Status = if List.isEmpty checklists then MarkdownEmptyDocument else MarkdownRendered
+          Diagnostics =
+            diagnostics
+            |> List.map (fun diagnostic ->
+                { Message = diagnostic.Message
+                  SourcePath = diagnostic.Source |> Option.map _.Path }) }
+
+    let openChecklists _projectPath snapshot =
+        match selectedFeatureRoot snapshot with
+        | None ->
+            let diagnostic = Domain.diagnostic Info "No active feature is selected for checklist discovery." None
+            let state =
+                { AvailableChecklists = []
+                  SelectedChecklist = None
+                  Document = Some(checklistListDocument [] [ diagnostic ])
+                  PreviousContext = dashboardContext snapshot
+                  Viewport = Domain.defaultDetailViewport 40 120
+                  Diagnostics = [ diagnostic ]
+                  Mode = ChecklistEmpty }
+
+            { snapshot with
+                Diagnostics = snapshot.Diagnostics @ [ diagnostic ]
+                FullScreen =
+                    Some
+                        { Target = ChecklistFullScreen
+                          SelectedFeatureId = snapshot.SelectedFeatureId
+                          SelectedStoryId = snapshot.SelectedStoryId
+                          SelectedTaskId = snapshot.SelectedTaskId
+                          Document = state.Document
+                          Checklist = Some state
+                          Viewport = state.Viewport } }
+        | Some featureRoot ->
+            let checklists, diagnostics = SpeckitArtifacts.discoverChecklists featureRoot
+            let mode = if List.isEmpty checklists then ChecklistEmpty else ChecklistListing
+            let state =
+                { AvailableChecklists = checklists
+                  SelectedChecklist = checklists |> List.tryHead
+                  Document = Some(checklistListDocument checklists diagnostics)
+                  PreviousContext = dashboardContext snapshot
+                  Viewport = Domain.defaultDetailViewport 40 120
+                  Diagnostics = diagnostics
+                  Mode = mode }
+
+            { snapshot with
+                Diagnostics = snapshot.Diagnostics @ diagnostics
+                FullScreen =
+                    Some
+                        { Target = ChecklistFullScreen
+                          SelectedFeatureId = snapshot.SelectedFeatureId
+                          SelectedStoryId = snapshot.SelectedStoryId
+                          SelectedTaskId = snapshot.SelectedTaskId
+                          Document = state.Document
+                          Checklist = Some state
+                          Viewport = state.Viewport } }
+
+    let openSelectedChecklist snapshot =
+        match snapshot.FullScreen with
+        | Some modal when modal.Target = ChecklistFullScreen ->
+            match modal.Checklist |> Option.bind _.SelectedChecklist with
+            | None -> snapshot
+            | Some checklist ->
+                let document = SpeckitArtifacts.loadChecklistDocument checklist
+                let diagnostics = checklistDiagnostics document
+                let nextState =
+                    modal.Checklist
+                    |> Option.map (fun state ->
+                        { state with
+                            Document = Some document
+                            Diagnostics = state.Diagnostics @ diagnostics
+                            Mode = ChecklistReading })
+
+                { snapshot with
+                    Diagnostics = snapshot.Diagnostics @ diagnostics
+                    FullScreen =
+                        Some
+                            { modal with
+                                Document = Some document
+                                Checklist = nextState } }
+        | _ -> snapshot
 
     let closeFullScreen snapshot = { snapshot with FullScreen = None }
 
@@ -428,19 +541,89 @@ module App =
                         { snapshot.Ui.Detail with
                             HorizontalStep = nextStep } } }
 
+    let cycleValue delta current choices =
+        match choices with
+        | [] -> current
+        | values ->
+            let currentIndex =
+                values
+                |> List.tryFindIndex ((=) current)
+                |> Option.defaultValue 0
+
+            let nextIndex = (currentIndex + delta + List.length values) % List.length values
+            values |> List.item nextIndex
+
+    let cycleAppTheme delta snapshot =
+        let next =
+            cycleValue delta snapshot.Ui.Themes.SelectedAppThemeId snapshot.Ui.Themes.AvailableAppThemes
+
+        { snapshot with
+            Ui =
+                { snapshot.Ui with
+                    Table = Domain.defaultUiPreferences.Table
+                    Colors = Domain.defaultUiPreferences.Colors
+                    Themes =
+                        { snapshot.Ui.Themes with
+                            SelectedAppThemeId = next } } }
+
+    let cycleMarkdownTheme delta snapshot =
+        let next =
+            cycleValue delta snapshot.Ui.Themes.SelectedMarkdownThemeId snapshot.Ui.Themes.AvailableMarkdownThemes
+
+        { snapshot with
+            Ui =
+                { snapshot.Ui with
+                    Themes =
+                        { snapshot.Ui.Themes with
+                            SelectedMarkdownThemeId = next } } }
+
     let settingsSurfaceActive snapshot =
         snapshot.FullScreen
         |> Option.exists (fun modal -> modal.Target = SettingsFullScreen)
+
+    let settingsFocus snapshot =
+        snapshot.FullScreen
+        |> Option.map _.Viewport.LineOffset
+        |> Option.defaultValue 0
+        |> max 0
+        |> min 3
+
+    let setSettingsFocus focus snapshot =
+        match snapshot.FullScreen with
+        | Some modal when modal.Target = SettingsFullScreen ->
+            let viewport =
+                { modal.Viewport with
+                    LineOffset = focus |> max 0 |> min 3 }
+
+            { snapshot with
+                FullScreen = Some { modal with Viewport = viewport } }
+        | _ -> snapshot
+
+    let moveSettingsFocus delta snapshot =
+        setSettingsFocus ((settingsFocus snapshot + delta + 4) % 4) snapshot
+
+    let changeFocusedSetting delta snapshot =
+        match settingsFocus snapshot with
+        | 0 -> cycleAppTheme delta snapshot
+        | 1 -> cycleMarkdownTheme delta snapshot
+        | 2 -> cycleBorder delta snapshot
+        | _ -> adjustDetailStep delta snapshot
 
     let fullScreenActive snapshot = snapshot.FullScreen.IsSome
 
     let applyCommand projectPath command snapshot =
         match command with
+        | StoryPrevious when settingsSurfaceActive snapshot -> moveSettingsFocus -1 snapshot
+        | StoryNext when settingsSurfaceActive snapshot -> moveSettingsFocus 1 snapshot
+        | TaskPrevious when settingsSurfaceActive snapshot -> changeFocusedSetting -1 snapshot
+        | TaskNext when settingsSurfaceActive snapshot -> changeFocusedSetting 1 snapshot
         | StoryPrevious when fullScreenActive snapshot -> scrollFullScreenLines -5 snapshot
         | StoryNext when fullScreenActive snapshot -> scrollFullScreenLines 5 snapshot
         | TaskPrevious when fullScreenActive snapshot ->
             scrollFullScreenColumns -snapshot.Ui.Detail.HorizontalStep snapshot
         | TaskNext when fullScreenActive snapshot -> scrollFullScreenColumns snapshot.Ui.Detail.HorizontalStep snapshot
+        | FeatureCheckout when snapshot.FullScreen |> Option.exists (fun modal -> modal.Target = ChecklistFullScreen) ->
+            openSelectedChecklist snapshot
         | FeaturePrevious -> selectFeature -1 snapshot
         | FeatureNext -> selectFeature 1 snapshot
         | StoryPrevious -> selectStory -1 snapshot
@@ -454,6 +637,11 @@ module App =
         | FullScreenPlan -> openFullScreen PlanFullScreen snapshot
         | FullScreenTask -> openFullScreen TaskFullScreen snapshot
         | ConstitutionOpen -> openConstitution projectPath snapshot
+        | ChecklistOpen -> openChecklists projectPath snapshot
+        | SettingsAppThemePrevious when settingsSurfaceActive snapshot -> cycleAppTheme -1 snapshot
+        | SettingsAppThemeNext when settingsSurfaceActive snapshot -> cycleAppTheme 1 snapshot
+        | SettingsMarkdownThemePrevious when settingsSurfaceActive snapshot -> cycleMarkdownTheme -1 snapshot
+        | SettingsMarkdownThemeNext when settingsSurfaceActive snapshot -> cycleMarkdownTheme 1 snapshot
         | TableScrollLeft when settingsSurfaceActive snapshot -> cycleBorder -1 snapshot
         | TableScrollRight when settingsSurfaceActive snapshot -> cycleBorder 1 snapshot
         | TableScrollLeft -> scrollTableColumns -snapshot.Ui.Table.HorizontalStep snapshot

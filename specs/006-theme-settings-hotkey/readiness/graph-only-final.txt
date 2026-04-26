@@ -1,0 +1,10 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/sk-Dashboard/specs/006-theme-settings-hotkey
+
+[1/2] Computing task graph...
+task-graph: 50 tasks parsed
+  wrote /home/developer/projects/sk-Dashboard/specs/006-theme-settings-hotkey/readiness/task-graph.json
+  wrote /home/developer/projects/sk-Dashboard/specs/006-theme-settings-hotkey/readiness/task-graph.md
+  status: 50[X]
+
+graph-only mode; skipping diff scan.

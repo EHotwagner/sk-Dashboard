@@ -1,0 +1,16 @@
+sk-dashboard settings
+Config: /tmp/sk-dashboard-installed-check.json
+App theme: default
+Markdown theme: default
+Resolved Markdown theme: default
+App theme choices: default, light, dark
+Markdown theme choices: plain, default
+Table border: rounded
+Sticky columns: 1
+Table horizontal step: 8
+Detail wrap: false
+Detail horizontal step: 8
+Live reload: true
+Live reload debounce: 250ms
+Diagnostics: none
+Settings status: ready

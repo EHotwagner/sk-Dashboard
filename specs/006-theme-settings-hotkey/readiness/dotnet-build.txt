@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Core -> /home/developer/projects/sk-Dashboard/src/Core/bin/Debug/net10.0/Core.dll
+  Dashboard -> /home/developer/projects/sk-Dashboard/src/Dashboard/bin/Debug/net10.0/sk-dashboard.dll
+  Core.Tests -> /home/developer/projects/sk-Dashboard/tests/Core.Tests/bin/Debug/net10.0/Core.Tests.dll
+  Dashboard.Tests -> /home/developer/projects/sk-Dashboard/tests/Dashboard.Tests/bin/Debug/net10.0/Dashboard.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.44

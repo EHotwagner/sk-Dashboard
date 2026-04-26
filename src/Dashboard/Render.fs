@@ -44,10 +44,16 @@ module Render =
     let rowStripeRole index =
         if index % 2 = 0 then RowStripeEven else RowStripeOdd
 
-    let rowStripeTag index ui = styleTag (rowStripeRole index) ui
+    let rowStripeTag index (ui: DashboardUiPreferences) = styleTag (rowStripeRole index) ui
 
-    let stripedMarkup index ui text =
-        sprintf "[%s] %s [/]" (rowStripeTag index ui) (Markup.Escape text)
+    let stripedMarkup index (ui: DashboardUiPreferences) text =
+        let tag =
+            if ui.Table.AlternateRowShading then
+                rowStripeTag index ui
+            else
+                styleTag DetailBody ui
+
+        sprintf "[%s] %s [/]" tag (Markup.Escape text)
 
     let styledCellMarkup rowRole ui text =
         sprintf "[%s] %s [/]" (styleTag rowRole ui) (Markup.Escape text)
@@ -248,20 +254,36 @@ module Render =
             [ { Message = "Markdown renderer failed: " + ex.Message
                 SourcePath = sourcePath } ]
 
-    let markdownRows text sourcePath viewport =
+    let markdownRows (ui: DashboardUiPreferences) text sourcePath viewport =
         let _, status, diagnostics = renderMarkdownLines sourcePath text
 
-        let sourceLines = fallbackMarkdownLines text
+        let theme = ui.Markdown
+
+        let sourceLines =
+            fallbackMarkdownLines text
+            |> Array.collect (fun line ->
+                let trimmed = line.TrimStart()
+
+                if trimmed.StartsWith("#") && theme.Spacing.BeforeHeading > 0 then
+                    Array.append (Array.create theme.Spacing.BeforeHeading "") [| line |]
+                else
+                    [| line |])
+
         let widest = sourceLines |> Array.map _.Length |> Array.append [| 0 |] |> Array.max
         let viewport = Domain.clampDetailViewport sourceLines.Length widest viewport
 
-        let inlineMarkdown (value: string) =
+        let colorTag value = value
+
+        let wrap tag value =
+            "[" + tag + "]" + value + "[/]"
+
+        let inlineMarkdown normalColor (value: string) =
             let output = StringBuilder()
             let literal = StringBuilder()
 
             let flushLiteral () =
                 if literal.Length > 0 then
-                    output.Append(Markup.Escape(literal.ToString())) |> ignore
+                    output.Append(wrap (colorTag normalColor) (Markup.Escape(literal.ToString()))) |> ignore
                     literal.Clear() |> ignore
 
             let appendStyled (tag: string) (text: string) =
@@ -277,7 +299,7 @@ module Render =
                     let close = value.IndexOf("**", index + 2, StringComparison.Ordinal)
 
                     if close > index then
-                        appendStyled "bold" value[(index + 2) .. (close - 1)]
+                        appendStyled ("bold " + theme.Colors.Strong) value[(index + 2) .. (close - 1)]
                         loop (close + 2)
                     else
                         literal.Append(value[index]) |> ignore
@@ -286,7 +308,7 @@ module Render =
                     let close = value.IndexOf('`', index + 1)
 
                     if close > index then
-                        appendStyled "yellow" value[(index + 1) .. (close - 1)]
+                        appendStyled theme.Colors.InlineCode value[(index + 1) .. (close - 1)]
                         loop (close + 1)
                     else
                         literal.Append(value[index]) |> ignore
@@ -295,7 +317,7 @@ module Render =
                     let close = value.IndexOf('_', index + 1)
 
                     if close > index then
-                        appendStyled "italic" value[(index + 1) .. (close - 1)]
+                        appendStyled ("italic " + theme.Colors.Emphasis) value[(index + 1) .. (close - 1)]
                         loop (close + 1)
                     else
                         literal.Append(value[index]) |> ignore
@@ -314,9 +336,13 @@ module Render =
                             flushLiteral ()
 
                             output
-                                .Append("[underline]")
+                                .Append("[underline ")
+                                .Append(theme.Colors.Link)
+                                .Append("]")
                                 .Append(Markup.Escape value[(index + 1) .. (labelClose - 1)])
-                                .Append("[/] [grey](")
+                                .Append("[/] [")
+                                .Append(theme.Colors.Muted)
+                                .Append("](")
                                 .Append(Markup.Escape value[(labelClose + 2) .. (urlClose - 1)])
                                 .Append(")[/]")
                             |> ignore
@@ -340,16 +366,32 @@ module Render =
             let trimmed = line.TrimStart()
 
             if line.Trim().StartsWith("```") then
-                Markup("[grey]" + Markup.Escape line + "[/]") :> IRenderable
+                Markup(wrap theme.Colors.CodeBlock (Markup.Escape line)) :> IRenderable
             elif inCode then
-                Markup("[grey]" + Markup.Escape line + "[/]") :> IRenderable
+                Markup(wrap theme.Colors.CodeBlock (Markup.Escape line)) :> IRenderable
+            elif trimmed.StartsWith(">") then
+                Markup(wrap theme.Colors.BlockQuote (Markup.Escape line)) :> IRenderable
             elif trimmed.StartsWith("#") then
                 let heading = trimmed.TrimStart('#').Trim()
-                Markup("[bold]" + inlineMarkdown heading + "[/]") :> IRenderable
+                Markup("[bold " + theme.Colors.Heading + "]" + inlineMarkdown theme.Colors.Heading heading + "[/]") :> IRenderable
             elif trimmed.StartsWith("- ") || trimmed.StartsWith("* ") then
                 let indent = line.Length - trimmed.Length
                 let body = trimmed.Substring(2)
-                Markup(String(' ', indent) + "- " + inlineMarkdown body) :> IRenderable
+                let markerColor, bodyText =
+                    if body.StartsWith("[x]", StringComparison.OrdinalIgnoreCase) then
+                        theme.Colors.CheckedItem, body
+                    elif body.StartsWith("[ ]", StringComparison.Ordinal) then
+                        theme.Colors.UncheckedItem, body
+                    else
+                        theme.Colors.ListMarker, body
+
+                Markup(
+                    String(' ', indent)
+                    + wrap markerColor "-"
+                    + " "
+                    + inlineMarkdown markerColor bodyText
+                )
+                :> IRenderable
             else
                 let dot = trimmed.IndexOf(". ", StringComparison.Ordinal)
 
@@ -357,9 +399,15 @@ module Render =
                     let indent = line.Length - trimmed.Length
                     let marker = trimmed[0..dot]
                     let body = trimmed.Substring(dot + 2)
-                    Markup(String(' ', indent) + marker + " " + inlineMarkdown body) :> IRenderable
+                    Markup(
+                        String(' ', indent)
+                        + wrap theme.Colors.ListMarker marker
+                        + " "
+                        + inlineMarkdown theme.Colors.Normal body
+                    )
+                    :> IRenderable
                 else
-                    Markup(inlineMarkdown line) :> IRenderable
+                    Markup(inlineMarkdown theme.Colors.Normal line) :> IRenderable
 
         let formatted =
             let mutable inCode = false
@@ -386,9 +434,9 @@ module Render =
 
         rows, sourceLines.Length, viewport, status, diagnostics
 
-    let markdownBlock text sourcePath =
+    let markdownBlock ui text sourcePath =
         let lines, _, _, status, diagnostics =
-            markdownRows text sourcePath (Domain.defaultDetailViewport System.Int32.MaxValue 120)
+            markdownRows ui text sourcePath (Domain.defaultDetailViewport System.Int32.MaxValue 120)
 
         let _ = status, diagnostics
         Rows lines :> IRenderable
@@ -694,7 +742,7 @@ module Render =
                                    (Markup.Escape source)
                            )
                            :> IRenderable
-                           markdownBlock description (task.SourceLocation |> Option.map _.Path) |]
+                           markdownBlock ui description (task.SourceLocation |> Option.map _.Path) |]
                     )
 
                 rows :> IRenderable)
@@ -903,15 +951,41 @@ module Render =
             modal.Document
             |> Option.map _.RawContent
             |> Option.defaultValue "No constitution document is loaded. Press esc to return."
+        | ChecklistFullScreen ->
+            modal.Checklist
+            |> Option.bind _.Document
+            |> Option.orElse modal.Document
+            |> Option.map _.RawContent
+            |> Option.defaultValue "No checklist document is loaded. Press esc to return."
         | SettingsFullScreen ->
             let ui = snapshot.Ui
+            let focus =
+                modal.Viewport.LineOffset |> max 0 |> min 3
+
+            let marker index = if focus = index then "> " else "  "
+            let fallbackText =
+                [ if ui.Themes.AppThemeFallback then "app fallback active"
+                  if ui.Themes.MarkdownThemeFallback then "markdown fallback active" ]
+                |> function
+                    | [] -> "none"
+                    | values -> String.concat ", " values
 
             sprintf
-                "Settings\nTable border: %s\nSticky columns: %d\nTable horizontal step: %d\nDetail wrap: %b\nDetail horizontal step: %d\nLive reload: %b\nLive reload debounce: %dms\n\nh/l changes table border. Shift-left/right changes detail step. 1 saves, 2 discards, 3 reloads, 4 overwrites. Config can also be edited with sk-dashboard --settings --config <path>."
+                "Settings\n%sApp theme: %s\n%sMarkdown theme: %s\nResolved Markdown theme: %s\nApp theme choices: %s\nMarkdown theme choices: %s\nTheme fallback: %s\n%sTable border: %s\nSticky columns: %d\nTable horizontal step: %d\nDetail wrap: %b\n%sDetail horizontal step: %d\nLive reload: %b\nLive reload debounce: %dms\n\nUp/down selects a setting. Left/right changes it and saves automatically. A/a and M/m also change themes. 2 reloads, Esc closes."
+                (marker 0)
+                ui.Themes.SelectedAppThemeId
+                (marker 1)
+                ui.Themes.SelectedMarkdownThemeId
+                ui.Markdown.Id
+                (String.concat ", " ui.Themes.AvailableAppThemes)
+                (String.concat ", " ui.Themes.AvailableMarkdownThemes)
+                fallbackText
+                (marker 2)
                 (Domain.tableBorderId ui.Table.Border)
                 ui.Table.StickyColumns
                 ui.Table.HorizontalStep
                 ui.Detail.WrapText
+                (marker 3)
                 ui.Detail.HorizontalStep
                 ui.LiveReload.Enabled
                 ui.LiveReload.DebounceMilliseconds
@@ -923,6 +997,7 @@ module Render =
         | PlanFullScreen -> "Plan"
         | TaskFullScreen -> "Task"
         | ConstitutionFullScreen -> "Constitution"
+        | ChecklistFullScreen -> "Checklists"
         | SettingsFullScreen -> "Settings"
 
     let fullScreenRenderable (snapshot: DashboardSnapshot) (modal: FullScreenModal) =
@@ -946,7 +1021,7 @@ module Render =
                         Markup("[white]" + Markup.Escape(sliceText viewport.ColumnOffset line) + "[/]") :> IRenderable)
 
                 rows, lines.Length, viewport, MarkdownRendered, []
-            | _ -> markdownRows rawText sourcePath modal.Viewport
+            | _ -> markdownRows ui rawText sourcePath modal.Viewport
 
         let title =
             let statusText =
@@ -1137,9 +1212,9 @@ module Render =
         let footer =
             let actions =
                 if List.isEmpty snapshot.Features then
-                    "[bold]C[/] constitution  [bold]r[/] refresh  [bold],[/] settings  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
+                    "[bold]C[/] constitution  [bold]L[/] checklists  [bold]r[/] refresh  [bold],[/] settings  [bold]q[/] quit  [grey]create specs with Speckit to begin[/]"
                 else
-                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]h/l[/] table scroll  [bold]F/S/P/T[/] full screen  [bold]C[/] constitution  [bold]arrows[/] scroll detail  [bold],[/] settings  [bold]r[/] refresh  [bold]q[/] quit"
+                    "[bold]j/k[/] features  [bold]up/down[/] stories  [bold]left/right[/] tasks  [bold]h/l[/] table scroll  [bold]F/S/P/T[/] full screen  [bold]C[/] constitution  [bold]L[/] checklists  [bold]arrows[/] scroll detail  [bold],[/] settings  [bold]r[/] refresh  [bold]q[/] quit"
 
             let rows =
                 Rows(

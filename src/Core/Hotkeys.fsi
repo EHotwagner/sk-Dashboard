@@ -17,6 +17,7 @@ type DashboardCommand =
     | FullScreenPlan
     | FullScreenTask
     | ConstitutionOpen
+    | ChecklistOpen
     | TableScrollLeft
     | TableScrollRight
     | DetailScrollUp
@@ -28,6 +29,10 @@ type DashboardCommand =
     | SettingsDiscard
     | SettingsReload
     | SettingsOverwrite
+    | SettingsAppThemePrevious
+    | SettingsAppThemeNext
+    | SettingsMarkdownThemePrevious
+    | SettingsMarkdownThemeNext
     | Refresh
     | HotkeysReload
     | Quit
@@ -50,6 +55,7 @@ module Hotkeys =
     val commandLabel: DashboardCommand -> string
     val colorRoleDefaults: unit -> Map<DashboardColorRole, DashboardColorStyle>
     val parseLayoutMode: string -> DashboardLayoutMode option
+    val resolveUiThemes: string -> DashboardUiPreferences -> DashboardUiPreferences * Diagnostic list
     val currentConfigVersion: string -> ConfigFileVersion
     val writePreferences: string -> DashboardPreferences -> unit
     val loadPreferences: string -> DashboardPreferences

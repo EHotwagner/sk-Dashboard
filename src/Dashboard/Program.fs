@@ -35,19 +35,41 @@ module Program =
           Ui = snapshot.Ui
           Diagnostics = diagnostics }
 
-    let applyCommandWithPreferences projectPath activePreferences command state =
+    let saveSettingsSnapshot configPath activePreferences snapshot =
+        let updated =
+            preferencesFromSnapshot activePreferences.Bindings activePreferences.Diagnostics snapshot
+
+        Hotkeys.writePreferences configPath updated
+        Hotkeys.loadPreferences configPath
+
+    let themeEditCommand command =
+        command = SettingsAppThemePrevious
+        || command = SettingsAppThemeNext
+        || command = SettingsMarkdownThemePrevious
+        || command = SettingsMarkdownThemeNext
+
+    let applyCommandWithPreferences projectPath configPath activePreferences command state =
         let next = App.applyCommand projectPath command state
 
         if command = Refresh then
             applyUi activePreferences next
+        elif App.settingsSurfaceActive state && themeEditCommand command then
+            let ui, diagnostics = Hotkeys.resolveUiThemes configPath next.Ui
+
+            { next with
+                Ui = ui
+                Diagnostics = next.Diagnostics @ diagnostics }
         else
             next
 
     let settingsEditCommand command =
         command = TableScrollLeft
         || command = TableScrollRight
+        || command = TaskPrevious
+        || command = TaskNext
         || command = DetailScrollLeft
         || command = DetailScrollRight
+        || themeEditCommand command
 
     let saveConflictDiagnostic () =
         Domain.diagnostic
@@ -79,11 +101,16 @@ module Program =
         | FullScreenPlan
         | FullScreenTask
         | ConstitutionOpen
+        | ChecklistOpen
         | SettingsOpen
         | SettingsSave
         | SettingsDiscard
         | SettingsReload
         | SettingsOverwrite
+        | SettingsAppThemePrevious
+        | SettingsAppThemeNext
+        | SettingsMarkdownThemePrevious
+        | SettingsMarkdownThemeNext
         | HotkeysReload
         | Refresh -> true
         | FeatureCheckout
@@ -157,13 +184,15 @@ module Program =
                         applyPreferences activePreferences state
                     | Some Quit -> state
                     | Some command ->
-                        let next = applyCommandWithPreferences projectPath activePreferences command state
+                        let next = applyCommandWithPreferences projectPath configPath activePreferences command state
 
                         if command = SettingsOpen then
                             settingsLoadedVersion <- Some(Hotkeys.currentConfigVersion configPath)
                             settingsDirty <- false
                         elif App.settingsSurfaceActive state && settingsEditCommand command then
-                            settingsDirty <- true
+                            activePreferences <- saveSettingsSnapshot configPath activePreferences next
+                            settingsLoadedVersion <- Some(Hotkeys.currentConfigVersion configPath)
+                            settingsDirty <- false
 
                         next)
                 snapshot
@@ -283,13 +312,15 @@ module Program =
                     snapshot <- applyPreferences activePreferences snapshot
                 | Some command ->
                     let previous = snapshot
-                    snapshot <- applyCommandWithPreferences projectPath activePreferences command snapshot
+                    snapshot <- applyCommandWithPreferences projectPath configPath activePreferences command snapshot
 
                     if command = SettingsOpen then
                         settingsLoadedVersion <- Some(Hotkeys.currentConfigVersion configPath)
                         settingsDirty <- false
                     elif App.settingsSurfaceActive previous && settingsEditCommand command then
-                        settingsDirty <- true
+                        activePreferences <- saveSettingsSnapshot configPath activePreferences snapshot
+                        settingsLoadedVersion <- Some(Hotkeys.currentConfigVersion configPath)
+                        settingsDirty <- false
 
         try
             Console.CursorVisible <- false
@@ -362,8 +393,13 @@ module Program =
             | values -> values |> List.map (fun d -> "Diagnostics: " + d.Message) |> String.concat "\n"
 
         sprintf
-            "sk-dashboard settings\nConfig: %s\nTable border: %s\nSticky columns: %d\nTable horizontal step: %d\nDetail wrap: %b\nDetail horizontal step: %d\nLive reload: %b\nLive reload debounce: %dms\n%s"
+            "sk-dashboard settings\nConfig: %s\nApp theme: %s\nMarkdown theme: %s\nResolved Markdown theme: %s\nApp theme choices: %s\nMarkdown theme choices: %s\nTable border: %s\nSticky columns: %d\nTable horizontal step: %d\nDetail wrap: %b\nDetail horizontal step: %d\nLive reload: %b\nLive reload debounce: %dms\n%s"
             configPath
+            preferences.Ui.Themes.SelectedAppThemeId
+            preferences.Ui.Themes.SelectedMarkdownThemeId
+            preferences.Ui.Markdown.Id
+            (String.concat ", " preferences.Ui.Themes.AvailableAppThemes)
+            (String.concat ", " preferences.Ui.Themes.AvailableMarkdownThemes)
             (Domain.tableBorderId preferences.Ui.Table.Border)
             preferences.Ui.Table.StickyColumns
             preferences.Ui.Table.HorizontalStep

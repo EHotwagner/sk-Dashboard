@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m [1mv0.1.18[0m  repo /home/developer/projects/sk-Dashboard  branch       
+ 006-theme-settings-hotkey                                                      
+                                                                                
+╭─[1mSettings Full Screen[0m lines 1-16/16 col +0────────────────────────────────────╮
+│ Settings                                                                     │
+│ App theme: missing-app                                                       │
+│ Markdown theme: missing-markdown                                             │
+│ Resolved Markdown theme: default                                             │
+│ App theme choices: default, light, dark, readiness-app                       │
+│ Markdown theme choices: plain, default, readiness-markdown                   │
+│ Theme fallback: app fallback active, markdown fallback active                │
+│ Table border: rounded                                                        │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mh/l[0m table scroll  [1mF/S/P/T[0m   │
+│ full screen  [1mC[0m constitution  [1mL[0m checklists  [1marrows[0m scroll detail  [1m,[0m settings  │
+│ [1mr[0m refresh  [1mq[0m quit                                                            │
+│ ╭───────────┬──────────────────────────────────────────────────────────────╮ │
+│ │ [1mSeverity[0m  │ [1mMessage[0m                                                      │ │
+│ ├───────────┼──────────────────────────────────────────────────────────────┤ │
+│ │  warning  │  Selected app theme is unavailable; using default:           │ │
+│ │           │ missing-app                                                  │ │
+│ │  warning  │  Selected Markdown theme is unavailable; using default:      │ │
+│ │           │ missing-markdown                                             │ │

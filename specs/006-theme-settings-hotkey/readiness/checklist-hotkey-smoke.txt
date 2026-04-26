@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m [1mv0.1.18[0m  repo /home/developer/projects/sk-Dashboard  branch       
+ 006-theme-settings-hotkey                                                      
+                                                                                
+╭─[1mChecklists Full Screen[0m lines 1-40/43 col +0──────────────────────────────────╮
+│ [1mSpecification Quality Checklist: Theme Settings and Checklist Hotkey[0m         │
+│ [1mPurpose[0m: Validate specification completeness and quality before proceeding   │
+│ to planning                                                                  │
+│ [1mCreated[0m: 2026-04-26                                                          │
+│ [1mFeature[0m: [4mspec.md[0m (../spec.md)                                                │
+│ [1mContent Quality[0m                                                              │
+│ - [x] No implementation details (languages, frameworks, APIs)                │
+│ - [x] Focused on user value and business needs                               │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mh/l[0m table scroll  [1mF/S/P/T[0m   │
+│ full screen  [1mC[0m constitution  [1mL[0m checklists  [1marrows[0m scroll detail  [1m,[0m settings  │
+│ [1mr[0m refresh  [1mq[0m quit                                                            │
+│ ╭────────────────────────────┬─────────────────────────────────────────────╮ │
+│ │ [1mSeverity[0m                   │ [1mMessage[0m                                     │ │
+│ ├────────────────────────────┼─────────────────────────────────────────────┤ │
+│ │ ok                         │ No diagnostics                              │ │
+│ ╰────────────────────────────┴─────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                

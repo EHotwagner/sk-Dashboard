@@ -1,0 +1,833 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create `specs/006-theme-settings-hotkey/readiness/` and seed placeholders for FSI, smoke, and audit transcripts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record the current public Core surface baseline for `Domain.fsi`, `Hotkeys.fsi`, and `SpeckitArtifacts.fsi`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add sample valid and invalid app/Markdown theme JSON files under readiness fixtures for implementation smoke checks",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add sample checklist fixtures covering non-empty, empty, missing, and malformed checklist inputs",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Document Tier 1 evidence obligations and quickstart commands in `readiness/evidence-plan.md`",
+      "explicit_deps": [
+        "T001",
+        "T002",
+        "T003",
+        "T004"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft theme family, theme id, theme source, app theme, Markdown theme, resolved display mode, selection, and validation feedback contracts in `src/Core/Domain.fsi`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft checklist view state and context-preservation contracts in `src/Core/Domain.fsi` and active-feature checklist discovery signatures in `src/Core/SpeckitArtifacts.fsi`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft checklist hotkey command contract in `src/Core/Hotkeys.fsi`, including stable id `checklists.open`, label, and default key `L`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add shared Core test fixtures/builders for temporary dashboard config files, theme folders, and checklist folders",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the drafted `.fsi` additions from FSI and capture the transcript at `specs/006-theme-settings-hotkey/readiness/fsi-session.txt`",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record unsupported-scope, fallback, and validation diagnostics expected for invalid themes, missing saved themes, and checklist IO failures",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh intentional public surface baselines for the drafted Tier 1 Core additions",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for built-in app themes `default`, `light`, `dark`, display names, mode resolution, and alternate row shading default-off behavior",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for app theme selection persistence, fallback from missing selected app themes, and validation feedback",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests showing app theme choices in settings and rendered table/status/detail surfaces using selected theme roles",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement app theme domain records, built-in `default`/`light`/`dark` definitions, color roles, table roles, and readable fallback mode in `src/Core/Domain.fs`",
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend dashboard preference load/save in `src/Core/Hotkeys.fs` to preserve selected app theme id alongside existing bindings and UI preferences",
+      "explicit_deps": [
+        "T014",
+        "T016"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Apply resolved app themes to Dashboard settings, tables, panels, selected rows, status colors, muted text, warnings, errors, and backgrounds in `src/Dashboard/App.fs` and `src/Dashboard/Render.fs`",
+      "explicit_deps": [
+        "T015",
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add live-safe app theme apply/discard behavior that preserves prior dashboard context and emits fallback diagnostics",
+      "explicit_deps": [
+        "T014",
+        "T018"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 independent validation evidence in `readiness/app-theme-smoke.txt`",
+      "explicit_deps": [
+        "T018",
+        "T019"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for built-in Markdown themes `plain` and `default`, element color roles, spacing rules, and app-mode compatibility",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for Markdown theme selection in settings and themed constitution/detail Markdown rendering",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement Markdown theme domain records, `plain` compatibility baseline, readable `default` theme, spacing clamps, and mode-compatible palettes",
+      "explicit_deps": [
+        "T021"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend dashboard preference load/save to persist selected Markdown theme id independently from selected app theme id",
+      "explicit_deps": [
+        "T021",
+        "T023"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Apply selected Markdown themes to constitution and full/detail Markdown-backed views without expanding compact table cells, including live settings save/discard behavior within the 2-second target",
+      "explicit_deps": [
+        "T022",
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add Markdown theme validation diagnostics for unreadable colors, excessive spacing, and renderer fallback paths",
+      "explicit_deps": [
+        "T021",
+        "T023"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 independent validation evidence in `readiness/markdown-theme-smoke.txt`",
+      "explicit_deps": [
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for custom app and Markdown theme folder discovery, deterministic ordering, family separation, and display names",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for invalid JSON, incomplete themes, duplicate ids, wrong-family files, unreadable folders, and unknown future fields",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for selecting custom themes, restart persistence, missing selected custom themes, and visible validation feedback",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement family-specific custom theme folder resolution relative to the dashboard user config path",
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement tolerant JSON custom theme parsing, validation, safe replacement of unreadable roles, and diagnostics in Core",
+      "explicit_deps": [
+        "T029",
+        "T031"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Merge built-in and valid custom themes into settings choices while keeping app and Markdown families separate",
+      "explicit_deps": [
+        "T028",
+        "T030",
+        "T032"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Preserve saved custom theme identifiers across fallback until the user saves a new selection",
+      "explicit_deps": [
+        "T030",
+        "T032",
+        "T033"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US3 independent validation evidence in `readiness/custom-theme-smoke.txt`",
+      "explicit_deps": [
+        "T033",
+        "T034"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Core semantic tests for checklist file discovery, checklist view state, empty-state diagnostics, and previous-context preservation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Hotkey tests for `ChecklistOpen`, command id `checklists.open`, label, default key `L`, conflict validation, and preference overrides",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add Dashboard smoke tests for pressing the checklist command, listing checklists, opening a checklist, keyboard navigation, and closing back to the prior context",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement checklist discovery for active feature `checklists/` folders in `src/Core/SpeckitArtifacts.fs`",
+      "explicit_deps": [
+        "T036"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Add the checklist command to Core hotkeys, Dashboard input routing, and `App.applyCommand`",
+      "explicit_deps": [
+        "T037",
+        "T039"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement checklist list/read/empty/error view state in `src/Dashboard/App.fs` while preserving feature, story, task, pane, and modal context",
+      "explicit_deps": [
+        "T036",
+        "T038",
+        "T040"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Render checklist headings, checked items, unchecked items, notes, and empty/error messages through the selected Markdown theme in `src/Dashboard/Render.fs`",
+      "explicit_deps": [
+        "T038",
+        "T041"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US4 independent validation evidence in `readiness/checklist-hotkey-smoke.txt`",
+      "explicit_deps": [
+        "T041",
+        "T042"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet format` or equivalent project formatting checks for modified F# files",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet build sk-Dashboard.sln` and capture build evidence",
+      "explicit_deps": [
+        "T044"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet test sk-Dashboard.sln` and capture Core/Dashboard semantic and smoke evidence",
+      "explicit_deps": [
+        "T045"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the quickstart theme, invalid-theme, custom-theme, and checklist hotkey smoke checks and capture transcripts under `readiness/`",
+      "explicit_deps": [
+        "T046"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh Tier 1 surface-area baselines and confirm intentional public additions only",
+      "explicit_deps": [
+        "T045"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/006-theme-settings-hotkey --graph-only` and confirm no dangling refs or cycles",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/006-theme-settings-hotkey` and document every synthetic override if any are accepted",
+      "explicit_deps": [
+        "T049"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    }
+  ]
+}

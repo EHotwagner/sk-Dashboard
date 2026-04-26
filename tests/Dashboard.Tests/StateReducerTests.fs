@@ -55,7 +55,10 @@ let stateReducerTests =
               Expect.equal (Input.commandForKey "P") (Some FullScreenPlan) "Plan full-screen is reachable."
               Expect.equal (Input.commandForKey "T") (Some FullScreenTask) "Task full-screen is reachable."
               Expect.equal (Input.commandForKey "C") (Some ConstitutionOpen) "Constitution view is reachable."
+              Expect.equal (Input.commandForKey "L") (Some ChecklistOpen) "Checklist view is reachable."
               Expect.equal (Input.commandForKey ",") (Some SettingsOpen) "Settings page is reachable."
+              Expect.equal (Input.commandForKey "A") (Some SettingsAppThemeNext) "App theme next is reachable."
+              Expect.equal (Input.commandForKey "M") (Some SettingsMarkdownThemeNext) "Markdown theme next is reachable."
               Expect.equal (Input.commandForKey "h") (Some TableScrollLeft) "Table scroll left is reachable."
               Expect.equal (Input.commandForKey "l") (Some TableScrollRight) "Table scroll right is reachable."
               Expect.equal (Input.commandForKey "u") (Some DetailScrollUp) "Detail scroll up is reachable."
@@ -412,6 +415,28 @@ let stateReducerTests =
               Expect.equal closed.SelectedTaskId snapshot.SelectedTaskId "Task context is preserved."
           }
 
+          test "checklist_hotkey_opens_active_feature_checklist_and_preserves_context" {
+              let root = Directory.CreateTempSubdirectory("sk-dashboard-checklist-hotkey-").FullName
+              let featureRoot = Path.Combine(root, "specs", "001-a")
+              Directory.CreateDirectory(Path.Combine(featureRoot, "checklists")) |> ignore
+
+              File.WriteAllText(Path.Combine(featureRoot, "spec.md"), "### User Story 1 - First (Priority: P1)\n")
+              File.WriteAllText(Path.Combine(featureRoot, "plan.md"), "## Summary\nPlan\n")
+              File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "- [ ] T001 [US1] First task\n")
+              File.WriteAllText(Path.Combine(featureRoot, "checklists", "requirements.md"), "# Requirements\n\n- [x] Done\n")
+
+              let snapshot = App.load root |> App.selectStory 0
+              let opened = App.applyCommand root ChecklistOpen snapshot
+
+              Expect.equal (opened.FullScreen |> Option.map _.Target) (Some ChecklistFullScreen) "Checklist modal opens."
+              Expect.equal opened.SelectedFeatureId snapshot.SelectedFeatureId "Feature selection is preserved."
+              Expect.equal opened.SelectedStoryId snapshot.SelectedStoryId "Story selection is preserved."
+
+              let reading = App.applyCommand root FeatureCheckout opened
+              let text = reading.FullScreen |> Option.bind _.Document |> Option.map _.RawContent |> Option.defaultValue ""
+              Expect.stringContains text "Requirements" "Enter opens the selected checklist document."
+          }
+
           test "scroll_commands_update_table_and_full_detail_offsets" {
               let longPlanContent =
                   String.concat "\n" [ for i in 1..200 -> sprintf "line %d" i ]
@@ -558,6 +583,77 @@ let stateReducerTests =
                   next.Diagnostics
                   (fun diagnostic -> diagnostic.Message.Contains "Settings page opened")
                   "Settings opening is visible in diagnostics."
+          }
+
+          test "settings_theme_commands_cycle_available_theme_ids" {
+              let snapshot =
+                  { RepositoryRoot = "."
+                    CurrentBranch = None
+                    Version = Domain.resolveDashboardVersion ()
+                    Features = []
+                    SelectedFeatureId = None
+                    Stories = []
+                    SelectedStoryId = None
+                    Plan = None
+                    TaskGraph = None
+                    SelectedTaskId = None
+                    Panes = Domain.defaultPanes
+                    Ui =
+                      { Domain.defaultUiPreferences with
+                          Themes =
+                            { Domain.defaultUiPreferences.Themes with
+                                AvailableAppThemes = [ "default"; "light"; "dark" ]
+                                AvailableMarkdownThemes = [ "plain"; "default" ] } }
+                    FullScreen = None
+                    Diagnostics = []
+                    LastRefreshedAt = DateTimeOffset.UnixEpoch }
+                  |> App.applyCommand "." SettingsOpen
+
+              let changedApp = App.applyCommand "." SettingsAppThemeNext snapshot
+              Expect.equal changedApp.Ui.Themes.SelectedAppThemeId "light" "App theme advances in settings."
+              Expect.equal changedApp.Ui.Colors Domain.defaultUiPreferences.Colors "App theme cycling clears previously resolved colors before reapplying."
+
+              let changedMarkdown = App.applyCommand "." SettingsMarkdownThemePrevious snapshot
+              Expect.equal changedMarkdown.Ui.Themes.SelectedMarkdownThemeId "plain" "Markdown theme cycles in settings."
+          }
+
+          test "settings_arrows_move_focus_and_change_focused_values" {
+              let snapshot =
+                  { RepositoryRoot = "."
+                    CurrentBranch = None
+                    Version = Domain.resolveDashboardVersion ()
+                    Features = []
+                    SelectedFeatureId = None
+                    Stories = []
+                    SelectedStoryId = None
+                    Plan = None
+                    TaskGraph = None
+                    SelectedTaskId = None
+                    Panes = Domain.defaultPanes
+                    Ui =
+                      { Domain.defaultUiPreferences with
+                          Themes =
+                            { Domain.defaultUiPreferences.Themes with
+                                AvailableAppThemes = [ "default"; "light"; "dark" ]
+                                AvailableMarkdownThemes = [ "plain"; "default" ] } }
+                    FullScreen = None
+                    Diagnostics = []
+                    LastRefreshedAt = DateTimeOffset.UnixEpoch }
+                  |> App.applyCommand "." SettingsOpen
+
+              let appChanged = App.applyCommand "." TaskNext snapshot
+              Expect.equal appChanged.Ui.Themes.SelectedAppThemeId "light" "Right arrow changes focused app theme."
+
+              let markdownFocused =
+                  snapshot |> App.applyCommand "." StoryNext
+
+              Expect.equal
+                  (markdownFocused.FullScreen |> Option.map _.Viewport.LineOffset)
+                  (Some 1)
+                  "Down arrow moves settings focus."
+
+              let markdownChanged = App.applyCommand "." TaskPrevious markdownFocused
+              Expect.equal markdownChanged.Ui.Themes.SelectedMarkdownThemeId "plain" "Left arrow changes focused Markdown theme."
           }
 
           test "preserveSelections_keeps_visible_selection_across_refresh" {

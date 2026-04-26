@@ -112,6 +112,37 @@ type DashboardResolvedLayout =
     | WidescreenLayout
     | VerticalLayout
 
+type ResolvedDisplayMode =
+    | LightDisplayMode
+    | DarkDisplayMode
+
+type ThemeFamily =
+    | AppThemeFamily
+    | MarkdownThemeFamily
+
+type ThemeSource =
+    | BuiltInTheme
+    | CustomTheme of string
+    | FallbackTheme of string
+
+type ThemeValidationStatus =
+    | ThemeValid
+    | ThemeValidWithReplacements
+    | ThemeIgnored of string
+    | ThemeDuplicate of string
+    | ThemeIncomplete of string
+    | ThemeUnreadable of string
+    | ThemeWrongFamily of ThemeFamily
+    | ThemeUnavailable of string
+
+type ThemeValidationFeedback =
+    { Severity: DiagnosticSeverity
+      Family: ThemeFamily
+      ThemeId: string option
+      Source: string option
+      Message: string
+      FailureKind: string }
+
 type DashboardColorRole =
     | Selected
     | LastActivity
@@ -142,7 +173,8 @@ type TableBorderStyle =
 type DashboardTablePreferences =
     { Border: TableBorderStyle
       StickyColumns: int
-      HorizontalStep: int }
+      HorizontalStep: int
+      AlternateRowShading: bool }
 
 type DashboardDetailPreferences = { WrapText: bool; HorizontalStep: int }
 
@@ -150,12 +182,76 @@ type DashboardLiveReloadPreferences =
     { Enabled: bool
       DebounceMilliseconds: int }
 
+type MarkdownThemeColors =
+    { Normal: string
+      Heading: string
+      Emphasis: string
+      Strong: string
+      Link: string
+      InlineCode: string
+      CodeBlock: string
+      BlockQuote: string
+      ListMarker: string
+      CheckedItem: string
+      UncheckedItem: string
+      Note: string
+      Muted: string }
+
+type MarkdownThemeSpacing =
+    { BeforeHeading: int
+      AfterHeading: int
+      BetweenParagraphs: int
+      AroundCodeBlock: int
+      AroundList: int }
+
+type MarkdownThemePresentation =
+    { Id: string
+      DisplayName: string
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing }
+
 type DashboardUiPreferences =
     { Layout: DashboardLayoutMode
       Table: DashboardTablePreferences
       Detail: DashboardDetailPreferences
       LiveReload: DashboardLiveReloadPreferences
+      Themes: ThemeSelection
+      Markdown: MarkdownThemePresentation
       Colors: Map<DashboardColorRole, DashboardColorStyle> }
+
+and ThemeSelection =
+    { SelectedAppThemeId: string
+      SelectedMarkdownThemeId: string
+      AvailableAppThemes: string list
+      AvailableMarkdownThemes: string list
+      AppThemeFallback: bool
+      MarkdownThemeFallback: bool }
+
+type AppTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      Mode: ResolvedDisplayMode option
+      Table: DashboardTablePreferences
+      AlternateRowShading: bool
+      Colors: Map<DashboardColorRole, DashboardColorStyle>
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type MarkdownTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      ModeCompatibility: ResolvedDisplayMode option
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type ThemeCatalog =
+    { AppThemes: AppTheme list
+      MarkdownThemes: MarkdownTheme list
+      Diagnostics: ThemeValidationFeedback list }
 
 type DashboardVersionDisplay =
     { Label: string
@@ -188,7 +284,48 @@ type FullScreenTarget =
     | PlanFullScreen
     | TaskFullScreen
     | ConstitutionFullScreen
+    | ChecklistFullScreen
     | SettingsFullScreen
+
+type TableViewport =
+    { RowOffset: int
+      ColumnOffset: int
+      VisibleRows: int
+      VisibleColumns: int
+      StickyColumns: int }
+
+type DetailViewport =
+    { LineOffset: int
+      ColumnOffset: int
+      VisibleLines: int
+      VisibleColumns: int }
+
+type ChecklistArtifact =
+    { Id: string
+      DisplayName: string
+      Path: string }
+
+type DashboardContext =
+    { SelectedFeatureId: string option
+      SelectedStoryId: string option
+      SelectedTaskId: string option
+      FocusedPaneId: string option
+      PreviousFullScreenTarget: FullScreenTarget option }
+
+type ChecklistViewMode =
+    | ChecklistListing
+    | ChecklistReading
+    | ChecklistEmpty
+    | ChecklistError
+
+type ChecklistViewState =
+    { AvailableChecklists: ChecklistArtifact list
+      SelectedChecklist: ChecklistArtifact option
+      Document: MarkdownDocument option
+      PreviousContext: DashboardContext
+      Viewport: DetailViewport
+      Diagnostics: Diagnostic list
+      Mode: ChecklistViewMode }
 
 type FullScreenModal =
     { Target: FullScreenTarget
@@ -196,20 +333,8 @@ type FullScreenModal =
       SelectedStoryId: string option
       SelectedTaskId: string option
       Document: MarkdownDocument option
+      Checklist: ChecklistViewState option
       Viewport: DetailViewport }
-
-and TableViewport =
-    { RowOffset: int
-      ColumnOffset: int
-      VisibleRows: int
-      VisibleColumns: int
-      StickyColumns: int }
-
-and DetailViewport =
-    { LineOffset: int
-      ColumnOffset: int
-      VisibleLines: int
-      VisibleColumns: int }
 
 type ConfigFileVersion =
     { Path: string
@@ -357,16 +482,87 @@ module Domain =
         | "heavy" -> Some HeavyBorder
         | _ -> None
 
+    let defaultThemeSelection =
+        { SelectedAppThemeId = "default"
+          SelectedMarkdownThemeId = "default"
+          AvailableAppThemes =
+            [ "default"
+              "light"
+              "dark"
+              "dracula-dark"
+              "nord-dark"
+              "tokyo-night"
+              "solarized-light"
+              "github-light"
+              "gruvbox-light" ]
+          AvailableMarkdownThemes = [ "plain"; "default" ]
+          AppThemeFallback = false
+          MarkdownThemeFallback = false }
+
+    let themeFamilyId family =
+        match family with
+        | AppThemeFamily -> "app"
+        | MarkdownThemeFamily -> "markdown"
+
+    let markdownColors normal heading emphasis strong link inlineCode codeBlock blockQuote listMarker checkedItem uncheckedItem note muted =
+        { Normal = normal
+          Heading = heading
+          Emphasis = emphasis
+          Strong = strong
+          Link = link
+          InlineCode = inlineCode
+          CodeBlock = codeBlock
+          BlockQuote = blockQuote
+          ListMarker = listMarker
+          CheckedItem = checkedItem
+          UncheckedItem = uncheckedItem
+          Note = note
+          Muted = muted }
+
+    let markdownSpacing beforeHeading afterHeading betweenParagraphs aroundCodeBlock aroundList =
+        { BeforeHeading = beforeHeading
+          AfterHeading = afterHeading
+          BetweenParagraphs = betweenParagraphs
+          AroundCodeBlock = aroundCodeBlock
+          AroundList = aroundList }
+
+    let defaultMarkdownColors =
+        markdownColors
+            "white"
+            "deepskyblue1"
+            "white"
+            "white"
+            "cyan"
+            "yellow"
+            "grey"
+            "grey"
+            "deepskyblue1"
+            "green"
+            "yellow"
+            "magenta"
+            "grey"
+
+    let defaultMarkdownSpacing = markdownSpacing 1 0 1 1 0
+
+    let defaultMarkdownPresentation =
+        { Id = "default"
+          DisplayName = "Default"
+          Colors = defaultMarkdownColors
+          Spacing = defaultMarkdownSpacing }
+
     let defaultUiPreferences =
         { Layout = Auto
           Table =
             { Border = RoundedBorder
               StickyColumns = 1
-              HorizontalStep = 8 }
+              HorizontalStep = 8
+              AlternateRowShading = false }
           Detail = { WrapText = false; HorizontalStep = 8 }
           LiveReload =
             { Enabled = true
               DebounceMilliseconds = 250 }
+          Themes = defaultThemeSelection
+          Markdown = defaultMarkdownPresentation
           Colors =
             [ Selected,
               { Foreground = "black"
@@ -414,6 +610,205 @@ module Domain =
               { Foreground = "grey"
                 Background = None } ]
             |> Map.ofList }
+
+    let appTheme id displayName mode table alternateRowShading colors =
+        { Id = id
+          DisplayName = displayName
+          Source = BuiltInTheme
+          Mode = mode
+          Table = { table with AlternateRowShading = alternateRowShading }
+          AlternateRowShading = alternateRowShading
+          Colors = colors
+          ValidationStatus = ThemeValid
+          Diagnostics = [] }
+
+    let builtInAppThemes =
+        let defaults = defaultUiPreferences
+
+        let fg foreground =
+            { Foreground = foreground
+              Background = None }
+
+        let pair foreground background =
+            { Foreground = foreground
+              Background = Some background }
+
+        let withColors entries =
+            entries
+            |> List.fold (fun colors (role, style) -> colors |> Map.add role style) defaults.Colors
+
+        let lightColors =
+            withColors
+                [ Selected, pair "black" "deepskyblue1"
+                  Muted, fg "grey42"
+                  PanelAccent, fg "blue"
+                  RowStripeOdd, pair "black" "white"
+                  RowStripeEven, pair "black" "white"
+                  DetailBody, fg "black" ]
+
+        let darkColors =
+            withColors
+                [ Selected, pair "black" "deepskyblue1"
+                  Muted, fg "grey"
+                  PanelAccent, fg "deepskyblue1"
+                  RowStripeOdd, pair "white" "black"
+                  RowStripeEven, pair "white" "black"
+                  DetailBody, fg "white" ]
+
+        let draculaDarkColors =
+            withColors
+                [ Selected, pair "black" "#ff79c6"
+                  LastActivity, pair "#f8f8f2" "#44475a"
+                  ProgressComplete, fg "#50fa7b"
+                  ProgressIncomplete, fg "#6272a4"
+                  DiagnosticInfo, fg "#8be9fd"
+                  DiagnosticWarning, fg "#f1fa8c"
+                  DiagnosticError, fg "#ff5555"
+                  Muted, fg "#6272a4"
+                  PanelAccent, fg "#bd93f9"
+                  RowStripeOdd, pair "#f8f8f2" "#282a36"
+                  RowStripeEven, pair "#f8f8f2" "#21222c"
+                  DetailHeading, fg "#bd93f9"
+                  DetailLabel, fg "#ffb86c"
+                  DetailBody, fg "#f8f8f2"
+                  DetailSource, fg "#6272a4" ]
+
+        let nordDarkColors =
+            withColors
+                [ Selected, pair "black" "#88c0d0"
+                  LastActivity, pair "#eceff4" "#3b4252"
+                  ProgressComplete, fg "#a3be8c"
+                  ProgressIncomplete, fg "#4c566a"
+                  DiagnosticInfo, fg "#88c0d0"
+                  DiagnosticWarning, fg "#ebcb8b"
+                  DiagnosticError, fg "#bf616a"
+                  Muted, fg "#81a1c1"
+                  PanelAccent, fg "#8fbcbb"
+                  RowStripeOdd, pair "#eceff4" "#2e3440"
+                  RowStripeEven, pair "#eceff4" "#3b4252"
+                  DetailHeading, fg "#88c0d0"
+                  DetailLabel, fg "#ebcb8b"
+                  DetailBody, fg "#eceff4"
+                  DetailSource, fg "#81a1c1" ]
+
+        let tokyoNightColors =
+            withColors
+                [ Selected, pair "black" "#7aa2f7"
+                  LastActivity, pair "#c0caf5" "#292e42"
+                  ProgressComplete, fg "#9ece6a"
+                  ProgressIncomplete, fg "#565f89"
+                  DiagnosticInfo, fg "#7dcfff"
+                  DiagnosticWarning, fg "#e0af68"
+                  DiagnosticError, fg "#f7768e"
+                  Muted, fg "#565f89"
+                  PanelAccent, fg "#bb9af7"
+                  RowStripeOdd, pair "#c0caf5" "#1a1b26"
+                  RowStripeEven, pair "#c0caf5" "#24283b"
+                  DetailHeading, fg "#7aa2f7"
+                  DetailLabel, fg "#e0af68"
+                  DetailBody, fg "#c0caf5"
+                  DetailSource, fg "#565f89" ]
+
+        let solarizedLightColors =
+            withColors
+                [ Selected, pair "#002b36" "#b58900"
+                  LastActivity, pair "#073642" "#eee8d5"
+                  ProgressComplete, fg "#859900"
+                  ProgressIncomplete, fg "#93a1a1"
+                  DiagnosticInfo, fg "#268bd2"
+                  DiagnosticWarning, fg "#b58900"
+                  DiagnosticError, fg "#dc322f"
+                  Muted, fg "#657b83"
+                  PanelAccent, fg "#268bd2"
+                  RowStripeOdd, pair "#073642" "#fdf6e3"
+                  RowStripeEven, pair "#073642" "#eee8d5"
+                  DetailHeading, fg "#268bd2"
+                  DetailLabel, fg "#b58900"
+                  DetailBody, fg "#073642"
+                  DetailSource, fg "#657b83" ]
+
+        let githubLightColors =
+            withColors
+                [ Selected, pair "white" "#0969da"
+                  LastActivity, pair "#24292f" "#f6f8fa"
+                  ProgressComplete, fg "#1a7f37"
+                  ProgressIncomplete, fg "#6e7781"
+                  DiagnosticInfo, fg "#0969da"
+                  DiagnosticWarning, fg "#9a6700"
+                  DiagnosticError, fg "#cf222e"
+                  Muted, fg "#6e7781"
+                  PanelAccent, fg "#0969da"
+                  RowStripeOdd, pair "#24292f" "#ffffff"
+                  RowStripeEven, pair "#24292f" "#f6f8fa"
+                  DetailHeading, fg "#0969da"
+                  DetailLabel, fg "#9a6700"
+                  DetailBody, fg "#24292f"
+                  DetailSource, fg "#6e7781" ]
+
+        let gruvboxLightColors =
+            withColors
+                [ Selected, pair "#fbf1c7" "#af3a03"
+                  LastActivity, pair "#3c3836" "#ebdbb2"
+                  ProgressComplete, fg "#79740e"
+                  ProgressIncomplete, fg "#928374"
+                  DiagnosticInfo, fg "#076678"
+                  DiagnosticWarning, fg "#b57614"
+                  DiagnosticError, fg "#9d0006"
+                  Muted, fg "#7c6f64"
+                  PanelAccent, fg "#076678"
+                  RowStripeOdd, pair "#3c3836" "#fbf1c7"
+                  RowStripeEven, pair "#3c3836" "#f2e5bc"
+                  DetailHeading, fg "#076678"
+                  DetailLabel, fg "#b57614"
+                  DetailBody, fg "#3c3836"
+                  DetailSource, fg "#7c6f64" ]
+
+        [ appTheme "default" "Default" None defaults.Table false defaults.Colors
+          appTheme "light" "Light" (Some LightDisplayMode) defaults.Table false lightColors
+          appTheme "dark" "Dark" (Some DarkDisplayMode) defaults.Table false darkColors
+          appTheme "dracula-dark" "Dracula Dark" (Some DarkDisplayMode) defaults.Table false draculaDarkColors
+          appTheme "nord-dark" "Nord Dark" (Some DarkDisplayMode) defaults.Table false nordDarkColors
+          appTheme "tokyo-night" "Tokyo Night" (Some DarkDisplayMode) defaults.Table false tokyoNightColors
+          appTheme "solarized-light" "Solarized Light" (Some LightDisplayMode) defaults.Table false solarizedLightColors
+          appTheme "github-light" "GitHub Light" (Some LightDisplayMode) defaults.Table false githubLightColors
+          appTheme "gruvbox-light" "Gruvbox Light" (Some LightDisplayMode) defaults.Table false gruvboxLightColors ]
+
+    let builtInMarkdownThemes =
+        let plain =
+            { Id = "plain"
+              DisplayName = "Plain"
+              Source = BuiltInTheme
+              ModeCompatibility = None
+              Colors =
+                markdownColors
+                    "white"
+                    "white"
+                    "white"
+                    "white"
+                    "white"
+                    "yellow"
+                    "grey"
+                    "grey"
+                    "white"
+                    "green"
+                    "yellow"
+                    "grey"
+                    "grey"
+              Spacing = markdownSpacing 0 0 0 0 0
+              ValidationStatus = ThemeValid
+              Diagnostics = [] }
+
+        let readable =
+            { Id = "default"
+              DisplayName = "Default"
+              Source = BuiltInTheme
+              ModeCompatibility = None
+              Colors = defaultMarkdownColors
+              Spacing = defaultMarkdownSpacing
+              ValidationStatus = ThemeValid
+              Diagnostics = [] }
+
+        [ plain; readable ]
 
     let clamp minValue maxValue value = value |> max minValue |> min maxValue
 

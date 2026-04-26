@@ -1,0 +1,431 @@
+namespace SkDashboard.Core
+
+open System
+
+type DiagnosticSeverity =
+    | Info
+    | Warning
+    | Error
+
+type SourceLocation = { Path: string; Line: int option }
+
+type Diagnostic =
+    { Severity: DiagnosticSeverity
+      Message: string
+      Source: SourceLocation option }
+
+type ArtifactState =
+    | Missing
+    | Present
+    | Unreadable of string
+    | Malformed of string
+    | GraphInvalid of string
+
+type CheckoutState =
+    | NotAttempted
+    | Current
+    | CheckedOut
+    | Failed of string
+
+type FeatureOrderKey =
+    | Numeric of int
+    | Timestamp of string
+    | Fallback of string
+
+type FeatureStatus =
+    { SpecState: ArtifactState
+      PlanState: ArtifactState
+      TasksState: ArtifactState
+      ChecklistState: ArtifactState
+      Diagnostics: Diagnostic list
+      LastRefreshedAt: DateTimeOffset }
+
+type Feature =
+    { Id: string
+      BranchName: string option
+      DisplayName: string
+      OrderKey: FeatureOrderKey
+      IsSelected: bool
+      ArtifactRoot: string option
+      CheckoutState: CheckoutState
+      Status: FeatureStatus option }
+
+type UserStory =
+    { Id: string
+      Title: string
+      Priority: string option
+      Description: string
+      AcceptanceScenarios: string list
+      SourceLocation: SourceLocation option }
+
+type Plan =
+    { Path: string option
+      Summary: string option
+      TechnicalContext: string option
+      ConstitutionCheck: string option
+      RawContent: string
+      Diagnostics: Diagnostic list }
+
+type SpeckitTask =
+    { Id: string
+      Title: string
+      Description: string option
+      RawStatus: string
+      Dependencies: string list
+      RelatedStoryId: string option
+      SourceLocation: SourceLocation option
+      Metadata: Map<string, string> }
+
+type TaskEdge =
+    { FromTaskId: string; ToTaskId: string }
+
+type TaskGraph =
+    { SelectedStoryId: string option
+      Nodes: SpeckitTask list
+      Edges: TaskEdge list
+      Diagnostics: Diagnostic list
+      SelectedTaskId: string option }
+
+type PaneKind =
+    | Features
+    | Stories
+    | Plan
+    | TaskGraph
+    | Details
+    | Diagnostics
+
+type Pane =
+    { Id: string
+      Title: string
+      Kind: PaneKind
+      IsFocused: bool
+      ScrollOffset: int
+      Selection: string option }
+
+type DashboardLayoutMode =
+    | Auto
+    | Widescreen
+    | Vertical
+
+type DashboardResolvedLayout =
+    | WidescreenLayout
+    | VerticalLayout
+
+type ResolvedDisplayMode =
+    | LightDisplayMode
+    | DarkDisplayMode
+
+type ThemeFamily =
+    | AppThemeFamily
+    | MarkdownThemeFamily
+
+type ThemeSource =
+    | BuiltInTheme
+    | CustomTheme of string
+    | FallbackTheme of string
+
+type ThemeValidationStatus =
+    | ThemeValid
+    | ThemeValidWithReplacements
+    | ThemeIgnored of string
+    | ThemeDuplicate of string
+    | ThemeIncomplete of string
+    | ThemeUnreadable of string
+    | ThemeWrongFamily of ThemeFamily
+    | ThemeUnavailable of string
+
+type ThemeValidationFeedback =
+    { Severity: DiagnosticSeverity
+      Family: ThemeFamily
+      ThemeId: string option
+      Source: string option
+      Message: string
+      FailureKind: string }
+
+type DashboardColorRole =
+    | Selected
+    | LastActivity
+    | ProgressComplete
+    | ProgressIncomplete
+    | DiagnosticInfo
+    | DiagnosticWarning
+    | DiagnosticError
+    | Muted
+    | PanelAccent
+    | RowStripeOdd
+    | RowStripeEven
+    | DetailHeading
+    | DetailLabel
+    | DetailBody
+    | DetailSource
+
+type DashboardColorStyle =
+    { Foreground: string
+      Background: string option }
+
+type TableBorderStyle =
+    | NoBorder
+    | MinimalBorder
+    | RoundedBorder
+    | HeavyBorder
+
+type DashboardTablePreferences =
+    { Border: TableBorderStyle
+      StickyColumns: int
+      HorizontalStep: int }
+
+type DashboardDetailPreferences = { WrapText: bool; HorizontalStep: int }
+
+type DashboardLiveReloadPreferences =
+    { Enabled: bool
+      DebounceMilliseconds: int }
+
+type MarkdownThemeColors =
+    { Normal: string
+      Heading: string
+      Emphasis: string
+      Strong: string
+      Link: string
+      InlineCode: string
+      CodeBlock: string
+      BlockQuote: string
+      ListMarker: string
+      CheckedItem: string
+      UncheckedItem: string
+      Note: string
+      Muted: string }
+
+type MarkdownThemeSpacing =
+    { BeforeHeading: int
+      AfterHeading: int
+      BetweenParagraphs: int
+      AroundCodeBlock: int
+      AroundList: int }
+
+type MarkdownThemePresentation =
+    { Id: string
+      DisplayName: string
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing }
+
+type DashboardUiPreferences =
+    { Layout: DashboardLayoutMode
+      Table: DashboardTablePreferences
+      Detail: DashboardDetailPreferences
+      LiveReload: DashboardLiveReloadPreferences
+      Themes: ThemeSelection
+      Markdown: MarkdownThemePresentation
+      Colors: Map<DashboardColorRole, DashboardColorStyle> }
+
+and ThemeSelection =
+    { SelectedAppThemeId: string
+      SelectedMarkdownThemeId: string
+      AvailableAppThemes: string list
+      AvailableMarkdownThemes: string list
+      AppThemeFallback: bool
+      MarkdownThemeFallback: bool }
+
+type AppTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      Mode: ResolvedDisplayMode option
+      Table: DashboardTablePreferences
+      AlternateRowShading: bool
+      Colors: Map<DashboardColorRole, DashboardColorStyle>
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type MarkdownTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      ModeCompatibility: ResolvedDisplayMode option
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type ThemeCatalog =
+    { AppThemes: AppTheme list
+      MarkdownThemes: MarkdownTheme list
+      Diagnostics: ThemeValidationFeedback list }
+
+type DashboardVersionDisplay =
+    { Label: string
+      Source: string
+      Diagnostic: Diagnostic option }
+
+type MarkdownRenderStatus =
+    | MarkdownRendered
+    | MarkdownPlainTextFallback of string
+    | MarkdownEmptyDocument
+    | MarkdownSourceMissing
+    | MarkdownSourceUnreadable of string
+
+type MarkdownDocumentSource = { Path: string; DisplayName: string }
+
+type RenderFailureDiagnostic =
+    { Message: string
+      SourcePath: string option }
+
+type MarkdownDocument =
+    { Title: string
+      RawContent: string
+      Source: MarkdownDocumentSource option
+      Status: MarkdownRenderStatus
+      Diagnostics: RenderFailureDiagnostic list }
+
+type FullScreenTarget =
+    | FeatureFullScreen
+    | StoryFullScreen
+    | PlanFullScreen
+    | TaskFullScreen
+    | ConstitutionFullScreen
+    | ChecklistFullScreen
+    | SettingsFullScreen
+
+type TableViewport =
+    { RowOffset: int
+      ColumnOffset: int
+      VisibleRows: int
+      VisibleColumns: int
+      StickyColumns: int }
+
+type DetailViewport =
+    { LineOffset: int
+      ColumnOffset: int
+      VisibleLines: int
+      VisibleColumns: int }
+
+type ChecklistArtifact =
+    { Id: string
+      DisplayName: string
+      Path: string }
+
+type DashboardContext =
+    { SelectedFeatureId: string option
+      SelectedStoryId: string option
+      SelectedTaskId: string option
+      FocusedPaneId: string option
+      PreviousFullScreenTarget: FullScreenTarget option }
+
+type ChecklistViewMode =
+    | ChecklistListing
+    | ChecklistReading
+    | ChecklistEmpty
+    | ChecklistError
+
+type ChecklistViewState =
+    { AvailableChecklists: ChecklistArtifact list
+      SelectedChecklist: ChecklistArtifact option
+      Document: MarkdownDocument option
+      PreviousContext: DashboardContext
+      Viewport: DetailViewport
+      Diagnostics: Diagnostic list
+      Mode: ChecklistViewMode }
+
+type FullScreenModal =
+    { Target: FullScreenTarget
+      SelectedFeatureId: string option
+      SelectedStoryId: string option
+      SelectedTaskId: string option
+      Document: MarkdownDocument option
+      Checklist: ChecklistViewState option
+      Viewport: DetailViewport }
+
+type ConfigFileVersion =
+    { Path: string
+      LastWriteTimeUtc: DateTimeOffset option
+      Length: int64 option }
+
+type SettingsConflict =
+    | NoSettingsConflict
+    | StaleSettingsSave of ConfigFileVersion
+    | PendingExternalReload of ConfigFileVersion
+
+type SettingsEditSession =
+    { Loaded: DashboardUiPreferences
+      Draft: DashboardUiPreferences
+      LoadedVersion: ConfigFileVersion
+      Dirty: bool
+      Conflict: SettingsConflict }
+
+type LiveReloadState =
+    { LastValid: DashboardUiPreferences
+      LastVersion: ConfigFileVersion option
+      PendingVersion: ConfigFileVersion option
+      Diagnostics: Diagnostic list }
+
+type DashboardSnapshot =
+    { RepositoryRoot: string
+      CurrentBranch: string option
+      Version: DashboardVersionDisplay
+      Features: Feature list
+      SelectedFeatureId: string option
+      Stories: UserStory list
+      SelectedStoryId: string option
+      Plan: Plan option
+      TaskGraph: TaskGraph option
+      SelectedTaskId: string option
+      Panes: Pane list
+      Ui: DashboardUiPreferences
+      FullScreen: FullScreenModal option
+      Diagnostics: Diagnostic list
+      LastRefreshedAt: DateTimeOffset }
+
+module Domain =
+    val diagnostic: DiagnosticSeverity -> string -> SourceLocation option -> Diagnostic
+    val constitutionRelativePath: string
+    val emptyFeatureStatus: DateTimeOffset -> FeatureStatus
+    val defaultPanes: Pane list
+    val defaultUiPreferences: DashboardUiPreferences
+    val colorRoleId: DashboardColorRole -> string
+    val tryColorRole: string -> DashboardColorRole option
+    val tableBorderId: TableBorderStyle -> string
+    val tryTableBorder: string -> TableBorderStyle option
+    val defaultThemeSelection: ThemeSelection
+    val builtInAppThemes: AppTheme list
+    val builtInMarkdownThemes: MarkdownTheme list
+    val themeFamilyId: ThemeFamily -> string
+    val resolveLayout: int -> DashboardLayoutMode -> DashboardResolvedLayout
+    val resolveDashboardVersion: unit -> DashboardVersionDisplay
+    val defaultTableViewport: int -> int -> TableViewport
+    val defaultDetailViewport: int -> int -> DetailViewport
+    val clampTableViewport: int -> int -> TableViewport -> TableViewport
+    val keepRowVisible: int -> int -> TableViewport -> TableViewport
+    val scrollTableColumns: int -> int -> TableViewport -> TableViewport
+    val resizeTableViewport: int -> int -> int -> int -> TableViewport -> TableViewport
+    val clampDetailViewport: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailLines: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailColumns: int -> int -> DetailViewport -> DetailViewport
+    val settingsSession: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
+    val updateSettingsDraft: DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
+    val markSettingsConflict: ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val discardSettingsDraft: SettingsEditSession -> SettingsEditSession
+    val reloadSettingsDraft: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val liveReloadState: DashboardUiPreferences -> LiveReloadState
+    val applyLiveReload: ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState
+    val deferLiveReload: ConfigFileVersion -> LiveReloadState -> LiveReloadState
+    val tableBorderId: TableBorderStyle -> string
+    val tryTableBorder: string -> TableBorderStyle option
+    val defaultTableViewport: int -> int -> TableViewport
+    val defaultDetailViewport: int -> int -> DetailViewport
+    val clampTableViewport: int -> int -> TableViewport -> TableViewport
+    val keepRowVisible: int -> int -> TableViewport -> TableViewport
+    val scrollTableColumns: int -> int -> TableViewport -> TableViewport
+    val resizeTableViewport: int -> int -> int -> int -> TableViewport -> TableViewport
+    val clampDetailViewport: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailLines: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailColumns: int -> int -> DetailViewport -> DetailViewport
+    val settingsSession: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
+    val updateSettingsDraft: DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
+    val markSettingsConflict: ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val discardSettingsDraft: SettingsEditSession -> SettingsEditSession
+    val reloadSettingsDraft: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val liveReloadState: DashboardUiPreferences -> LiveReloadState
+    val applyLiveReload: ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState
+    val deferLiveReload: ConfigFileVersion -> LiveReloadState -> LiveReloadState
+    val normalizeDashboardVersionLabel: string -> string option
+    val resolveDashboardVersion: unit -> DashboardVersionDisplay
+    val resolveLayout: int -> DashboardLayoutMode -> DashboardResolvedLayout

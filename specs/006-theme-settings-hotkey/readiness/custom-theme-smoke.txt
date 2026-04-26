@@ -1,0 +1,24 @@
+ [1msk-dashboard[0m [1mv0.1.18[0m  repo /home/developer/projects/sk-Dashboard  branch       
+ 006-theme-settings-hotkey                                                      
+                                                                                
+╭─[1mSettings Full Screen[0m lines 1-16/16 col +0────────────────────────────────────╮
+│ Settings                                                                     │
+│ App theme: readiness-app                                                     │
+│ Markdown theme: readiness-markdown                                           │
+│ Resolved Markdown theme: readiness-markdown                                  │
+│ App theme choices: default, light, dark, readiness-app                       │
+│ Markdown theme choices: plain, default, readiness-markdown                   │
+│ Theme fallback: none                                                         │
+│ Table border: minimal                                                        │
+╭─[1mStatus[0m───────────────────────────────────────────────────────────────────────╮
+│ ───────────────────────────────── controls ───────────────────────────────── │
+│ [1mj/k[0m features  [1mup/down[0m stories  [1mleft/right[0m tasks  [1mh/l[0m table scroll  [1mF/S/P/T[0m   │
+│ full screen  [1mC[0m constitution  [1mL[0m checklists  [1marrows[0m scroll detail  [1m,[0m settings  │
+│ [1mr[0m refresh  [1mq[0m quit                                                            │
+│                                                                              │
+│   [1mSeverity[0m │ [1mMessage[0m                                                         │
+│  ──────────┼───────────────────────────────────────────────────────────────  │
+│    info    │  Settings page opened. Use sk-dashboard --settings to edit      │
+│            │ the shared dashboard config in a separate console.              │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯

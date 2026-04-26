@@ -40,3 +40,34 @@ let malformedProject () =
     File.WriteAllText(Path.Combine(featureRoot, "plan.md"), "# Missing summary")
     File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "not a task row")
     { Root = root; FeatureRoot = Some featureRoot }
+
+let tempConfigFile name =
+    let root = Directory.CreateTempSubdirectory("sk-dashboard-config-" + name + "-").FullName
+    Path.Combine(root, "dashboard.json")
+
+let themeFolders (configPath: string) =
+    let root = Path.GetDirectoryName configPath |> Option.ofObj |> Option.defaultValue "."
+    let app = Path.Combine(root, "themes", "app")
+    let markdown = Path.Combine(root, "themes", "markdown")
+    Directory.CreateDirectory(app) |> ignore
+    Directory.CreateDirectory(markdown) |> ignore
+    app, markdown
+
+let writeThemeFile (folder: string) (name: string) (content: string) =
+    let path = Path.Combine(folder, name)
+    File.WriteAllText(path, content)
+    path
+
+let checklistProject (files: (string * string) list) =
+    let root = Directory.CreateTempSubdirectory("sk-dashboard-checklist-fixture-").FullName
+    let featureRoot = Path.Combine(root, "specs", "001-checklists")
+    let checklistRoot = Path.Combine(featureRoot, "checklists")
+    Directory.CreateDirectory(checklistRoot) |> ignore
+    File.WriteAllText(Path.Combine(featureRoot, "spec.md"), "### User Story 1 - Checklists (Priority: P1)")
+    File.WriteAllText(Path.Combine(featureRoot, "plan.md"), "## Summary\nChecklist fixture")
+    File.WriteAllText(Path.Combine(featureRoot, "tasks.md"), "- [ ] T001 [US1] Checklist task")
+
+    for name, content in files do
+        File.WriteAllText(Path.Combine(checklistRoot, name), content)
+
+    { Root = root; FeatureRoot = Some featureRoot }

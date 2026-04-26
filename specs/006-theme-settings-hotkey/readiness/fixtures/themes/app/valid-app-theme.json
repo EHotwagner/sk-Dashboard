@@ -1,0 +1,20 @@
+{
+  "family": "app",
+  "id": "readiness-app",
+  "displayName": "Readiness App",
+  "version": 1,
+  "mode": "dark",
+  "alternateRowShading": false,
+  "table": {
+    "border": "minimal",
+    "stickyColumns": 1,
+    "horizontalStep": 8
+  },
+  "colors": {
+    "panelAccent": "cyan",
+    "selected": {
+      "foreground": "black",
+      "background": "green"
+    }
+  }
+}

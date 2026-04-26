@@ -2,8 +2,21 @@ module SkDashboard.Dashboard.Tests.RenderingSmokeTests
 
 open System.IO
 open Expecto
+open Spectre.Console
 open SkDashboard.Core
 open SkDashboard.Dashboard
+
+let renderToText renderable =
+    use writer = new StringWriter()
+    let output = AnsiConsoleOutput(writer)
+    let settings = AnsiConsoleSettings()
+    settings.Ansi <- AnsiSupport.Yes
+    settings.ColorSystem <- ColorSystemSupport.TrueColor
+    settings.Out <- output
+    settings.Interactive <- InteractionSupport.No
+    let console = AnsiConsole.Create(settings)
+    console.Write(renderable)
+    writer.ToString()
 
 [<Tests>]
 let renderingSmokeTests =
@@ -65,6 +78,8 @@ let renderingSmokeTests =
                     Table = Domain.defaultUiPreferences.Table
                     Detail = Domain.defaultUiPreferences.Detail
                     LiveReload = Domain.defaultUiPreferences.LiveReload
+                    Themes = Domain.defaultUiPreferences.Themes
+                    Markdown = Domain.defaultUiPreferences.Markdown
                     Colors =
                       Domain.defaultUiPreferences.Colors
                       |> Map.add
@@ -126,6 +141,10 @@ let renderingSmokeTests =
               Expect.equal (Render.color PanelAccent ui) "#7aa2f7" "Panel accent color is used."
               Expect.equal (Render.rowStripeTag 0 ui) "white on #18232f" "Even stripe role is used."
               Expect.equal (Render.rowStripeTag 1 ui) "white on #101820" "Odd stripe role is used."
+              Expect.equal
+                  (Render.stripedMarkup 1 { ui with Table = { ui.Table with AlternateRowShading = true } } "row")
+                  "[white on #101820] row [/]"
+                  "Enabled row shading uses stripe role colors."
           }
 
           test "default_colors_are_used_without_custom_preferences" {
@@ -134,8 +153,8 @@ let renderingSmokeTests =
               Expect.equal (Render.color ProgressComplete ui) "green" "Default progress color is used."
               Expect.equal (Render.color DiagnosticError ui) "red" "Default diagnostic error color is used."
               Expect.equal (Render.color Muted ui) "grey" "Default muted color is used."
-              Expect.equal (Render.rowStripeTag 0 ui) "white on black" "Default even stripe is used."
-              Expect.equal (Render.rowStripeTag 1 ui) "white on grey7" "Default odd stripe is used."
+              Expect.equal (Render.stripedMarkup 0 ui "row") "[white] row [/]" "Default theme does not shade table rows."
+              Expect.isFalse ui.Table.AlternateRowShading "Default alternate row shading is disabled."
           }
 
           test "snapshotText_includes_dashboard_version" {
@@ -330,6 +349,73 @@ let renderingSmokeTests =
               Expect.stringContains text "Live reload" "Live reload value is visible."
           }
 
+          test "settings_surface_lists_custom_theme_choices_and_fallbacks" {
+              let root =
+                  Directory.CreateTempSubdirectory("sk-dashboard-render-custom-themes-").FullName
+
+              let configPath = Path.Combine(root, "dashboard.json")
+              let appFolder = Path.Combine(root, "themes", "app")
+              let markdownFolder = Path.Combine(root, "themes", "markdown")
+              Directory.CreateDirectory(appFolder) |> ignore
+              Directory.CreateDirectory(markdownFolder) |> ignore
+
+              File.WriteAllText(
+                  Path.Combine(appFolder, "custom-app.json"),
+                  """{"family":"app","id":"custom-app","displayName":"Custom App","colors":{"panelAccent":"cyan"}}"""
+              )
+
+              File.WriteAllText(
+                  Path.Combine(markdownFolder, "custom-md.json"),
+                  """{"family":"markdown","id":"custom-md","displayName":"Custom Markdown","colors":{"heading":"magenta"}}"""
+              )
+
+              File.WriteAllText(configPath, """{"version":1,"bindings":[],"ui":{"themes":{"app":"missing-app","markdown":"custom-md"}}}""")
+
+              let preferences = Hotkeys.loadPreferences configPath
+              let snapshot =
+                  { App.load root with
+                      Ui = preferences.Ui
+                      Diagnostics = preferences.Diagnostics }
+                  |> App.applyCommand root SettingsOpen
+
+              let text =
+                  snapshot.FullScreen
+                  |> Option.map (Render.fullScreenText snapshot)
+                  |> Option.defaultValue ""
+
+              Expect.stringContains text "custom-app" "Custom app theme choice is visible."
+              Expect.stringContains text "custom-md" "Custom Markdown theme choice is visible."
+              Expect.stringContains text "app fallback active" "Missing selected app theme is visible."
+              Expect.isNonEmpty snapshot.Diagnostics "Fallback diagnostics are preserved."
+          }
+
+          test "markdown_theme_is_used_for_fullscreen_and_checklist_rendering" {
+              let ui =
+                  { Domain.defaultUiPreferences with
+                      Markdown =
+                        { Domain.defaultUiPreferences.Markdown with
+                            Id = "test-md"
+                            Colors =
+                              { Domain.defaultUiPreferences.Markdown.Colors with
+                                  Heading = "magenta"
+                                  CheckedItem = "green"
+                                  UncheckedItem = "yellow"
+                                  Note = "cyan" } } }
+
+              let rows, _, _, _, _ =
+                  Render.markdownRows
+                      ui
+                      "# Heading\n\n- [x] Done\n- [ ] Todo\n> Note"
+                      None
+                      (Domain.defaultDetailViewport 8 80)
+
+              let text = renderToText (Rows rows)
+              Expect.stringContains text "\u001b[" "The markdown rows produce styled terminal output."
+              Expect.stringContains text "Heading" "Heading content is rendered."
+              Expect.stringContains text "Done" "Checked item content is rendered."
+              Expect.stringContains text "Todo" "Unchecked item content is rendered."
+          }
+
           test "visibleRows_keeps_selected_item_visible_after_first_page" {
               let rows = [ 1..50 ]
               let visible, viewport = Render.visibleRows 37 12 rows
@@ -347,6 +433,7 @@ let renderingSmokeTests =
                     SelectedStoryId = None
                     SelectedTaskId = None
                     Document = None
+                    Checklist = None
                     Viewport =
                       { Domain.defaultDetailViewport 5 8 with
                           ColumnOffset = 20 } }

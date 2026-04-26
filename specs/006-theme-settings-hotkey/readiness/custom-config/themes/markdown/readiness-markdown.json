@@ -1,0 +1,16 @@
+{
+  "family": "markdown",
+  "id": "readiness-markdown",
+  "displayName": "Readiness Markdown",
+  "version": 1,
+  "colors": {
+    "heading": "cyan",
+    "inlineCode": "yellow",
+    "checkedItem": "green",
+    "uncheckedItem": "yellow"
+  },
+  "spacing": {
+    "beforeHeading": 1,
+    "betweenParagraphs": 1
+  }
+}

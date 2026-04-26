@@ -111,6 +111,37 @@ type DashboardResolvedLayout =
     | WidescreenLayout
     | VerticalLayout
 
+type ResolvedDisplayMode =
+    | LightDisplayMode
+    | DarkDisplayMode
+
+type ThemeFamily =
+    | AppThemeFamily
+    | MarkdownThemeFamily
+
+type ThemeSource =
+    | BuiltInTheme
+    | CustomTheme of string
+    | FallbackTheme of string
+
+type ThemeValidationStatus =
+    | ThemeValid
+    | ThemeValidWithReplacements
+    | ThemeIgnored of string
+    | ThemeDuplicate of string
+    | ThemeIncomplete of string
+    | ThemeUnreadable of string
+    | ThemeWrongFamily of ThemeFamily
+    | ThemeUnavailable of string
+
+type ThemeValidationFeedback =
+    { Severity: DiagnosticSeverity
+      Family: ThemeFamily
+      ThemeId: string option
+      Source: string option
+      Message: string
+      FailureKind: string }
+
 type DashboardColorRole =
     | Selected
     | LastActivity
@@ -141,7 +172,8 @@ type TableBorderStyle =
 type DashboardTablePreferences =
     { Border: TableBorderStyle
       StickyColumns: int
-      HorizontalStep: int }
+      HorizontalStep: int
+      AlternateRowShading: bool }
 
 type DashboardDetailPreferences = { WrapText: bool; HorizontalStep: int }
 
@@ -149,12 +181,76 @@ type DashboardLiveReloadPreferences =
     { Enabled: bool
       DebounceMilliseconds: int }
 
+type MarkdownThemeColors =
+    { Normal: string
+      Heading: string
+      Emphasis: string
+      Strong: string
+      Link: string
+      InlineCode: string
+      CodeBlock: string
+      BlockQuote: string
+      ListMarker: string
+      CheckedItem: string
+      UncheckedItem: string
+      Note: string
+      Muted: string }
+
+type MarkdownThemeSpacing =
+    { BeforeHeading: int
+      AfterHeading: int
+      BetweenParagraphs: int
+      AroundCodeBlock: int
+      AroundList: int }
+
+type MarkdownThemePresentation =
+    { Id: string
+      DisplayName: string
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing }
+
 type DashboardUiPreferences =
     { Layout: DashboardLayoutMode
       Table: DashboardTablePreferences
       Detail: DashboardDetailPreferences
       LiveReload: DashboardLiveReloadPreferences
+      Themes: ThemeSelection
+      Markdown: MarkdownThemePresentation
       Colors: Map<DashboardColorRole, DashboardColorStyle> }
+
+and ThemeSelection =
+    { SelectedAppThemeId: string
+      SelectedMarkdownThemeId: string
+      AvailableAppThemes: string list
+      AvailableMarkdownThemes: string list
+      AppThemeFallback: bool
+      MarkdownThemeFallback: bool }
+
+type AppTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      Mode: ResolvedDisplayMode option
+      Table: DashboardTablePreferences
+      AlternateRowShading: bool
+      Colors: Map<DashboardColorRole, DashboardColorStyle>
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type MarkdownTheme =
+    { Id: string
+      DisplayName: string
+      Source: ThemeSource
+      ModeCompatibility: ResolvedDisplayMode option
+      Colors: MarkdownThemeColors
+      Spacing: MarkdownThemeSpacing
+      ValidationStatus: ThemeValidationStatus
+      Diagnostics: ThemeValidationFeedback list }
+
+type ThemeCatalog =
+    { AppThemes: AppTheme list
+      MarkdownThemes: MarkdownTheme list
+      Diagnostics: ThemeValidationFeedback list }
 
 type DashboardVersionDisplay =
     { Label: string
@@ -187,7 +283,48 @@ type FullScreenTarget =
     | PlanFullScreen
     | TaskFullScreen
     | ConstitutionFullScreen
+    | ChecklistFullScreen
     | SettingsFullScreen
+
+type TableViewport =
+    { RowOffset: int
+      ColumnOffset: int
+      VisibleRows: int
+      VisibleColumns: int
+      StickyColumns: int }
+
+type DetailViewport =
+    { LineOffset: int
+      ColumnOffset: int
+      VisibleLines: int
+      VisibleColumns: int }
+
+type ChecklistArtifact =
+    { Id: string
+      DisplayName: string
+      Path: string }
+
+type DashboardContext =
+    { SelectedFeatureId: string option
+      SelectedStoryId: string option
+      SelectedTaskId: string option
+      FocusedPaneId: string option
+      PreviousFullScreenTarget: FullScreenTarget option }
+
+type ChecklistViewMode =
+    | ChecklistListing
+    | ChecklistReading
+    | ChecklistEmpty
+    | ChecklistError
+
+type ChecklistViewState =
+    { AvailableChecklists: ChecklistArtifact list
+      SelectedChecklist: ChecklistArtifact option
+      Document: MarkdownDocument option
+      PreviousContext: DashboardContext
+      Viewport: DetailViewport
+      Diagnostics: Diagnostic list
+      Mode: ChecklistViewMode }
 
 type FullScreenModal =
     { Target: FullScreenTarget
@@ -195,20 +332,8 @@ type FullScreenModal =
       SelectedStoryId: string option
       SelectedTaskId: string option
       Document: MarkdownDocument option
+      Checklist: ChecklistViewState option
       Viewport: DetailViewport }
-
-and TableViewport =
-    { RowOffset: int
-      ColumnOffset: int
-      VisibleRows: int
-      VisibleColumns: int
-      StickyColumns: int }
-
-and DetailViewport =
-    { LineOffset: int
-      ColumnOffset: int
-      VisibleLines: int
-      VisibleColumns: int }
 
 type ConfigFileVersion =
     { Path: string
@@ -258,6 +383,31 @@ module Domain =
     val defaultUiPreferences: DashboardUiPreferences
     val colorRoleId: DashboardColorRole -> string
     val tryColorRole: string -> DashboardColorRole option
+    val tableBorderId: TableBorderStyle -> string
+    val tryTableBorder: string -> TableBorderStyle option
+    val defaultThemeSelection: ThemeSelection
+    val builtInAppThemes: AppTheme list
+    val builtInMarkdownThemes: MarkdownTheme list
+    val themeFamilyId: ThemeFamily -> string
+    val resolveLayout: int -> DashboardLayoutMode -> DashboardResolvedLayout
+    val resolveDashboardVersion: unit -> DashboardVersionDisplay
+    val defaultTableViewport: int -> int -> TableViewport
+    val defaultDetailViewport: int -> int -> DetailViewport
+    val clampTableViewport: int -> int -> TableViewport -> TableViewport
+    val keepRowVisible: int -> int -> TableViewport -> TableViewport
+    val scrollTableColumns: int -> int -> TableViewport -> TableViewport
+    val resizeTableViewport: int -> int -> int -> int -> TableViewport -> TableViewport
+    val clampDetailViewport: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailLines: int -> int -> DetailViewport -> DetailViewport
+    val scrollDetailColumns: int -> int -> DetailViewport -> DetailViewport
+    val settingsSession: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession
+    val updateSettingsDraft: DashboardUiPreferences -> SettingsEditSession -> SettingsEditSession
+    val markSettingsConflict: ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val discardSettingsDraft: SettingsEditSession -> SettingsEditSession
+    val reloadSettingsDraft: DashboardUiPreferences -> ConfigFileVersion -> SettingsEditSession -> SettingsEditSession
+    val liveReloadState: DashboardUiPreferences -> LiveReloadState
+    val applyLiveReload: ConfigFileVersion -> DashboardUiPreferences -> LiveReloadState -> LiveReloadState
+    val deferLiveReload: ConfigFileVersion -> LiveReloadState -> LiveReloadState
     val tableBorderId: TableBorderStyle -> string
     val tryTableBorder: string -> TableBorderStyle option
     val defaultTableViewport: int -> int -> TableViewport

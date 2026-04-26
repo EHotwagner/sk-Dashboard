@@ -21,6 +21,7 @@ type DashboardCommand =
     | FullScreenPlan
     | FullScreenTask
     | ConstitutionOpen
+    | ChecklistOpen
     | TableScrollLeft
     | TableScrollRight
     | DetailScrollUp
@@ -32,6 +33,10 @@ type DashboardCommand =
     | SettingsDiscard
     | SettingsReload
     | SettingsOverwrite
+    | SettingsAppThemePrevious
+    | SettingsAppThemeNext
+    | SettingsMarkdownThemePrevious
+    | SettingsMarkdownThemeNext
     | Refresh
     | HotkeysReload
     | Quit
@@ -66,6 +71,7 @@ module Hotkeys =
         | FullScreenPlan -> "fullscreen.plan"
         | FullScreenTask -> "fullscreen.task"
         | ConstitutionOpen -> "constitution.open"
+        | ChecklistOpen -> "checklists.open"
         | TableScrollLeft -> "table.scrollLeft"
         | TableScrollRight -> "table.scrollRight"
         | DetailScrollUp -> "detail.scrollUp"
@@ -77,6 +83,10 @@ module Hotkeys =
         | SettingsDiscard -> "settings.discard"
         | SettingsReload -> "settings.reload"
         | SettingsOverwrite -> "settings.overwrite"
+        | SettingsAppThemePrevious -> "settings.appTheme.previous"
+        | SettingsAppThemeNext -> "settings.appTheme.next"
+        | SettingsMarkdownThemePrevious -> "settings.markdownTheme.previous"
+        | SettingsMarkdownThemeNext -> "settings.markdownTheme.next"
         | Refresh -> "refresh"
         | HotkeysReload -> "hotkeys.reload"
         | Quit -> "quit"
@@ -99,6 +109,7 @@ module Hotkeys =
         | "fullscreen.plan" -> Some FullScreenPlan
         | "fullscreen.task" -> Some FullScreenTask
         | "constitution.open" -> Some ConstitutionOpen
+        | "checklists.open" -> Some ChecklistOpen
         | "table.scrollLeft" -> Some TableScrollLeft
         | "table.scrollRight" -> Some TableScrollRight
         | "detail.scrollUp" -> Some DetailScrollUp
@@ -110,6 +121,10 @@ module Hotkeys =
         | "settings.discard" -> Some SettingsDiscard
         | "settings.reload" -> Some SettingsReload
         | "settings.overwrite" -> Some SettingsOverwrite
+        | "settings.appTheme.previous" -> Some SettingsAppThemePrevious
+        | "settings.appTheme.next" -> Some SettingsAppThemeNext
+        | "settings.markdownTheme.previous" -> Some SettingsMarkdownThemePrevious
+        | "settings.markdownTheme.next" -> Some SettingsMarkdownThemeNext
         | "refresh" -> Some Refresh
         | "hotkeys.reload" -> Some HotkeysReload
         | "quit" -> Some Quit
@@ -133,6 +148,7 @@ module Hotkeys =
         | FullScreenPlan -> "Open plan document"
         | FullScreenTask -> "Open task document"
         | ConstitutionOpen -> "Open constitution"
+        | ChecklistOpen -> "Open checklists"
         | TableScrollLeft -> "Scroll table left"
         | TableScrollRight -> "Scroll table right"
         | DetailScrollUp -> "Scroll detail up"
@@ -144,6 +160,10 @@ module Hotkeys =
         | SettingsDiscard -> "Discard settings"
         | SettingsReload -> "Reload settings"
         | SettingsOverwrite -> "Overwrite settings"
+        | SettingsAppThemePrevious -> "Previous app theme"
+        | SettingsAppThemeNext -> "Next app theme"
+        | SettingsMarkdownThemePrevious -> "Previous Markdown theme"
+        | SettingsMarkdownThemeNext -> "Next Markdown theme"
         | Refresh -> "Refresh"
         | HotkeysReload -> "Reload hotkeys"
         | Quit -> "Quit"
@@ -213,6 +233,10 @@ module Hotkeys =
             KeySequence = "C"
             Scope = "dashboard"
             Source = "default" }
+          { Command = ChecklistOpen
+            KeySequence = "L"
+            Scope = "dashboard"
+            Source = "default" }
           { Command = TableScrollLeft
             KeySequence = "h"
             Scope = "dashboard"
@@ -255,6 +279,22 @@ module Hotkeys =
             Source = "default" }
           { Command = SettingsOverwrite
             KeySequence = "4"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsAppThemePrevious
+            KeySequence = "a"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsAppThemeNext
+            KeySequence = "A"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsMarkdownThemePrevious
+            KeySequence = "m"
+            Scope = "settings"
+            Source = "default" }
+          { Command = SettingsMarkdownThemeNext
+            KeySequence = "M"
             Scope = "settings"
             Source = "default" }
           { Command = Refresh
@@ -531,6 +571,7 @@ module Hotkeys =
             let mutable table = Domain.defaultUiPreferences.Table
             let mutable detail = Domain.defaultUiPreferences.Detail
             let mutable liveReload = Domain.defaultUiPreferences.LiveReload
+            let mutable themes = Domain.defaultUiPreferences.Themes
             let mutable colors = Domain.defaultUiPreferences.Colors
 
             match ui.TryGetProperty("layout") with
@@ -583,6 +624,10 @@ module Hotkeys =
                     diagnostics <-
                         diagnostic path Warning "Table horizontalStep must be positive; using default."
                         :: diagnostics
+                | None -> ()
+
+                match readBoolProperty value "alternateRowShading" with
+                | Some enabled -> table <- { table with AlternateRowShading = enabled }
                 | None -> ()
             | true, _ ->
                 diagnostics <-
@@ -637,10 +682,42 @@ module Hotkeys =
                     :: diagnostics
             | false, _ -> ()
 
+            match ui.TryGetProperty("themes") with
+            | true, value when value.ValueKind = JsonValueKind.Object ->
+                let appTheme =
+                    readStringProperty value "app"
+                    |> Option.orElse (readStringProperty value "selectedAppThemeId")
+                    |> Option.defaultValue themes.SelectedAppThemeId
+
+                let markdownTheme =
+                    readStringProperty value "markdown"
+                    |> Option.orElse (readStringProperty value "selectedMarkdownThemeId")
+                    |> Option.defaultValue themes.SelectedMarkdownThemeId
+
+                themes <-
+                    { themes with
+                        SelectedAppThemeId =
+                            if String.IsNullOrWhiteSpace appTheme then
+                                Domain.defaultThemeSelection.SelectedAppThemeId
+                            else
+                                appTheme
+                        SelectedMarkdownThemeId =
+                            if String.IsNullOrWhiteSpace markdownTheme then
+                                Domain.defaultThemeSelection.SelectedMarkdownThemeId
+                            else
+                                markdownTheme }
+            | true, _ ->
+                diagnostics <-
+                    diagnostic path Warning "UI themes must be an object; using default theme selections."
+                    :: diagnostics
+            | false, _ -> ()
+
             { Layout = layout
               Table = table
               Detail = detail
               LiveReload = liveReload
+              Themes = themes
+              Markdown = Domain.defaultUiPreferences.Markdown
               Colors = colors },
             List.rev diagnostics
 
@@ -655,6 +732,99 @@ module Hotkeys =
             { Path = path
               LastWriteTimeUtc = Some(DateTimeOffset info.LastWriteTimeUtc)
               Length = Some info.Length }
+
+    let themeFeedbackDiagnostic feedback =
+        Domain.diagnostic feedback.Severity feedback.Message (feedback.Source |> Option.map (fun path -> { Path = path; Line = None }))
+
+    let resolveUiThemes path (ui: DashboardUiPreferences) =
+        let catalog = SpeckitArtifacts.discoverThemeCatalog path
+
+        let appTheme =
+            catalog.AppThemes
+            |> List.tryFind (fun theme -> theme.Id = ui.Themes.SelectedAppThemeId)
+
+        let markdownTheme =
+            catalog.MarkdownThemes
+            |> List.tryFind (fun theme -> theme.Id = ui.Themes.SelectedMarkdownThemeId)
+
+        let fallbackDiagnostics =
+            match appTheme with
+            | Some _ -> []
+            | None ->
+                [ Domain.diagnostic
+                      Warning
+                      ("Selected app theme is unavailable; using default: " + ui.Themes.SelectedAppThemeId)
+                      None ]
+
+        let markdownFallbackDiagnostics =
+            match markdownTheme with
+            | Some _ -> []
+            | None ->
+                [ Domain.diagnostic
+                      Warning
+                      ("Selected Markdown theme is unavailable; using default: " + ui.Themes.SelectedMarkdownThemeId)
+                      None ]
+
+        let resolvedApp =
+            appTheme
+            |> Option.orElse (catalog.AppThemes |> List.tryFind (fun theme -> theme.Id = "default"))
+
+        let resolvedMarkdown =
+            markdownTheme
+            |> Option.orElse (catalog.MarkdownThemes |> List.tryFind (fun theme -> theme.Id = "default"))
+
+        let themeSelection =
+            { ui.Themes with
+                AvailableAppThemes = catalog.AppThemes |> List.map _.Id
+                AvailableMarkdownThemes = catalog.MarkdownThemes |> List.map _.Id
+                AppThemeFallback = Option.isNone appTheme
+                MarkdownThemeFallback = Option.isNone markdownTheme }
+
+        let markdownPresentation =
+            resolvedMarkdown
+            |> Option.map (fun theme ->
+                { Id = theme.Id
+                  DisplayName = theme.DisplayName
+                  Colors = theme.Colors
+                  Spacing = theme.Spacing })
+            |> Option.defaultValue Domain.defaultUiPreferences.Markdown
+
+        let themedUi =
+            match resolvedApp with
+            | None ->
+                { ui with
+                    Themes = themeSelection
+                    Markdown = markdownPresentation }
+            | Some theme ->
+                let colors =
+                    theme.Colors
+                    |> Map.fold
+                        (fun resolved role themeStyle ->
+                            let current = ui.Colors |> Map.tryFind role
+                            let defaultStyle = Domain.defaultUiPreferences.Colors |> Map.tryFind role
+
+                            match current, defaultStyle with
+                            | Some currentStyle, Some baseStyle when currentStyle <> baseStyle ->
+                                Map.add role currentStyle resolved
+                            | _ -> Map.add role themeStyle resolved)
+                        theme.Colors
+
+                { ui with
+                    Themes = themeSelection
+                    Markdown = markdownPresentation
+                    Table =
+                        if ui.Table = Domain.defaultUiPreferences.Table then
+                            theme.Table
+                        else
+                            ui.Table
+                    Colors = colors }
+
+        let diagnostics =
+            (catalog.Diagnostics |> List.map themeFeedbackDiagnostic)
+            @ fallbackDiagnostics
+            @ markdownFallbackDiagnostics
+
+        themedUi, diagnostics
 
     let writePreferences (path: string) preferences =
         let directory = Path.GetDirectoryName path |> Option.ofObj
@@ -685,7 +855,7 @@ module Hotkeys =
 
         let json =
             sprintf
-                """{"version":1,"bindings":[%s],"ui":{"layout":"%s","table":{"border":"%s","stickyColumns":%d,"horizontalStep":%d},"detail":{"wrapText":%s,"horizontalStep":%d},"liveReload":{"enabled":%s,"debounceMilliseconds":%d},"colors":{%s}}}"""
+                """{"version":1,"bindings":[%s],"ui":{"layout":"%s","table":{"border":"%s","stickyColumns":%d,"horizontalStep":%d,"alternateRowShading":%s},"detail":{"wrapText":%s,"horizontalStep":%d},"liveReload":{"enabled":%s,"debounceMilliseconds":%d},"themes":{"app":"%s","markdown":"%s"},"colors":{%s}}}"""
                 bindings
                 (match preferences.Ui.Layout with
                  | Auto -> "auto"
@@ -694,6 +864,10 @@ module Hotkeys =
                 border
                 preferences.Ui.Table.StickyColumns
                 preferences.Ui.Table.HorizontalStep
+                (if preferences.Ui.Table.AlternateRowShading then
+                     "true"
+                 else
+                     "false")
                 (if preferences.Ui.Detail.WrapText then "true" else "false")
                 preferences.Ui.Detail.HorizontalStep
                 (if preferences.Ui.LiveReload.Enabled then
@@ -701,6 +875,8 @@ module Hotkeys =
                  else
                      "false")
                 preferences.Ui.LiveReload.DebounceMilliseconds
+                preferences.Ui.Themes.SelectedAppThemeId
+                preferences.Ui.Themes.SelectedMarkdownThemeId
                 colorEntries
 
         File.WriteAllText(path, json)
@@ -716,10 +892,11 @@ module Hotkeys =
                 let root = document.RootElement
                 let bindings, bindingDiagnostics = parseBindings path root
                 let ui, uiDiagnostics = parseUi path root
+                let themedUi, themeDiagnostics = resolveUiThemes path ui
 
                 { Bindings = bindings
-                  Ui = ui
-                  Diagnostics = bindingDiagnostics @ uiDiagnostics }
+                  Ui = themedUi
+                  Diagnostics = bindingDiagnostics @ uiDiagnostics @ themeDiagnostics }
             with ex ->
                 { Bindings = defaultBindings
                   Ui = Domain.defaultUiPreferences
